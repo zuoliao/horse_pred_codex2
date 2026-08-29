@@ -2,7 +2,7 @@
 
 JRA中央競馬を主対象とする、競馬予測・馬券購入判断支援システムの研究開発リポジトリです。
 
-> **現在の段階:** 要求・設計方針のすり合わせ中。データ調査および実装は未着手。  
+> **現在の段階:** 調査計画の全workstreamと統合結論を完了。実装前decision gateの確認・仕様承認待ち。データ契約・取得およびモデル実装は未着手。
 > **最終更新:** 2026-08-30 (JST)
 
 ## 1. プロジェクトの目的
@@ -46,10 +46,10 @@ Point-in-time特徴量生成
 単勝について最小構成では、
 
 \[
-\mathrm{EV}_i = \hat{P}_i(\mathrm{win}) \times \mathrm{odds}_i
+\mathrm{snapshot\ EV\ proxy}_i = \hat{P}_i(\mathrm{win}) \times \mathrm{displayed\ odds}_{i,t}
 \]
 
-を基本指標とします。
+を初期の購入判断指標とします。JRAの単勝はpari-mutuelで、時点表示オッズは購入時に固定されないため、これは真の確定EVではありません。選択は時点付き表示オッズ、実現損益は公式払戻で評価します。
 
 ただし、初期段階では回収率の直接最適化を急がず、まず予測モデルそのものを改善します。
 
@@ -503,7 +503,7 @@ JRA、JRA-VAN、netkeiba、JBIS、その他候補について、以下を確認�
 - bankroll management
 - 時系列評価とバックテストのリーク防止
 
-### 12.3 調査後に確定する事項
+### 12.3 実装前に確定する事項
 
 - 使用データソースと取得方式
 - 利用可能な期間、train/dev/finalの具体的範囲
@@ -517,12 +517,29 @@ JRA、JRA-VAN、netkeiba、JBIS、その他候補について、以下を確認�
 - artifact保存方式
 - Webアプリの技術構成
 
+### 12.4 調査成果
+
+2026-08-30に `docs/research_plan.md` のworkstream A～Hを完了し、個別結果と横断的な結論を `docs/research/` に保存しました。
+
+- [調査結論と実装前仕様](docs/research/research_conclusions.md)
+- [データソース](docs/research/data_sources.md)
+- [利用可能な特徴量](docs/research/available_features.md)
+- [Point-in-Time設計](docs/research/point_in_time.md)
+- [競馬予測手法](docs/research/horse_racing_prediction.md)
+- [ranking・rating・race strength](docs/research/ranking_rating_and_strength.md)
+- [form・fatigue・適性・interaction](docs/research/form_fatigue_and_interactions.md)
+- [確率推定・calibration](docs/research/probability_and_calibration.md)
+- [JRA市場・market probability](docs/research/betting_market.md)
+- [backtest・leakage・評価](docs/research/backtesting_and_leakage.md)
+
+主な調査推奨は、JRA-VAN/JV-Linkを個人研究MVPの主ソース候補とし、前日版と当日締切前版を分離し、raw model scoreからrace内で整合する勝率を明示的に作り、時点付き暫定オッズによる選択と公式払戻による精算を分けることです。これらは実装前のdecision gateとユーザー承認を経て確定します。
+
 ## 13. 開発フェーズ案
 
 ```text
-Phase 0: 要求・設計方針のすり合わせ             ← 現在
-Phase 1: データソース・既存手法の調査
-Phase 2: 調査結果を反映した仕様確定と初期リポジトリ作成
+Phase 0: 要求・設計方針のすり合わせ             完了
+Phase 1: データソース・既存手法の調査           完了
+Phase 2: 調査結果を反映した仕様確定と初期リポジトリ作成  ← 次（承認待ち）
 Phase 3: データ取得・point-in-time特徴量基盤
 Phase 4: LightGBM Binary / LambdaRank baseline
 Phase 5: 特徴量・rating・calibration改善
@@ -545,19 +562,19 @@ Phase 8: 自動予測処理・Web UI
 | 個体ID | 決定 | 馬ID・騎手ID等を直接入力しない |
 | 履歴 | 決定 | 少数走に早期固定せず複数窓・条件別に集約 |
 | 初期券種 | 決定 | 単勝中心 |
-| 初期購入戦略 | 決定 | 固定額・固定EV閾値 |
+| 初期購入戦略 | 決定 | 固定額・固定snapshot EV proxy閾値。公式払戻で精算 |
 | 初期ROI目標 | 決定 | 100%超を必須としない |
 | 評価 | 決定 | ranking、確率、校正、条件別、市場比較、backtestを併用 |
 | 実験運用 | 決定 | 原則1 experiment = 1 commit |
 | 実験台帳 | 決定 | 機械可読結果からREADME表を自動更新 |
-| データソース | 未決 | 調査後に決定 |
-| 具体的な予測時点 | 未決 | データの更新時点を調査後に決定 |
-| split期間 | 未決 | データ期間を調査後に決定 |
-| rating方式 | 未決 | Elo、TrueSkill、条件別rating等を比較検討 |
-| probabilistic ranking | 未決 | 既存研究調査後に選定 |
+| データソース | 調査推奨・未採択 | 個人研究MVPはJRA-VAN/JV-Link。利用主体・保存・派生成果公開のdecision gateあり |
+| 具体的な予測時点 | 暫定仕様・未採択 | 前日固定版と当日締切前版を分離。実配信・締切監査後に時刻を固定 |
+| split期間 | 調査推奨・未採択 | 長期no-odds予測trackと、短期PIT-A/B市場trackを別manifest・別finalで評価。絶対日付はcoverage監査後に固定 |
+| rating方式 | 調査推奨・未採択 | PIT-safe forward-only Elo/Bradley–Terry-styleから開始し、条件別ratingを順次比較 |
+| probabilistic ranking | 調査推奨・延期 | Plackett–Luceを最初の高度baseline候補とするが、順位別biasを検証してから採否判断 |
 | artifact管理 | 未決 | データ量・運用を確認後に決定 |
 | Web技術 | 未決 | 後続フェーズで決定 |
 
 ## 15. 次の作業
 
-次は、実装を始める前に**調査計画を確定し、データソースと既存手法の調査を実施する**予定です。その結果をこのリポジトリに蓄積し、Codexへそのまま渡せる初期状態へ更新します。
+次は、[調査結論](docs/research/research_conclusions.md)のretain/modify/rejectと実装前decision gateを人間が確認し、Phase 2のデータ契約・PIT・dataset・experiment specificationを確定します。承認前にデータ取得基盤やモデルの本格実装へ進みません。
