@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 from math import isclose
 
 import pandas as pd
@@ -213,12 +214,15 @@ def test_lightgbm_binary_and_ranker_use_same_frame_contract() -> None:
         params=params,
         early_stopping_rounds=3,
     )
-    ranker = train_ranker(
-        frame,
-        feature_columns=["form", "load"],
-        params=params,
-        early_stopping_rounds=3,
-    )
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        ranker = train_ranker(
+            frame,
+            feature_columns=["form", "load"],
+            params={**params, "eval_at": [1, 3, 5]},
+            early_stopping_rounds=3,
+        )
+    assert not any("Found 'eval_at' in params" in str(item.message) for item in caught)
     binary_predictions = predict(
         binary, frame.iloc[:6], feature_columns=["form", "load"], model_kind="binary"
     )

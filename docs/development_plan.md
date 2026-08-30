@@ -44,6 +44,19 @@
 | 25 | LIVE-02 | shadow evaluation | LIVE-01, PROB-01 | 固定cutoff・固定model・固定EV proxyで購入せずに予測を記録し、十分な将来期間で実行可能性を評価 |
 | 26 | PAID-01 | JRA-VAN導入判断 | DEC-01, LIVE-01 | 無料構成の欠損と追加価値を定量化し、調教、正規ID、速報、時系列oddsのどれを検証するか一特徴群ずつ決定 |
 
+## 2026-08-30実行状態
+
+| 範囲 | 状態 | 証拠 |
+|---|---|---|
+| GOV-01～QA-01（1～14） | 完了 | data/feature/spec実装、PIT・split・例外fixtureを含む58 tests |
+| BASE-01（15） | 完了 | uniform/history-rateを2024/2025同一race集合でartifact化 |
+| EXP-001（16、今回Goal） | 完了 | LightGBM Binary、raw/coherent probability、2023 temperature、2024主評価 |
+| EXP-002～EVAL-01（17～19、先行準備） | 完了 | LambdaRank、確率写像、校正、条件別統合評価まで同一runnerで実行 |
+| BET-01（20、先行準備） | 完了 | final oddsを別artifactへ分離し、selection/ROIなしのoracle診断だけを実行 |
+| DEC-01（21） | 人間判断待ち | [baseline評価レポート](experiments/mvp_task16_20260830.md)から次の一仮説を選択 |
+
+実行のsource of truthは`experiments/mvp_task16_20260830/metrics_summary.json`、完全なlocal artifactはGit対象外の`artifacts/mvp_baseline_20260830_task16_v2/`である。
+
 ## 直近のマイルストーン
 
 | マイルストーン | 対象タスク | 到達条件 |

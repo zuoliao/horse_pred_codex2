@@ -2,7 +2,7 @@
 
 JRA中央競馬を主対象とする、競馬予測・馬券購入判断支援システムの研究開発リポジトリです。
 
-> **現在の段階:** 調査、データ契約、coverage・PIT・split仕様を確定し、PIT特徴量、非学習baseline、LightGBM Binary/LambdaRank、校正・統合評価runnerを実装済み。全量baseline実行と結果確定を進行中。
+> **現在の段階:** 調査、データ契約、PIT特徴量、非学習baseline、LightGBM Binary/LambdaRank、2023校正、2024主評価を完了。2025 retrospectiveも明示opt-inで一回確認済み。次の仮説選択待ち。
 > **最終更新:** 2026-08-30 (JST)
 
 ## 1. プロジェクトの目的
@@ -363,7 +363,7 @@ NDCGのrelevance定義等、競馬に適した具体的な算出方法は調査�
 
 ### 9.2 実行方式
 
-最終的に、1コマンドで次を実行できる状態を目指します。
+MVPでは、1コマンドで次を実行できます。
 
 ```text
 特徴量生成
@@ -374,34 +374,47 @@ NDCGのrelevance定義等、競馬に適した具体的な算出方法は調査�
     ↓
 モデル単体評価
     ↓
-固定購入ルールでのbacktest
+final-odds oracle診断（購入選択・ROIなし）
     ↓
 結果・metadata保存
     ↓
 README実験一覧更新
 ```
 
-コマンド例は実装時に確定します。
-
 ```bash
-python -m src.experiment run configs/exp_0001.yaml
+uv sync
+uv run horse-pred run-mvp \
+  --raw-path /path/to/race_results_merged.csv \
+  --output artifacts/mvp_baseline
+
+# sealed finalではない2025 retrospectiveを今回だけ明示的に含める場合
+uv run horse-pred run-mvp \
+  --raw-path /path/to/race_results_merged.csv \
+  --output artifacts/mvp_baseline_with_2025 \
+  --include-retrospective-test
 ```
 
 ### 9.3 保存対象
 
-暫定構成例:
+現在の構成:
 
 ```text
 configs/
-  exp_0001.yaml
+  exp_001_binary.json
+  exp_002_lambdarank.json
 
 experiments/
-  exp_0001/
+  mvp_task16_20260830/
+    metrics_summary.json
+
+artifacts/                 # Git対象外
+  mvp_baseline.../
     metrics.json
-    run_meta.json
-    predictions.parquet
+    run_meta_*.json
+    predictions.csv.gz
+    final_market_oracle.csv.gz
     feature_importance.csv
-    model.txt
+    models/
 
 README.md
 ```
@@ -418,17 +431,20 @@ README.md
 - feature set
 - コード・依存関係の再現に必要な情報
 
-大容量のモデルや予測ファイルを通常Git、Git LFS、外部artifact storageのどこに保存するかは未決定です。
+大容量のモデル・runner予測・market artifactは`artifacts/`へ保存してGit対象外とし、集約metricとレポートだけを追跡します。
 
 ### 9.4 実験一覧
 
 各experiment directory内の機械可読ファイルをsource of truthとし、READMEの実験一覧表を自動更新します。READMEを手作業の記録台帳にはしません。
 
-将来の表の例:
+| Exp | Model | 2024 Log Loss ↓ | 2024 Brier ↓ | 2024 NDCG@3 ↑ | 2024 Top-1 ↑ | Notes |
+|---|---|---:|---:|---:|---:|---|
+| mvp_task16_20260830 | Uniform | 2.5921 | 0.9219 | 0.1870 | 0.0797 | non-learning baseline |
+| mvp_task16_20260830 | History rate | 2.5440 | 0.9110 | 0.2546 | 0.1244 | PIT smoothed history baseline |
+| mvp_task16_20260830 | LGBM Binary + T | 2.0875 | 0.8308 | 0.4898 | **0.2873** | `T=1.0448`, 2023 fit |
+| mvp_task16_20260830 | LGBM LambdaRank + T | **2.0866** | **0.8302** | **0.4907** | 0.2844 | `T=0.8570`, 2023 fit |
 
-| Exp | Model | Change | LogLoss | Brier | NDCG | ROI EV>1.1 | Notes |
-|---|---|---|---:|---:|---:|---:|---|
-| 0001 | LGBM Binary | baseline | - | - | - | - | not run |
+[完全な集約metric](experiments/mvp_task16_20260830/metrics_summary.json)と[批判的評価レポート](docs/experiments/mvp_task16_20260830.md)を参照してください。final oddsは事後oracle専用で、実行可能ROIは評価していません。
 
 詳細な実験レポートを毎回作ることは必須としません。混合した結果を単純に「改善」と要約せず、改善・悪化した指標を事実として記録します。
 
@@ -550,8 +566,8 @@ Phase 0: 要求・設計方針のすり合わせ             完了
 Phase 1: データソース・既存手法の調査           完了
 Phase 2: 既存rawのcoverage/PIT gateと仕様確定    完了
 Phase 3: point-in-time特徴量基盤                 実装・検証済み
-Phase 4: LightGBM Binary / LambdaRank baseline   ← 実行中
-Phase 5: 特徴量・rating・calibration改善
+Phase 4: LightGBM Binary / LambdaRank baseline   完了
+Phase 5: 特徴量・rating・calibration改善         ← 次の仮説選択待ち
 Phase 6: 確率的ランキングおよび高度なモデル
 Phase 7: 購入戦略・リスク管理の改善
 Phase 8: 自動予測処理・Web UI
@@ -586,4 +602,4 @@ Phase 8: 自動予測処理・Web UI
 
 ## 15. 次の作業
 
-次は、固定済みmanifest・feature・splitで全量baselineを一度実行し、2024 developmentを主対象にBinary/LambdaRankのranking・確率・校正を比較します。2025 retrospective testは明示opt-in時だけ参照し、仕様再選択には使いません。締切前oddsを使う実行可能な市場評価は、別のprospective snapshot trackで行います。
+タスク16のBinary baselineと、先行して実施したLambdaRank・coherent確率化・統合評価は完了しました。次は[baseline評価レポート](docs/experiments/mvp_task16_20260830.md)を基に、人間ユーザーが次の一仮説を選びます。候補はfeature-group ablationとrace/date block uncertaintyです。締切前oddsを使う実行可能な市場評価は、別のprospective snapshot trackで行います。

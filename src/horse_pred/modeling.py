@@ -904,11 +904,14 @@ def train_ranker(
     ]
     training_features = _frame_masked_features(frame, training_mask, feature_columns)
     validation_features = _frame_masked_features(frame, validation_mask, feature_columns)
-    model = build_lightgbm_estimator("lambdarank", params=params)
+    estimator_params = dict(params or {})
+    eval_at = list(estimator_params.pop("eval_at", [1, 3, 5]))
+    model = build_lightgbm_estimator("lambdarank", params=estimator_params)
     fit_options: dict[str, Any] = {
         "group": list(groups.group_sizes),
         "feature_name": list(feature_columns),
         "eval_group": [list(validation_groups.group_sizes)],
+        "eval_at": eval_at,
         "eval_metric": "ndcg",
         **_lightgbm_validation_data(
             model,
@@ -916,8 +919,6 @@ def train_ranker(
             ranking_relevance_targets(validation_positions),
         ),
     }
-    if params is None or "eval_at" not in params:
-        fit_options["eval_at"] = [1, 3, 5]
     if early_stopping_rounds is not None:
         if early_stopping_rounds < 1:
             raise ValueError("early_stopping_rounds must be positive or None")
