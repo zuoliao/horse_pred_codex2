@@ -85,7 +85,7 @@ Venue comes only from `raceid[4:6]`:
 
 Surface maps `芝→turf`, `ダート→dirt`, `障害→jump`. Unknown venue/surface values become canonical `unknown` while `venue_code`/`surface_raw` retain the source value and the audit increments an unknown counter. Unknown values are not dropped.
 
-The initial modeling population is JRA **flat** racing. Jump rows remain in the normalized/audit layer but are excluded by a later explicit population filter, never by the raw loader.
+The initial modeling population is JRA **flat** racing. Jump rows remain in the normalized/audit and feature layers but are excluded by an explicit race-level population filter, never by the raw loader. `course_type` alone is not a valid discriminator because the source retains `芝` or `ダート` for some obstacle races; any race whose `race_class` contains `障害` is non-flat regardless of its surface label.
 
 ## 5. Outcome and exception contract
 

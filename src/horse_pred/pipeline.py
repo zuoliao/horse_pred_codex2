@@ -52,8 +52,10 @@ def prepare_model_frame(dataset: FeatureDataset) -> pd.DataFrame:
     frame = dataset.frame
     required = {
         "course_type",
+        "race_class",
         "started",
         "pit_c_scoring_eligible",
+        "meta__is_flat_race",
         "winner_label",
         "finish_position",
         "race_id",
@@ -69,6 +71,7 @@ def prepare_model_frame(dataset: FeatureDataset) -> pd.DataFrame:
         "course_type",
         "started",
         "pit_c_scoring_eligible",
+        "meta__is_flat_race",
         "meta__is_scored_race",
         "winner_label",
         "finish_position",
@@ -95,8 +98,17 @@ def prepare_model_frame(dataset: FeatureDataset) -> pd.DataFrame:
     eligible = frame["pit_c_scoring_eligible"].eq(True)  # noqa: E712
     if "meta__is_scored_race" in frame:
         eligible &= frame["meta__is_scored_race"].eq(True)  # noqa: E712
+    race_has_obstacle_class = (
+        frame["race_class"]
+        .astype("string")
+        .str.contains("障害", na=False)
+        .groupby(frame["race_id"], sort=False)
+        .transform("max")
+    )
     selected = frame.loc[
         frame["course_type"].isin(["芝", "ダート"])
+        & ~race_has_obstacle_class
+        & frame["meta__is_flat_race"].eq(True)  # noqa: E712
         & frame["started"].eq(True)  # noqa: E712 - pandas nullable boolean comparison
         & eligible
         & frame["split"].isin(STANDARD_SPLIT_YEARS)
@@ -223,9 +235,11 @@ def run_mvp(
     raw = load_raw(raw_path, expected_sha256=expected_hash)
     normalized = normalize_raw(raw)
     del raw
-    flat = normalized.loc[normalized["course_type"].isin(["芝", "ダート"])].reset_index(drop=True)
-    features = build_features(flat, split_config=split_config)
-    del normalized, flat
+    # Preserve every normalized race through PIT feature construction.  The
+    # feature builder owns the race-level flat/jump decision so a jump race
+    # with a turf/dirt course label cannot update flat historical state.
+    features = build_features(normalized, split_config=split_config)
+    del normalized
     model_frame = prepare_model_frame(features)
     feature_columns, feature_groups = resolve_experiment_features(
         features, binary_config, ranker_config

@@ -61,7 +61,7 @@ for date in ascending dates:
 raw文字カテゴリは直接modelへ渡さない。未来データのカテゴリ集合で符号が変わらない固定encodeだけを生成する。
 
 - 競馬場: race IDの場コードを`1..10`へ変換した`venue_code`
-- surface: turf / dirt / unknown one-hot。障害はunknown側になり、行は監査用に保持するが`meta__is_scored_race=False`かつflat履歴stateを更新しない
+- surface: turf / dirt / unknown one-hot。障害raceは`course_type`だけでは判定せず、`race_class`に`障害`を含むraceをsurface表記に関係なく非flatとする。行は監査用に保持するが`meta__is_flat_race=False`、`meta__is_scored_race=False`かつflat履歴stateを更新しない
 - direction: right / left / straight / unknown one-hot
 - sex: male / female / gelding / unknown one-hot
 - class: 新馬、未勝利、1勝/500万、2勝/1000万、3勝/1600万、open/重賞を`0..5`へ固定変換

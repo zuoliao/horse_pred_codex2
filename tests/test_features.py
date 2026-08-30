@@ -241,6 +241,33 @@ def test_non_flat_race_is_retained_but_not_scored_or_added_to_flat_history() -> 
     assert _by_horse(features, "202305010301", "h1")["horse_history__career__starts"] == 1
 
 
+def test_dirt_coded_obstacle_race_never_updates_flat_entity_or_elo_state() -> None:
+    raw = pd.DataFrame(
+        [
+            _row("202305010101", "2023-01-01", "h1", "j1", "t1", 1),
+            _row("202305010101", "2023-01-01", "h2", "j2", "t2", 2),
+            _row("202305010201", "2023-01-02", "h1", "j1", "t1", 2),
+            _row("202305010201", "2023-01-02", "h3", "j3", "t3", 1),
+            _row("202305010301", "2023-01-03", "h1", "j1", "t1", 1),
+            _row("202305010301", "2023-01-03", "h4", "j4", "t4", 2),
+        ]
+    )
+    obstacle_mask = raw["date"].eq("2023-01-02")
+    raw.loc[obstacle_mask, "course_type"] = "ダート"
+    raw.loc[obstacle_mask, "race_class"] = "障害4歳以上未勝利"
+
+    features = build_pit_features(raw)
+    obstacle = _by_horse(features, "202305010201", "h1")
+    following = _by_horse(features, "202305010301", "h1")
+
+    assert not bool(obstacle["meta__is_flat_race"])
+    assert not bool(obstacle["meta__is_scored_race"])
+    assert following["horse_history__career__starts"] == 1
+    assert following["jockey_history__career__starts"] == 1
+    assert following["trainer_history__career__starts"] == 1
+    assert following["rating__horse_elo_pre"] == obstacle["rating__horse_elo_pre"]
+
+
 def test_integrated_api_keeps_metadata_but_exposes_numeric_closed_allowlist(raw_fixture: pd.DataFrame) -> None:
     split_config = json.loads((Path(__file__).parents[1] / "configs" / "splits.json").read_text())
     dataset = build_features(raw_fixture, split_config=split_config)

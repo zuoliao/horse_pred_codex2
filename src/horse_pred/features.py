@@ -493,6 +493,32 @@ def _is_flat_surface(value: object) -> bool:
     return str(value).strip().lower() in {"芝", "turf", "ダート", "dirt"}
 
 
+def _is_obstacle_class(value: object) -> bool:
+    if _is_missing_key(value):
+        return False
+    return "障害" in str(value)
+
+
+def is_flat_race(race: pd.DataFrame, config: Optional[FeatureConfig] = None) -> bool:
+    """Return whether every row belongs to the flat-racing population.
+
+    The source's ``course_type`` is not a reliable flat/jump discriminator:
+    some jump races retain the underlying turf or dirt course label.  A race
+    whose class contains ``障害`` is therefore non-flat regardless of its
+    surface label.
+    """
+
+    config = config or FeatureConfig()
+    if config.surface_col not in race:
+        return False
+    surfaces_are_flat = bool(race[config.surface_col].map(_is_flat_surface).all())
+    if not surfaces_are_flat:
+        return False
+    if config.race_class_col not in race:
+        return False
+    return not bool(race[config.race_class_col].map(_is_obstacle_class).any())
+
+
 def _expected_elo(rating_i: float, rating_j: float, scale: float) -> float:
     return 1.0 / (1.0 + 10.0 ** ((rating_j - rating_i) / scale))
 
@@ -544,6 +570,7 @@ def _require_columns(raw: pd.DataFrame, config: FeatureConfig) -> None:
         config.trainer_id_col,
         config.finish_col,
         config.distance_col,
+        config.race_class_col,
         config.surface_col,
     }
     missing = sorted(required.difference(raw.columns))
@@ -694,7 +721,7 @@ def build_pit_features(raw: pd.DataFrame, config: Optional[FeatureConfig] = None
             starter_flags = _starter_flags(race, finish_raw, config)
             is_nonstarter = starter_flags.eq(False).fillna(False).astype(bool)
             has_unknown_start = bool(starter_flags.isna().any())
-            race_is_flat = bool(race[config.surface_col].map(_is_flat_surface).all())
+            race_is_flat = is_flat_race(race, config)
             is_scored_race = race_is_flat and not bool(is_nonstarter.any()) and not has_unknown_start
             field_size = len(race)
             venue_values = (
@@ -738,6 +765,7 @@ def build_pit_features(raw: pd.DataFrame, config: Optional[FeatureConfig] = None
                     "meta__date": event_date,
                     "meta__venue": venue,
                     "meta__is_runner": starter_flags.iloc[position],
+                    "meta__is_flat_race": race_is_flat,
                     "meta__is_scored_race": is_scored_race,
                 }
                 features.update(_copy_context(row, config, venue, field_size))

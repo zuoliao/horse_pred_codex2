@@ -17,8 +17,10 @@ def test_prepare_model_frame_keeps_dnf_and_excludes_ambiguous_or_jump_races() ->
             "race_id": ["r1", "r1", "r1", "r2", "r2", "r3", "r3"],
             "race_date": ["2024-01-01"] * 3 + ["2024-01-02"] * 2 + ["2024-01-03"] * 2,
             "course_type": ["芝"] * 5 + ["障害"] * 2,
+            "race_class": ["3歳未勝利"] * 5 + ["障害4歳以上未勝利"] * 2,
             "started": [True, True, True, True, False, True, True],
             "pit_c_scoring_eligible": [True, True, True, False, False, True, True],
+            "meta__is_flat_race": [True] * 5 + [False] * 2,
             "winner_label": [1, 0, 0, 1, None, 1, 0],
             "finish_position": [1, 2, None, 1, None, 1, 2],
             "final_win_odds": [2.0, 3.0, 4.0, 2.0, None, 2.0, 3.0],
@@ -39,14 +41,43 @@ def test_prepare_model_frame_keeps_dnf_and_excludes_ambiguous_or_jump_races() ->
     assert result["model_finish_position"].tolist() == [1, 2, 4]
 
 
+def test_prepare_model_frame_rejects_dirt_coded_obstacle_even_if_metadata_is_wrong() -> None:
+    frame = pd.DataFrame(
+        {
+            "race_id": ["r1", "r1", "r2", "r2"],
+            "race_date": ["2024-01-01"] * 4,
+            "course_type": ["ダート"] * 4,
+            "race_class": ["障害4歳以上未勝利"] * 2 + ["3歳未勝利"] * 2,
+            "started": [True] * 4,
+            "pit_c_scoring_eligible": [True] * 4,
+            # Simulate a bad upstream flag: the independent class guard must
+            # still prevent this race from entering the model population.
+            "meta__is_flat_race": [True] * 4,
+            "meta__is_scored_race": [True] * 4,
+            "winner_label": [1, 0, 1, 0],
+            "finish_position": [1, 2, 1, 2],
+            "final_win_odds": [2.0, 3.0, 2.0, 3.0],
+            "split": ["development"] * 4,
+            "distance": [2890, 2890, 1800, 1800],
+            "horse_number": [1, 2, 1, 2],
+            "feature__value": [0.0] * 4,
+        }
+    )
+    dataset = FeatureDataset(frame, ("feature__value",), {"test": ("feature__value",)})
+
+    assert prepare_model_frame(dataset)["race_id"].unique().tolist() == ["r2"]
+
+
 def test_prepare_model_frame_rejects_split_year_mismatch() -> None:
     frame = pd.DataFrame(
         {
             "race_id": ["r1", "r1"],
             "race_date": ["2025-01-01", "2025-01-01"],
             "course_type": ["芝", "芝"],
+            "race_class": ["3歳未勝利", "3歳未勝利"],
             "started": [True, True],
             "pit_c_scoring_eligible": [True, True],
+            "meta__is_flat_race": [True, True],
             "winner_label": [1, 0],
             "finish_position": [1, 2],
             "final_win_odds": [2.0, 3.0],
