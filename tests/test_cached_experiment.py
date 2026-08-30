@@ -57,6 +57,60 @@ def test_feature_selection_requires_exactly_one_operation() -> None:
         )
 
 
+def test_registered_relative_features_require_selected_pit_sources() -> None:
+    frame = pd.DataFrame(
+        {
+            "race_id": ["r1", "r1", "r2", "r2"],
+            "horse_history__decay_30d__mean_finish": [1.0, 3.0, np.nan, 2.0],
+        }
+    )
+    config = _config({"drop": []})
+    config["derived_features"] = [
+        {
+            "operation": "within_race_percentile",
+            "source": "horse_history__decay_30d__mean_finish",
+            "output": "experimental__decay_30d_mean_finish__percentile",
+        }
+    ]
+    columns, groups, resolution = cached.add_registered_derived_features(
+        frame,
+        ("horse_history__decay_30d__mean_finish",),
+        {"form_workload": ("horse_history__decay_30d__mean_finish",)},
+        {"taxonomy": "semantic_feature_groups_v2"},
+        config,
+    )
+
+    output = "experimental__decay_30d_mean_finish__percentile"
+    assert columns[-1] == output
+    assert groups["experimental_derived"] == (output,)
+    assert frame[output].tolist()[:2] == [0.5, 1.0]
+    assert np.isnan(frame.loc[2, output])
+    assert frame.loc[3, output] == 1.0
+    assert resolution["derived_features"][0]["source"].startswith("horse_history__")
+
+    with pytest.raises(ValueError, match="not in the selected allowlist"):
+        cached.add_registered_derived_features(
+            frame.drop(columns=output),
+            (),
+            {},
+            {},
+            config,
+        )
+
+
+def test_derived_feature_config_rejects_nonexperimental_output() -> None:
+    config = _config()
+    config["derived_features"] = [
+        {
+            "operation": "within_race_percentile",
+            "source": "horse_history__career__starts",
+            "output": "winner_label",
+        }
+    ]
+    with pytest.raises(ValueError, match="experimental__"):
+        cached.validate_cached_experiment_config(config)
+
+
 def test_isolate_pre_2025_frame_removes_retrospective_and_checks_dates() -> None:
     rows = []
     for split, date in (

@@ -45,6 +45,7 @@ from horse_pred.pipeline import PROBABILITY_EPSILON
 
 _RUN_SPLITS = ("train", "model_validation", "calibration", "development")
 _MODEL_NAMES = ("binary", "lambdarank")
+_DERIVED_OPERATION = "within_race_percentile"
 
 
 def feature_columns_checksum(columns: tuple[str, ...] | list[str]) -> str:
@@ -95,6 +96,26 @@ def validate_cached_experiment_config(config: dict[str, Any]) -> None:
         raise ValueError("feature_selection.include must not be empty")
     if len(groups) != len(set(groups)):
         raise ValueError(f"feature_selection.{operation} contains duplicates")
+
+    derived = config.get("derived_features", [])
+    if not isinstance(derived, list):
+        raise ValueError("derived_features must be a list")
+    outputs: set[str] = set()
+    for item in derived:
+        if not isinstance(item, dict) or set(item) != {"operation", "source", "output"}:
+            raise ValueError(
+                "each derived feature must contain exactly operation, source, and output"
+            )
+        if item["operation"] != _DERIVED_OPERATION:
+            raise ValueError(f"unsupported derived feature operation: {item['operation']}")
+        if not isinstance(item["source"], str) or not item["source"]:
+            raise ValueError("derived feature source must be a non-empty string")
+        output = item["output"]
+        if not isinstance(output, str) or not output.startswith("experimental__"):
+            raise ValueError("derived feature output must start with experimental__")
+        if output in outputs:
+            raise ValueError(f"duplicate derived feature output: {output}")
+        outputs.add(output)
 
 
 def resolve_semantic_feature_selection(
@@ -192,6 +213,56 @@ def isolate_pre_2025_frame(frame: pd.DataFrame) -> tuple[pd.DataFrame, dict[str,
     }
 
 
+def add_registered_derived_features(
+    frame: pd.DataFrame,
+    feature_columns: tuple[str, ...],
+    feature_groups: dict[str, tuple[str, ...]],
+    resolution: dict[str, Any],
+    config: dict[str, Any],
+) -> tuple[tuple[str, ...], dict[str, tuple[str, ...]], dict[str, Any]]:
+    """Add narrowly registered, race-local transforms after source selection.
+
+    The operation uses only values already available in the same PIT feature
+    row.  It cannot access labels, dates, market columns, or raw identifiers as
+    sources because the source must already belong to the model allowlist.
+    """
+
+    derived = config.get("derived_features", [])
+    if not derived:
+        return feature_columns, feature_groups, resolution
+
+    selected = set(feature_columns)
+    outputs: list[str] = []
+    records: list[dict[str, str]] = []
+    for item in derived:
+        source = item["source"]
+        output = item["output"]
+        if source not in selected:
+            raise ValueError(
+                f"derived feature source is not in the selected allowlist: {source}"
+            )
+        if output in frame.columns:
+            raise ValueError(f"derived feature output already exists: {output}")
+        frame[output] = frame.groupby("race_id", sort=False, observed=True)[
+            source
+        ].rank(pct=True, method="average")
+        outputs.append(output)
+        records.append(
+            {
+                "operation": _DERIVED_OPERATION,
+                "source": source,
+                "output": output,
+                "timestamp_semantics": "same-row PIT source, target-race cross-section",
+            }
+        )
+
+    updated_groups = dict(feature_groups)
+    updated_groups["experimental_derived"] = tuple(outputs)
+    updated_resolution = dict(resolution)
+    updated_resolution["derived_features"] = records
+    return feature_columns + tuple(outputs), updated_groups, updated_resolution
+
+
 def run_cached_experiment(
     *,
     repo_root: str | Path,
@@ -229,6 +300,15 @@ def run_cached_experiment(
         all_features = tuple(cache_meta["feature_columns"])
         feature_columns, feature_groups, feature_resolution = (
             resolve_semantic_feature_selection(all_features, config)
+        )
+        feature_columns, feature_groups, feature_resolution = (
+            add_registered_derived_features(
+                frame,
+                feature_columns,
+                feature_groups,
+                feature_resolution,
+                config,
+            )
         )
 
         common_kwargs = {
