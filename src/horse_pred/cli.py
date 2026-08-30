@@ -75,6 +75,11 @@ def parser() -> argparse.ArgumentParser:
         action="store_true",
         help="materialize the opt-in turf/dirt-specific Elo feature group",
     )
+    run.add_argument(
+        "--expected-actual-race-value",
+        action="store_true",
+        help="materialize the opt-in 90-day Elo expected-vs-actual race-value feature",
+    )
     uncertainty = commands.add_parser(
         "analyze-uncertainty", help="run the fixed 2024 paired block bootstrap"
     )
@@ -148,7 +153,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             include_retrospective_test=args.include_retrospective_test,
             model_frame_cache_path=args.model_frame_cache,
             feature_config=FeatureConfig(
-                surface_conditioned_elo=args.surface_conditioned_elo
+                surface_conditioned_elo=args.surface_conditioned_elo,
+                expected_actual_race_value=args.expected_actual_race_value,
             ),
         )
         summary = {

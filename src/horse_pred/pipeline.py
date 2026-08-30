@@ -287,6 +287,9 @@ def run_mvp(
         ),
         "experimental_options": {
             "surface_conditioned_elo": effective_feature_config.surface_conditioned_elo,
+            "expected_actual_race_value": (
+                effective_feature_config.expected_actual_race_value
+            ),
         },
     }
     write_json(output / "feature_schema.json", feature_schema)

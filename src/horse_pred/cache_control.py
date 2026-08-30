@@ -30,6 +30,9 @@ SURFACE_RATING_COLUMNS: tuple[str, ...] = (
     "surface_rating__horse_minus_field_mean_elo",
     "surface_rating__horse_elo_percentile",
 )
+RACE_VALUE_COLUMNS: tuple[str, ...] = (
+    "race_value__decay_90d__mean_global_elo_surprise",
+)
 
 
 def _positional_mismatch_count(left: Sequence[str], right: Sequence[str]) -> int:
@@ -115,15 +118,20 @@ def _feature_value_mismatches(
     }
 
 
-def compare_surface_elo_cache_control(
+def _compare_opt_in_cache_control(
     baseline_cache_path: str | Path,
     candidate_cache_path: str | Path,
     *,
+    expected_experimental_columns: Sequence[str],
+    experimental_prefix: str,
+    comparison_name: str,
+    count_key: str,
+    contract_key: str,
     output_path: str | Path | None = None,
     chunk_size: int = 10_000,
     expected_baseline_feature_count: int = 268,
 ) -> dict[str, Any]:
-    """Verify that a surface-Elo cache differs only by its three opt-in columns."""
+    """Verify that a cache differs only by a declared opt-in column contract."""
 
     if chunk_size <= 0:
         raise ValueError("chunk_size must be positive")
@@ -141,17 +149,17 @@ def compare_surface_elo_cache_control(
 
     baseline_features = tuple(baseline_meta["feature_columns"])
     candidate_features = tuple(candidate_meta["feature_columns"])
-    candidate_surface_features = tuple(
-        column for column in candidate_features if column.startswith("surface_rating__")
+    candidate_experimental_features = tuple(
+        column for column in candidate_features if column.startswith(experimental_prefix)
     )
     candidate_control_features = tuple(
-        column for column in candidate_features if not column.startswith("surface_rating__")
+        column for column in candidate_features if not column.startswith(experimental_prefix)
     )
     schema_mismatch_count = _positional_mismatch_count(
         baseline_features, candidate_control_features
     )
-    surface_schema_mismatch_count = _positional_mismatch_count(
-        SURFACE_RATING_COLUMNS, candidate_surface_features
+    experimental_schema_mismatch_count = _positional_mismatch_count(
+        expected_experimental_columns, candidate_experimental_features
     )
     baseline_count_mismatch = int(
         len(baseline_features) != expected_baseline_feature_count
@@ -198,14 +206,14 @@ def compare_surface_elo_cache_control(
         + baseline_count_mismatch
         + fingerprint_mismatch
         + schema_mismatch_count
-        + surface_schema_mismatch_count
+        + experimental_schema_mismatch_count
         + len(missing_value_columns)
         + identity_cell_mismatches
         + int(value_comparison["mismatch_count"])
     )
     result: dict[str, Any] = {
         "schema_version": 1,
-        "comparison": "surface_conditioned_elo_cache_control",
+        "comparison": comparison_name,
         "passed": mismatch_count == 0,
         "chunk_size": chunk_size,
         "cache_sha256": {
@@ -228,14 +236,14 @@ def compare_surface_elo_cache_control(
             "baseline": len(baseline_features),
             "candidate": len(candidate_features),
             "candidate_control": len(candidate_control_features),
-            "candidate_surface_rating": len(candidate_surface_features),
+            count_key: len(candidate_experimental_features),
         },
         "feature_schema": {
             "control_order_matches": schema_mismatch_count == 0,
             "control_positional_mismatch_count": schema_mismatch_count,
-            "surface_contract_matches": surface_schema_mismatch_count == 0,
-            "surface_positional_mismatch_count": surface_schema_mismatch_count,
-            "surface_rating_columns": list(candidate_surface_features),
+            f"{contract_key}_contract_matches": experimental_schema_mismatch_count == 0,
+            f"{contract_key}_positional_mismatch_count": experimental_schema_mismatch_count,
+            f"{contract_key}_columns": list(candidate_experimental_features),
             "missing_value_comparison_columns": missing_value_columns,
         },
         "runner_identity": {
@@ -249,3 +257,51 @@ def compare_surface_elo_cache_control(
     if output_path is not None:
         write_json(output_path, result)
     return result
+
+
+def compare_surface_elo_cache_control(
+    baseline_cache_path: str | Path,
+    candidate_cache_path: str | Path,
+    *,
+    output_path: str | Path | None = None,
+    chunk_size: int = 10_000,
+    expected_baseline_feature_count: int = 268,
+) -> dict[str, Any]:
+    """Verify that a surface-Elo cache differs only by its three opt-in columns."""
+
+    return _compare_opt_in_cache_control(
+        baseline_cache_path,
+        candidate_cache_path,
+        expected_experimental_columns=SURFACE_RATING_COLUMNS,
+        experimental_prefix="surface_rating__",
+        comparison_name="surface_conditioned_elo_cache_control",
+        count_key="candidate_surface_rating",
+        contract_key="surface",
+        output_path=output_path,
+        chunk_size=chunk_size,
+        expected_baseline_feature_count=expected_baseline_feature_count,
+    )
+
+
+def compare_race_value_cache_control(
+    baseline_cache_path: str | Path,
+    candidate_cache_path: str | Path,
+    *,
+    output_path: str | Path | None = None,
+    chunk_size: int = 10_000,
+    expected_baseline_feature_count: int = 268,
+) -> dict[str, Any]:
+    """Verify that an expected-actual cache differs only by its one opt-in column."""
+
+    return _compare_opt_in_cache_control(
+        baseline_cache_path,
+        candidate_cache_path,
+        expected_experimental_columns=RACE_VALUE_COLUMNS,
+        experimental_prefix="race_value__",
+        comparison_name="expected_actual_race_value_cache_control",
+        count_key="candidate_race_value",
+        contract_key="race_value",
+        output_path=output_path,
+        chunk_size=chunk_size,
+        expected_baseline_feature_count=expected_baseline_feature_count,
+    )

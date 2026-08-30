@@ -44,6 +44,7 @@ _GENERATED_PREFIXES: tuple[str, ...] = (
     "field_relative__",
     "rating__",
     "surface_rating__",
+    "race_value__",
 )
 
 FEATURE_PREFIXES: Mapping[str, tuple[str, ...]] = {
@@ -54,6 +55,7 @@ FEATURE_PREFIXES: Mapping[str, tuple[str, ...]] = {
     "field_relative": ("field_relative__",),
     "rating_strength": ("rating__",),
     "surface_conditioned_rating": ("surface_rating__",),
+    "race_value_expected_actual": ("race_value__",),
 }
 
 # This is documentation and a defensive check.  Safety does not depend on
@@ -135,6 +137,10 @@ class FeatureConfig:
     # 268-column baseline contract byte-for-byte while allowing a separately
     # ablatable turf/dirt-specific Elo state to be materialized.
     surface_conditioned_elo: bool = False
+    # Experimental opt-in.  This exposes the 90-day exponentially decayed
+    # mean of actual pairwise performance minus global-Elo expectation.  The
+    # observation for a race is exactly its global Elo delta divided by K.
+    expected_actual_race_value: bool = False
 
     def __post_init__(self) -> None:
         for name, values in (
@@ -148,6 +154,10 @@ class FeatureConfig:
                 raise ValueError(f"{name} must be strictly increasing and unique")
         if self.elo_k <= 0 or self.elo_scale <= 0:
             raise ValueError("elo_k and elo_scale must be positive")
+        if self.expected_actual_race_value and 90 not in self.decay_half_lives:
+            raise ValueError(
+                "expected_actual_race_value requires a 90-day decay half-life"
+            )
 
 
 @dataclass(frozen=True)
@@ -161,6 +171,7 @@ class _Performance:
     venue: object
     opponent_mean_elo: float
     performance_value: float
+    elo_surprise: float
 
 
 @dataclass
@@ -174,6 +185,8 @@ class _Aggregate:
     opponent_sum: float = 0.0
     value_count: float = 0.0
     value_sum: float = 0.0
+    surprise_count: float = 0.0
+    surprise_sum: float = 0.0
 
     def add(self, record: _Performance, weight: float = 1.0) -> None:
         self.starts += weight
@@ -189,6 +202,9 @@ class _Aggregate:
         if np.isfinite(record.performance_value):
             self.value_count += weight
             self.value_sum += weight * record.performance_value
+        if np.isfinite(record.elo_surprise):
+            self.surprise_count += weight
+            self.surprise_sum += weight * record.elo_surprise
 
     def multiply(self, factor: float) -> None:
         for name in (
@@ -201,6 +217,8 @@ class _Aggregate:
             "opponent_sum",
             "value_count",
             "value_sum",
+            "surprise_count",
+            "surprise_sum",
         ):
             setattr(self, name, getattr(self, name) * factor)
 
@@ -295,6 +313,11 @@ class _EntityState:
             result[f"{prefix}career__mean_performance_value"] = _safe_ratio(
                 self.career.value_sum, self.career.value_count
             )
+            if config.expected_actual_race_value:
+                decay_90d = self.decayed[90]
+                result["race_value__decay_90d__mean_global_elo_surprise"] = (
+                    _safe_ratio(decay_90d.surprise_sum, decay_90d.surprise_count)
+                )
         return result
 
     def update(self, record: _Performance) -> None:
@@ -932,7 +955,18 @@ def build_pit_features(raw: pd.DataFrame, config: Optional[FeatureConfig] = None
             active_finishes = finish_numeric.iloc[active_positions]
             finite_finishes = active_finishes[np.isfinite(active_finishes)]
             worst_finite = float(finite_finishes.max()) if len(finite_finishes) else np.nan
-            outcomes: list[tuple[object, float, bool]] = []
+            outcomes = [
+                (
+                    race.iloc[position][config.horse_id_col],
+                    float(finish_numeric.iloc[position]),
+                    bool(
+                        np.isfinite(float(finish_numeric.iloc[position]))
+                        and float(finish_numeric.iloc[position]) == 1.0
+                    ),
+                )
+                for position in active_positions
+            ]
+            deltas = _race_elo_deltas(outcomes, pre_ratings, config)
 
             for position in active_positions:
                 row = race.iloc[position]
@@ -963,6 +997,7 @@ def build_pit_features(raw: pd.DataFrame, config: Optional[FeatureConfig] = None
                     performance_value=finish_value
                     + (float(race_features.iloc[position]["rating__field_mean_elo_pre"]) - config.initial_elo)
                     / config.elo_scale,
+                    elo_surprise=deltas.get(horse_id, np.nan) / config.elo_k,
                 )
                 for state_map, key in (
                     (horse_states, horse_id),
@@ -972,9 +1007,6 @@ def build_pit_features(raw: pd.DataFrame, config: Optional[FeatureConfig] = None
                     state = _state_for(state_map, key, config)
                     if state is not None:
                         state.update(record)
-                outcomes.append((horse_id, finish, bool(is_win)))
-
-            deltas = _race_elo_deltas(outcomes, pre_ratings, config)
             for horse_id, delta in deltas.items():
                 elo_ratings[horse_id] = pre_ratings[horse_id] + delta
             if config.surface_conditioned_elo and surface_key is not None:
@@ -1023,6 +1055,9 @@ def feature_groups(frame: pd.DataFrame) -> dict[str, tuple[str, ...]]:
         "surface_conditioned_rating": tuple(
             column for column in frame if column.startswith("surface_rating__")
         ),
+        "race_value_expected_actual": tuple(
+            column for column in frame if column.startswith("race_value__")
+        ),
     }
     return groups
 
@@ -1069,6 +1104,8 @@ def semantic_feature_groups_v2(
     }
     if any(column.startswith("surface_rating__") for column in feature_columns):
         groups["surface_conditioned_rating"] = []
+    if any(column.startswith("race_value__") for column in feature_columns):
+        groups["race_value_expected_actual"] = []
     for column in feature_columns:
         if column.startswith("context__"):
             group = "current_context"
@@ -1083,6 +1120,8 @@ def semantic_feature_groups_v2(
             group = "rating_value"
         elif column.startswith("surface_rating__"):
             group = "surface_conditioned_rating"
+        elif column.startswith("race_value__"):
+            group = "race_value_expected_actual"
         elif column.startswith("horse_history__same_"):
             group = "suitability"
         elif column.startswith("horse_history__") and any(

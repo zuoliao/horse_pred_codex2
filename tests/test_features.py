@@ -11,6 +11,7 @@ import pytest
 from horse_pred.features import (
     FORBIDDEN_SOURCE_COLUMNS,
     FeatureConfig,
+    _race_elo_deltas,
     build_features,
     build_pit_features,
     feature_groups,
@@ -358,6 +359,89 @@ def test_surface_conditioned_elo_ignores_surface_coded_obstacle_result() -> None
     assert following["surface_rating__horse_elo_pre"] == obstacle[
         "surface_rating__horse_elo_pre"
     ]
+
+
+def test_expected_actual_race_value_is_opt_in_and_keeps_baseline_contract(
+    raw_fixture: pd.DataFrame,
+) -> None:
+    baseline = build_features(raw_fixture)
+    experimental = build_features(
+        raw_fixture, config=FeatureConfig(expected_actual_race_value=True)
+    )
+
+    added = tuple(
+        column
+        for column in experimental.feature_columns
+        if column not in baseline.feature_columns
+    )
+    assert added == ("race_value__decay_90d__mean_global_elo_surprise",)
+    assert experimental.feature_groups["race_value_expected_actual"] == added
+    assert semantic_feature_groups_v2(experimental.feature_columns)[
+        "race_value_expected_actual"
+    ] == added
+    pdt.assert_frame_equal(
+        baseline.frame.loc[:, baseline.feature_columns],
+        experimental.frame.loc[:, baseline.feature_columns],
+    )
+
+
+@pytest.mark.parametrize(
+    ("finishes", "expected_surprises"),
+    [
+        ([1.0, 2.0, 3.0, 4.0], [0.5, 1.0 / 6.0, -1.0 / 6.0, -0.5]),
+        ([1.0, 1.0, 3.0], [0.25, 0.25, -0.5]),
+        ([1.0, 2.0, np.nan], [0.5, 0.0, -0.5]),
+    ],
+)
+def test_expected_actual_surprise_matches_pairwise_elo_delta(
+    finishes: list[float], expected_surprises: list[float]
+) -> None:
+    config = FeatureConfig(expected_actual_race_value=True)
+    horse_ids = [f"h{index}" for index in range(len(finishes))]
+    outcomes = [
+        (horse_id, finish, bool(np.isfinite(finish) and finish == 1.0))
+        for horse_id, finish in zip(horse_ids, finishes)
+    ]
+    pre_ratings = {horse_id: config.initial_elo for horse_id in horse_ids}
+
+    deltas = _race_elo_deltas(outcomes, pre_ratings, config)
+    surprises = [deltas[horse_id] / config.elo_k for horse_id in horse_ids]
+
+    np.testing.assert_allclose(surprises, expected_surprises)
+    assert sum(surprises) == pytest.approx(0.0)
+
+
+def test_expected_actual_race_value_is_pit_safe_and_equals_prior_elo_delta() -> None:
+    raw = pd.DataFrame(
+        [
+            _row("202305010101", "2023-01-01", "h1", "j1", "t1", 1),
+            _row("202305010101", "2023-01-01", "h2", "j2", "t2", 2),
+            # Neither later race on the same date may see the first result.
+            _row("202305010102", "2023-01-01", "h1", "j1", "t1", 1),
+            _row("202305010102", "2023-01-01", "h3", "j3", "t3", 2),
+            _row("202305010201", "2023-01-02", "h1", "j1", "t1", 1),
+            _row("202305010201", "2023-01-02", "h4", "j4", "t4", 2),
+        ]
+    )
+    features = build_pit_features(
+        raw, FeatureConfig(expected_actual_race_value=True)
+    )
+    feature = "race_value__decay_90d__mean_global_elo_surprise"
+    same_date = _by_horse(features, "202305010102", "h1")
+    next_date = _by_horse(features, "202305010201", "h1")
+
+    assert np.isnan(same_date[feature])
+    assert next_date[feature] == pytest.approx(0.5)
+    assert next_date[feature] == pytest.approx(
+        (next_date["rating__horse_elo_pre"] - 1500.0) / 24.0
+    )
+
+
+def test_expected_actual_race_value_requires_90_day_decay() -> None:
+    with pytest.raises(ValueError, match="requires a 90-day decay"):
+        FeatureConfig(
+            decay_half_lives=(30,), expected_actual_race_value=True
+        )
 
 
 def test_integrated_api_keeps_metadata_but_exposes_numeric_closed_allowlist(raw_fixture: pd.DataFrame) -> None:

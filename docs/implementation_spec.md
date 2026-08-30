@@ -68,6 +68,7 @@ feature groupは分離し、各列にavailability semanticsを付ける。
 - `field_relative`: 今回field内の履歴/rating差、順位、z-score。target outcomeは使わない
 - `rating_strength`: forward-only horse rating、field平均、平均との差、過去race strength
 - `surface_conditioned_rating`（opt-in experimentのみ）: 芝/ダート別forward-only horse Eloのpre値、field平均との差、percentile。default 268列には含めない
+- `race_value_expected_actual`（opt-in experimentのみ）: 過去raceのpairwise実績平均とglobal Elo期待平均の差（Elo delta / K）をhalf-life 90日で減衰集約した1列。default 268列には含めない
 
 horse/jockey ID、馬名、騎手名、調教師名はstate結合にだけ使い、model featureへ直接入れない。
 

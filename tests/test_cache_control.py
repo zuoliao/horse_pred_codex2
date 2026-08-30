@@ -5,7 +5,10 @@ import json
 import numpy as np
 import pandas as pd
 
-from horse_pred.cache_control import compare_surface_elo_cache_control
+from horse_pred.cache_control import (
+    compare_race_value_cache_control,
+    compare_surface_elo_cache_control,
+)
 
 
 def _write_cache(path, frame: pd.DataFrame, features: list[str]) -> None:
@@ -157,3 +160,31 @@ def test_surface_cache_control_rejects_changed_control_feature_order(tmp_path) -
     assert result["feature_schema"]["control_positional_mismatch_count"] == 2
     # Value comparison is intentionally withheld when the column contract differs.
     assert result["feature_values"]["max_abs_diff"] is None
+
+
+def test_race_value_cache_control_passes_for_exact_control_values(tmp_path) -> None:
+    baseline = _frame()
+    candidate = baseline.copy()
+    race_value_column = "race_value__decay_90d__mean_global_elo_surprise"
+    candidate[race_value_column] = [np.nan, 0.5, -0.5]
+    baseline_path = tmp_path / "baseline.pkl"
+    candidate_path = tmp_path / "candidate.pkl"
+    _write_cache(baseline_path, baseline, ["feature_a", "feature_b"])
+    _write_cache(
+        candidate_path,
+        candidate,
+        ["feature_a", "feature_b", race_value_column],
+    )
+
+    result = compare_race_value_cache_control(
+        baseline_path,
+        candidate_path,
+        chunk_size=2,
+        expected_baseline_feature_count=2,
+    )
+
+    assert result["passed"]
+    assert result["comparison"] == "expected_actual_race_value_cache_control"
+    assert result["feature_counts"]["candidate_race_value"] == 1
+    assert result["feature_schema"]["race_value_contract_matches"]
+    assert result["feature_schema"]["race_value_columns"] == [race_value_column]

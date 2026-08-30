@@ -107,6 +107,8 @@ delta_i = K / (field_size - 1) * sum_j(actual(i > j) - expected(i > j))
 
 登録実験では`surface_conditioned_elo=True`により、芝・ダートを独立keyとする同じinitial/K/scaleのElo stateを追加できる。生成列はtarget surfaceのpre-Elo、field平均との差、race内percentileの3列で、`surface_rating__` prefixと独立groupに属する。default 268列は変えない。同日batch更新、障害race更新禁止、芝/ダートstate分離をtestで固定する。IMP-002では旧533,853行×268列がdefault cacheと完全一致することを確認してから評価した。
 
+`expected_actual_race_value=True`の登録実験では、各過去raceについてpairwise実績平均とglobal Elo事前期待平均の差を保存する。この値は上式の`delta_i / K`と厳密に同じで、正ならratingから期待された以上、負なら期待未満の着順だったことを表す。target dateより前の全観測をhalf-life 90日で指数減衰し、その加重平均1列`race_value__decay_90d__mean_global_elo_surprise`だけを独立groupとしてemitする。履歴なしは欠損を保ち、同日の結果、オッズ、人気、2025結果は使わない。既存のcareer簡易valueは比較のため残し、class・着差・走破時計・上がりを同じ実験へ混ぜない。
+
 ## 7. 結果例外
 
 | raw着順 | 行保持 | start/history update | win | finish平均 | Elo |
