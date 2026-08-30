@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "experiment_id": "pv_003_margin_rating_temporal_calibration",
+  "run_commit": "79905d8fa6afa84b4b53d520984926df1f8e342b",
+  "run_dirty": false,
+  "data_fingerprint": "270923ce73c4441e64173f242a8719de7d1e9b205508140463ca547ef7b1ca87",
+  "scope": {
+    "early_tau_years": [2014, 2015, 2016, 2017],
+    "rolling_evaluation_years": [2019, 2020, 2021, 2022],
+    "calibration_year": 2023,
+    "development_year": 2024,
+    "development_races": 3051,
+    "development_runners": 41946,
+    "development_2024_opened": true,
+    "retrospective_2025_used": false,
+    "odds_used": false
+  },
+  "tau_derivation": {
+    "tau_seconds_per_1000m": 0.125,
+    "clean_races": 13261,
+    "eligible_adjacent_pairs": 178641,
+    "strictly_positive_pairs": 135258,
+    "zero_pairs": 43383,
+    "negative_pairs": 0
+  },
+  "rolling_gate": {
+    "positive_log_loss_years": 4,
+    "evaluation_years": 4,
+    "annual_macro_improvement": {
+      "race_log_loss": 0.0090869636,
+      "race_brier": 0.0017639814,
+      "ndcg_at_3": 0.0043884256,
+      "top_1": 0.0027968657
+    },
+    "latest_2022_log_loss_improvement": {
+      "point": 0.0084334939,
+      "lower": 0.0058194865,
+      "upper": 0.0111657945
+    },
+    "decision": "go"
+  },
+  "development_2024": {
+    "temperature_2023": {"control": 0.5187022312, "candidate": 0.4729207087},
+    "control": {
+      "race_log_loss": 2.4015311825,
+      "race_brier": 0.8945905933,
+      "ndcg_at_3": 0.3533345503,
+      "top_1": 0.1692887578
+    },
+    "candidate": {
+      "race_log_loss": 2.3957021271,
+      "race_brier": 0.8935473015,
+      "ndcg_at_3": 0.3563437225,
+      "top_1": 0.1679777122
+    },
+    "paired_improvement": {
+      "race_log_loss": {"point": 0.0058290554, "lower": 0.0019676476, "upper": 0.0097491894},
+      "race_brier": {"point": 0.0010432918, "lower": 0.0002369013, "upper": 0.0018496313},
+      "ndcg_at_3": {"point": 0.0030091722, "lower": -0.0007832459, "upper": 0.0067726068},
+      "top_1": {"point": -0.0013110456, "lower": -0.0091630823, "upper": 0.0062255535}
+    },
+    "decision": "go"
+  },
+  "conclusion": "calibrated_margin_aware_rating_replaces_ordinal_standalone_on_current_development_evidence",
+  "next_experiment": "PV-04 add only the frozen margin-aware raw rating score to the PV-01 LightGBM control",
+  "local_artifact": "artifacts/pv_003_margin_rating_temporal_calibration_20260831/"
+}

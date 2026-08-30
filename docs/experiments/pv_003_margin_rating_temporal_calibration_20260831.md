@@ -62,3 +62,49 @@ If the gate fails, 2023 and 2024 remain unopened. In all cases, 2025 is excluded
 before normalization and final odds/ROI are unused. A supported result would only
 authorize a separate PV-04 LightGBM integration experiment; it would not prove that
 the integrated model improves.
+
+## Result
+
+Both gates passed. The early-period derivation reproduced `tau=0.125` from only
+2014–2017 (13,261 clean races and 135,258 positive adjacent-rank gaps). Candidate
+Log Loss improved in all four previous-year-temperature evaluations:
+
+| Temperature year → evaluation year | Control T | Candidate T | Log Loss improvement | Brier improvement |
+|---|---:|---:|---:|---:|
+| 2018 → 2019 | .5334 | .4847 | +.010159 | +.001739 |
+| 2019 → 2020 | .5563 | .5035 | +.007629 | +.001358 |
+| 2020 → 2021 | .5501 | .5032 | +.010127 | +.002149 |
+| 2021 → 2022 | .5501 | .5007 | +.008433 | +.001810 |
+
+Annual-macro improvements were Log Loss +.009087, Brier +.001764, NDCG@3
++.004388, and Top-1 +.002797. On 2022, the paired Log Loss interval was
+`+.008433 [+.005819,+.011166]` and the Brier interval was
+`+.001810 [+.001162,+.002468]`.
+
+The conditional 2024 stage then fitted temperature on 2023 only. It reproduced the
+known ordinal control temperature 0.518702 and fitted candidate temperature 0.472921.
+
+| 2024 strict scoring population | Control | Candidate | Candidate improvement |
+|---|---:|---:|---:|
+| Races / runners | 3,051 / 41,946 | 3,051 / 41,946 | — |
+| Calibrated race Log Loss ↓ | 2.401531 | 2.395702 | +.005829 |
+| Calibrated race Brier ↓ | .894591 | .893547 | +.001043 |
+| NDCG@3 ↑ | .353335 | .356344 | +.003009 |
+| Top-1 ↑ | .169289 | .167978 | -.001311 |
+
+Paired 2024 intervals, positive-is-candidate-better:
+
+- Log Loss: `+.005829 [+.001968,+.009749]`
+- Brier: `+.001043 [+.000237,+.001850]`
+- NDCG@3: `+.003009 [-.000783,+.006773]`
+- Top-1: `-.001311 [-.009163,+.006226]`
+
+The primary probability improvements were significant and both ranking guardrails
+passed, so the preregistered 2024 decision is **go**. This establishes the calibrated
+margin-aware rating as the better standalone R5 replacement on current development
+evidence. It does not yet establish incremental value inside LightGBM, especially
+because PV-01 already encodes a related signed time-gap history.
+
+The complete ignored artifact is
+`artifacts/pv_003_margin_rating_temporal_calibration_20260831/`; the tracked aggregate
+is `experiments/race_content_20260831/pv_003_summary.json`.
