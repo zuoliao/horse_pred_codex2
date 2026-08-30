@@ -1,72 +1,64 @@
 # Project Handoff
 
-## Operating Rule
+## Operating rule
 
-Read `README.md`, `AGENTS.md`, this file, and the relevant specification under `docs/` before changing model or split behavior. Preserve one interpretable hypothesis per experiment, strict point-in-time semantics, no odds in the primary model, and human ownership of experiment acceptance. Raw data, model binaries, runner predictions, and market artifacts remain outside Git.
+Read `README.md`, `AGENTS.md`, this file, and relevant `docs/` before changing model, feature, or split behavior. Preserve one interpretable hypothesis per experiment, strict PIT semantics, no odds in the primary model, and 2026+ prospective final. Raw data, caches, model binaries, runner predictions, and market artifacts stay outside Git.
 
-## Current Goal
+## Current state
 
-The user-designated Goal, tasks 1–16 through the LightGBM Binary baseline, is complete. LambdaRank, coherent probability calibration, integrated evaluation, and final-odds oracle diagnostics (tasks 17–20) were also completed as forward preparation. The next decision is DEC-01: the human user selects the next single hypothesis.
+The corrected LightGBM baseline validation round is complete through data/evaluation health, 2024 uncertainty, semantic ablation, SHAP/permutation diagnostics, conditional errors, and three limited improvement experiments.
 
-## Current State
+- Primary selection period: 2024 development, 3,051 races / 41,946 runners / 106 dates.
+- 2025: 0 rows used for hypothesis, feature, calibration, model, or accept/reject decisions. Cached retrospective rows are removed immediately after load.
+- Corrected model frame: 533,853 runners / 37,889 races / 268 default features.
+- Baseline Binary and LambdaRank both stably beat Uniform/History-rate. Their family difference remains unresolved.
+- Current best feature config: `abl_006_drop_field_relative`, 253 features.
+- Point-estimate best model: LambdaRank on that config (NDCG@3 .4924, Log Loss 2.0847), but Binary has better Top-1/Brier and paired family intervals cross zero.
+- Surface-conditioned Elo adds a supported LambdaRank ranking signal relative to the corrected 268-feature baseline, but is not the overall best point config.
+- Final odds remain an oracle-only diagnostic. No executable ROI or betting claim exists.
 
-- Research and free-data source assessment: complete.
-- Data/coverage/outcome/PIT/split contracts: complete and frozen before metrics.
-- PIT feature engine: complete, 268 numeric features in six logical groups.
-- Full-data Binary and LambdaRank baseline: complete.
-- Primary evaluation: 2024 development; 2025 was inspected once with explicit retrospective opt-in and must not be used to refit/reselect this baseline.
-- Baseline interpretation: both LightGBM models clearly beat uniform/history-rate baselines; Binary and LambdaRank are effectively tied without uncertainty intervals; the final-odds market remains materially stronger.
+## Critical correction and population limits
 
-## Implemented Artifacts
+The original Task 16 run incorrectly included races whose `course_type` was turf/dirt but whose class was obstacle. Commit `810a003` fixed race-level flat classification and prevented obstacle results from updating flat horse/jockey/trainer/Elo state. Do not use the old `mvp_task16_20260830` metrics for current decisions.
 
-- Data contract and loader: `docs/data_contract.md`, `src/horse_pred/data.py`
-- PIT feature contract and engine: `docs/feature_spec.md`, `src/horse_pred/features.py`
-- Model/evaluation contracts: `docs/implementation_spec.md`, `docs/evaluation_spec.md`
-- Models and calibration: `src/horse_pred/modeling.py`
-- Metrics and oracle evaluation: `src/horse_pred/evaluation.py`
-- One-command runner: `src/horse_pred/pipeline.py`, `src/horse_pred/cli.py`
-- Frozen configs: `configs/data_manifest.json`, `configs/splits.json`, `configs/exp_001_binary.json`, `configs/exp_002_lambdarank.json`
-- Tracked aggregate result: `experiments/mvp_task16_20260830/metrics_summary.json`
-- Critical interpretation: `docs/experiments/mvp_task16_20260830.md`
+Known selection limits:
 
-## Data State
+- 2024 missing: 108 races concentrated in nine days of the 7th Kyoto meeting; 103 are flat. This is structural, not MCAR.
+- 2024 official flat coverage: raw 96.90%; strict scored population 91.70%.
+- 173/3,224 raw 2024 flat races contain a scratch/exclusion and are excluded as whole races because event timestamps are unavailable.
+- The baseline is internally trustworthy for the observed strict PIT-C population, but external validity for full JRA/live populations is only moderate.
 
-- Canonical local raw filename: `race_results_merged.csv`
-- Runtime path used: `/Users/zuoliao/Documents/GitHub/horse_codex/data/data/raceinfo/race_results_merged.csv`
-- SHA-256: `270923ce73c4441e64173f242a8719de7d1e9b205508140463ca547ef7b1ca87`
-- Raw rows/races: 629,967 / 44,761; 26 raw columns; 2013-01-05 through 2025-12-28.
-- Known official shortfall: 146 races total, including 108 in 2024.
-- The user explicitly approved use within this private, personal repository. No new scraping or network collection was used for implementation or the full experiment.
-- `data/`, `datasets/`, `artifacts/`, `.venv/`, caches, models, predictions, and local market tables are intentionally untracked.
-- Final verified local artifact: `artifacts/mvp_baseline_20260830_task16_v2/`; manifest SHA-256 `92e2807bcb7c29fb1d5139fc59abab9a69ae0e4adf45cf5c3650f679c9c6e60e`.
+## Completed evidence
 
-## Verification
+- Data health: `docs/experiments/baseline_data_health_20260830.md`
+- Block uncertainty: `docs/experiments/baseline_uncertainty_20260830.md`
+- Semantic ablation: `docs/experiments/semantic_feature_ablation_20260830.md`
+- Importance/error diagnostics: `docs/experiments/baseline_diagnostics_20260830.md`
+- Improvement preregistration/results: `docs/experiments/improvement_experiments_20260830.md`
+- Integrated decision report: `docs/experiments/baseline_validation_conclusions_20260830.md`
+- Tracked machine source of truth: `experiments/baseline_validation_20260830/`
 
-- Full run commit: `b7e86ee44a3aa8aed4b93a867950ee1588e23404`, recorded as `dirty=false` in both run metadata files.
-- Full run: 540,709 model runners, 38,472 races, 268 features, 1,005.7 seconds.
-- 2024: 42,334 runners / 3,087 races. Binary+T NDCG@3 0.4898, Log Loss 2.0875; LambdaRank+T NDCG@3 0.4907, Log Loss 2.0866.
-- 2025 opt-in retrospective: 44,874 runners / 3,236 races. Binary+T NDCG@3 0.4759, Log Loss 2.1340; LambdaRank+T NDCG@3 0.4757, Log Loss 2.1338.
-- Strict JSON parsing passed; all 13 artifact checksums passed; primary predictions contain no final odds/popularity; first and second full-run metrics matched except intentional `Infinity` to JSON `null` normalization.
-- Latest local checks: `uv run pytest -q` reports 58 passed; `uv run ruff check .` passes; compileall and `git diff --check` pass.
+Local complete artifacts are under `artifacts/` and intentionally ignored. Local model-frame caches are `data/model_frame_20260830_corrected.pkl` (268) and `data/model_frame_surface_elo_20260830.pkl` (271); both are ignored.
 
-## Known Gaps
+## Improvement outcomes
 
-- No prospective PIT-A snapshot or executable closing-time odds history.
-- 2,096 races containing scratch/exclusion events are excluded from PIT-C scoring, creating selection bias.
-- No race/date block bootstrap or confidence intervals; tiny Binary/LambdaRank differences are not decision-grade.
-- No ROI, profit, EV selection, staking, or payout settlement evaluation.
-- 2024 has 108 known missing official races; missingness is not shown to be random.
-- Feature importance is split-count diagnostic only; no ablation or causal interpretation.
-- The LightGBM `eval_at` duplicate-warning path was removed after the verified run; tests cover the no-warning behavior, but it does not change model settings or prior metrics.
+1. `imp_001_compact_form_relative`: reject. Adding one 90-day form race-percentile to the 253-feature drop control significantly worsened NDCG and Log Loss in both families.
+2. `imp_002_surface_conditioned_elo`: Binary inconclusive; LambdaRank ranking path accepted. NDCG improvement +.00364 with 95% interval `[+.00005,+.00714]`, with proper scores non-worse. Cache control matched all old 268 values exactly.
+3. `imp_003_field_size_band_temperature`: reject. Ranking was exactly unchanged and ECE improved, but Log Loss/Brier worsened for both families; medium-field Log Loss significantly worsened.
 
-## Next Tasks
+These are nominal intervals across three hypotheses and two model families. They retain 2024 selection optimism and require prospective confirmation.
 
-1. DEC-01 (requires human choice): accept the baseline as a reference and select one next hypothesis.
-2. Recommended candidate: one feature-group ablation experiment, starting with `connections_pit` or `rating_strength`, using the same frozen split and adding race/date block uncertainty.
-3. Keep 2025 closed to iterative tuning. Use 2024 development for the next registered hypothesis and reserve 2026+ for prospective final evidence.
-4. Separately plan LIVE-01 before making any executable market or ROI claim.
+## Exact next task
 
-## Useful Commands
+Preregister one independent experiment:
+
+> Control = `abl_006_drop_field_relative` (253 features). Candidate = the same config plus only the surface-conditioned rating family.
+
+This tests whether the two individually supported changes are complementary. Do not assume they compose. Use the same 2024 4-date moving-block bootstrap (10,000), do not inspect 2025, and keep Binary/LambdaRank results separate. The experiment must be a new config/artifact/commit and must not bundle rating formula tuning.
+
+If that experiment is not authorized, stop at the current validated reference rather than moving to data expansion, DNN, purchase strategy, or UI.
+
+## Useful commands
 
 ```bash
 uv sync
@@ -74,20 +66,28 @@ uv run pytest -q
 uv run ruff check .
 uv run python -m compileall -q src tests
 
-# Default: 2024 development only
-uv run horse-pred run-mvp \
-  --repo-root . \
-  --raw-path /path/to/race_results_merged.csv \
-  --output artifacts/mvp_baseline
+# Corrected baseline uncertainty
+uv run horse-pred analyze-uncertainty \
+  --predictions artifacts/mvp_baseline_20260830_corrected/predictions.csv.gz \
+  --output artifacts/baseline_uncertainty
 
-# 2025 is non-sealed and requires explicit opt-in
+# Registered cached experiment; 2025 is removed by the runner
+uv run horse-pred run-cached-experiment \
+  --cache data/model_frame_20260830_corrected.pkl \
+  --config configs/ablations/abl_006_drop_field_relative.json \
+  --output artifacts/example_ablation
+
+# Rebuild opt-in surface Elo cache (long-running)
 uv run horse-pred run-mvp \
-  --repo-root . \
   --raw-path /path/to/race_results_merged.csv \
-  --output artifacts/mvp_baseline_with_2025 \
-  --include-retrospective-test
+  --output artifacts/surface_cache_control \
+  --model-frame-cache data/model_frame_surface_elo.pkl \
+  --surface-conditioned-elo
 ```
 
-## Handoff Notes
+## Verification baseline
 
-Do not rerun or reinterpret 2025 to choose features, calibrators, thresholds, or hyperparameters for this baseline. Do not add odds/popularity to primary model features. Any data acquisition beyond the approved local raw needs a separate source/terms gate. The user explicitly allowed autonomous technical judgments but retained the final model/experiment accept-reject decision.
+- Improvement run commit: `e3bdbf406f933f4fda69245f285be93e9835d321`, `dirty=false`.
+- Raw SHA-256: `270923ce73c4441e64173f242a8719de7d1e9b205508140463ca547ef7b1ca87`.
+- Surface-cache control: 533,853 rows; old 268 column names/order/values/NaN positions exact; mismatch count 0; max absolute difference 0.
+- Latest verification before final documentation: 96 tests passed and Ruff passed. Rerun after documentation changes before handoff.

@@ -21,7 +21,7 @@ X = dataset.frame.loc[:, dataset.feature_columns]
 
 - `frame`: 入力raw/normalized列、監査用`meta__*`、生成特徴を同じ行に保持する。race ID、entity ID、着順label、最終単勝、人気はここに残してよい。
 - `feature_columns`: **生成済み数値特徴だけ**の閉じたallowlist。モデル入力は必ずこれを使う。
-- `feature_groups`: 実験configと一致する論理group別の数値列。`race_context`、`horse_history_basic`、`form_workload`、`connections_pit`、`field_relative`、`rating_strength`。
+- `feature_groups`: 実験configと一致する論理group別の数値列。defaultは`race_context`、`horse_history_basic`、`form_workload`、`connections_pit`、`field_relative`、`rating_strength`。`FeatureConfig(surface_conditioned_elo=True)`の登録実験だけ`surface_conditioned_rating`を追加する。
 
 低水準の `build_pit_features(raw, config)` は生成特徴と`meta__*`だけを返す。`model_feature_allowlist()` と `validate_model_feature_columns()` は、rawの数値列をdtypeだけで誤採用することを防ぐ。
 
@@ -104,6 +104,8 @@ delta_i = K / (field_size - 1) * sum_j(actual(i > j) - expected(i > j))
 同着は0.5、数値着順は小さい方を勝ち、中止・失格は全数値着順より下、複数の中止・失格同士はtieとする。取消・除外は比較に入れない。Kを相手数で割るため、頭数だけで更新幅が線形増加しない。
 
 生成するstrength特徴はhorse pre-Elo、field pre-Eloのmean/max/std、horse-minus-field mean、field内percentileである。過去走の簡易valueは「そのraceの着順percentile + (pre-race field mean Elo - 1500) / 400」とし、将来の相手成績で遡及更新しない。これは将来のRace-value encoderの代替ではなく、forward-only相手強度仮説を検証するための分離可能なbaselineである。
+
+登録実験では`surface_conditioned_elo=True`により、芝・ダートを独立keyとする同じinitial/K/scaleのElo stateを追加できる。生成列はtarget surfaceのpre-Elo、field平均との差、race内percentileの3列で、`surface_rating__` prefixと独立groupに属する。default 268列は変えない。同日batch更新、障害race更新禁止、芝/ダートstate分離をtestで固定する。IMP-002では旧533,853行×268列がdefault cacheと完全一致することを確認してから評価した。
 
 ## 7. 結果例外
 

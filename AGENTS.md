@@ -12,9 +12,9 @@ Before making architecture or modeling decisions, read `README.md` and all relev
 
 ## Current phase
 
-The project is currently in the **research and specification phase**.
+The project is currently in the **validated LightGBM baseline and early feature-hypothesis phase**. The research plan, implementation specification, corrected baseline, 2024 uncertainty, semantic ablations, model/error diagnostics, and the first three limited improvement experiments are complete.
 
-Do not jump directly into a large implementation. First execute the research plan in `docs/research_plan.md`, synthesize the findings, and update the implementation specification accordingly.
+Use `docs/experiments/baseline_validation_conclusions_20260830.md` and `docs/handoff.md` as the current decision state. Continue with small preregistered LightGBM/PIT feature hypotheses; do not jump to data expansion, DNN, complex betting strategy, or UI without an explicit phase decision.
 
 ## Core design decisions already agreed
 

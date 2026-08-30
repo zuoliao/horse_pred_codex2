@@ -2,7 +2,7 @@
 
 JRA中央競馬を主対象とする、競馬予測・馬券購入判断支援システムの研究開発リポジトリです。
 
-> **現在の段階:** 調査、データ契約、PIT特徴量、非学習baseline、LightGBM Binary/LambdaRank、2023校正、2024主評価を完了。2025 retrospectiveも明示opt-inで一回確認済み。次の仮説選択待ち。
+> **現在の段階:** 障害混入を修正したLightGBM baselineについて、2024限定のデータ健全性、block bootstrap、feature ablation、SHAP/permutation、条件別error、限定改善3実験まで完了。現bestはfield-relative 15列を除く253特徴configで、Binary/LambdaRankのfamily差は未解決。
 > **最終更新:** 2026-08-30 (JST)
 
 ## 1. プロジェクトの目的
@@ -404,8 +404,12 @@ configs/
   exp_002_lambdarank.json
 
 experiments/
-  mvp_task16_20260830/
-    metrics_summary.json
+  baseline_validation_20260830/
+    data_health_summary.json
+    uncertainty_summary.json
+    ablation_summary.json
+    diagnostics_summary.json
+    improvement_summary.json
 
 artifacts/                 # Git対象外
   mvp_baseline.../
@@ -437,14 +441,17 @@ README.md
 
 各experiment directory内の機械可読ファイルをsource of truthとし、READMEの実験一覧表を自動更新します。READMEを手作業の記録台帳にはしません。
 
-| Exp | Model | 2024 Log Loss ↓ | 2024 Brier ↓ | 2024 NDCG@3 ↑ | 2024 Top-1 ↑ | Notes |
-|---|---|---:|---:|---:|---:|---|
-| mvp_task16_20260830 | Uniform | 2.5921 | 0.9219 | 0.1870 | 0.0797 | non-learning baseline |
-| mvp_task16_20260830 | History rate | 2.5440 | 0.9110 | 0.2546 | 0.1244 | PIT smoothed history baseline |
-| mvp_task16_20260830 | LGBM Binary + T | 2.0875 | 0.8308 | 0.4898 | **0.2873** | `T=1.0448`, 2023 fit |
-| mvp_task16_20260830 | LGBM LambdaRank + T | **2.0866** | **0.8302** | **0.4907** | 0.2844 | `T=0.8570`, 2023 fit |
+| Exp | Model | Features | 2024 Log Loss ↓ | 2024 Brier ↓ | 2024 NDCG@3 ↑ | 2024 Top-1 ↑ | Notes |
+|---|---|---:|---:|---:|---:|---:|---|
+| corrected baseline | Uniform | — | 2.5949 | .9222 | .1859 | .0793 | non-learning baseline |
+| corrected baseline | History rate | — | 2.5453 | .9111 | .2546 | .1242 | PIT smoothed history baseline |
+| corrected baseline | LGBM Binary + T | 268 | 2.0898 | .8312 | .4873 | .2814 | History-rateへの改善はblock bootstrapで安定 |
+| corrected baseline | LGBM LambdaRank + T | 268 | 2.0892 | .8301 | .4864 | .2804 | Binaryとの差は未解決 |
+| `abl_006_drop_field_relative` | LGBM Binary + T | 253 | 2.0855 | **.82985** | .4913 | **.2912** | current best feature config |
+| `abl_006_drop_field_relative` | LGBM LambdaRank + T | 253 | **2.0847** | .82995 | **.4924** | .2881 | point-estimate best model、family差は未解決 |
+| `imp_002_surface_conditioned_elo` | LGBM LambdaRank + T | 271 | 2.0870 | .82963 | .4900 | .2832 | corrected baseline比NDCG `+.00364 [+.00005,+.00714]` |
 
-[完全な集約metric](experiments/mvp_task16_20260830/metrics_summary.json)と[批判的評価レポート](docs/experiments/mvp_task16_20260830.md)を参照してください。final oddsは事後oracle専用で、実行可能ROIは評価していません。
+[機械可読summary](experiments/baseline_validation_20260830/improvement_summary.json)と[統合結論](docs/experiments/baseline_validation_conclusions_20260830.md)を参照してください。旧Task 16 reportは障害混入修正前のためsupersededである。final oddsは事後oracle専用で、実行可能ROIは評価していません。
 
 詳細な実験レポートを毎回作ることは必須としません。混合した結果を単純に「改善」と要約せず、改善・悪化した指標を事実として記録します。
 
@@ -567,7 +574,7 @@ Phase 1: データソース・既存手法の調査           完了
 Phase 2: 既存rawのcoverage/PIT gateと仕様確定    完了
 Phase 3: point-in-time特徴量基盤                 実装・検証済み
 Phase 4: LightGBM Binary / LambdaRank baseline   完了
-Phase 5: 特徴量・rating・calibration改善         ← 次の仮説選択待ち
+Phase 5: 特徴量・rating・calibration改善         進行中（診断・限定3実験完了）
 Phase 6: 確率的ランキングおよび高度なモデル
 Phase 7: 購入戦略・リスク管理の改善
 Phase 8: 自動予測処理・Web UI
@@ -595,11 +602,11 @@ Phase 8: 自動予測処理・Web UI
 | データソース | 決定 | 承認済み既存raw 2013～2025を主系統とし、JRA公式結果でcoverage・不足項目を照合・補完。新規取得は別gate |
 | 具体的な予測時点 | MVP決定 | 過去結果rawによる保守的PIT-C前日相当。同日の全raceは一括emit後に更新。当日締切前版は別track |
 | split期間 | MVP決定 | 2014～21 train、2022 validation、2023 calibration、2024 development、2025 opt-in retrospective、2026+ prospective final |
-| rating方式 | MVP決定 | PIT-safe forward-only Eloを最初の単一方式として採用 |
+| rating方式 | MVP決定 | PIT-safe global Eloをbaselineとし、芝/ダート別EloはLambdaRank rankingで追加signalを確認。lean configとの組合せは次の独立仮説 |
 | probabilistic ranking | 調査推奨・延期 | Plackett–Luceを最初の高度baseline候補とするが、順位別biasを検証してから採否判断 |
 | artifact管理 | MVP決定 | config、git/data fingerprint、aggregate metricsを追跡し、raw・model・runner予測はGit対象外 |
 | Web技術 | 未決 | 後続フェーズで決定 |
 
 ## 15. 次の作業
 
-タスク16のBinary baselineと、先行して実施したLambdaRank・coherent確率化・統合評価は完了しました。次は[baseline評価レポート](docs/experiments/mvp_task16_20260830.md)を基に、人間ユーザーが次の一仮説を選びます。候補はfeature-group ablationとrace/date block uncertaintyです。締切前oddsを使う実行可能な市場評価は、別のprospective snapshot trackで行います。
+corrected baselineの健全性、不確実性、feature-group ablation、model/error診断、限定改善3実験は完了しました。次の最優先仮説は、current bestの`abl_006_drop_field_relative`をcontrolに、支持されたsurface-conditioned rating familyだけを追加する実験です。2025は使用せず、同じ2024 paired block評価で検証し、2026+ prospective final方針を維持します。締切前oddsを使う実行可能な市場評価は別trackです。

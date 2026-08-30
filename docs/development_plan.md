@@ -1,7 +1,7 @@
 # 開発タスクリスト
 
 **作成日:** 2026-08-30 (JST)  
-**前提:** 調査フェーズと既存ローカルrawの利用判断は完了。GOV-01～QA-01と初期baseline runnerを実装し、全量実験を進行中。
+**前提:** 調査、既存raw採用、GOV-01～QA-01、corrected LightGBM baseline、2024限定の健全性・不確実性・ablation・診断・限定改善3実験まで完了。
 **対象:** JRA平地競走、no-odds予測を先行し、購入判断を別層にする。
 
 ## 進行原則
@@ -43,19 +43,19 @@
 | 24 | LIVE-01 | prospective snapshot仕様・収集 | PIT-01, 追加source gate | 出馬表、変更、馬体重、馬場、oddsについて`published_at/ingested_at`付きPIT-Aを保存。rate/cache/diff方針を固定 |
 | 25 | LIVE-02 | shadow evaluation | LIVE-01, PROB-01 | 固定cutoff・固定model・固定EV proxyで購入せずに予測を記録し、十分な将来期間で実行可能性を評価 |
 | 26 | PAID-01 | JRA-VAN導入判断 | DEC-01, LIVE-01 | 無料構成の欠損と追加価値を定量化し、調教、正規ID、速報、時系列oddsのどれを検証するか一特徴群ずつ決定 |
+| 27 | EXP-003 | lean config × surface-conditioned rating | DEC-01 | 253-feature field-relative-dropをcontrolに、芝/ダート別Elo familyだけを追加。2024 paired blockで独立評価し、2025不使用、2026+ prospective方針を維持 |
 
 ## 2026-08-30実行状態
 
 | 範囲 | 状態 | 証拠 |
 |---|---|---|
-| GOV-01～QA-01（1～14） | 完了 | data/feature/spec実装、PIT・split・例外fixtureを含む58 tests |
-| BASE-01（15） | 完了 | uniform/history-rateを2024/2025同一race集合でartifact化 |
-| EXP-001（16、今回Goal） | 完了 | LightGBM Binary、raw/coherent probability、2023 temperature、2024主評価 |
-| EXP-002～EVAL-01（17～19、先行準備） | 完了 | LambdaRank、確率写像、校正、条件別統合評価まで同一runnerで実行 |
-| BET-01（20、先行準備） | 完了 | final oddsを別artifactへ分離し、selection/ROIなしのoracle診断だけを実行 |
-| DEC-01（21） | 人間判断待ち | [baseline評価レポート](experiments/mvp_task16_20260830.md)から次の一仮説を選択 |
+| GOV-01～QA-01（1～14） | 完了 | data/feature/spec実装、PIT・split・例外fixture。障害raceがflat stateを更新しない回帰testを追加 |
+| BASE-01～BET-01（15～20） | 完了・corrected | 障害混入修正後、Uniform/History/Binary/LambdaRank、2023校正、2024評価、final-odds oracleを再生成 |
+| DEC-01（21） | 完了 | data health、10,000回block bootstrap、7 group ablation、SHAP/permutation、条件別errorを統合 |
+| IMP-001～003 | 完了 | compact relative reject、surface EloはRanker rankingのみ支持、field-size calibration reject |
+| EXP-003（27） | 次候補 | lean 253-feature controlへsurface ratingだけを追加する独立仮説。未実行 |
 
-実行のsource of truthは`experiments/mvp_task16_20260830/metrics_summary.json`、完全なlocal artifactはGit対象外の`artifacts/mvp_baseline_20260830_task16_v2/`である。
+実行のsource of truthは`experiments/baseline_validation_20260830/`、統合判断は[baseline validation conclusions](experiments/baseline_validation_conclusions_20260830.md)。完全なmodel・prediction・bootstrap artifactはGit対象外の`artifacts/`である。
 
 ## 直近のマイルストーン
 
@@ -65,6 +65,7 @@
 | M2: PIT dataset完成 | EXP-01、PIPE-01～QA-01 | 同一race・future leakage testを含む検証suiteが通る |
 | M3: 初期モデル比較 | BASE-01～PROB-01 | BinaryとLambdaRankを同一条件で比較し、coherent probabilityを得る |
 | M4: MVP評価完了 | EVAL-01～DEC-01 | 多面的評価とoracle市場診断を再現可能なartifactとして提示する |
+| M4.1: baseline validation | DEC-01、IMP-001～003 | data/evaluation health、uncertainty、ablation、model/error診断と限定改善を2024だけで完了する |
 | M5: 実行可能市場評価 | LIVE-01～LIVE-02 | 締切前snapshotを用いたprospective shadow期間が蓄積される |
 
 GOV-01～QA-01のdecision gateはmetric確認前に固定済みである。baseline結果を見てこれらを変更する場合は、新しいexperiment IDと将来評価期間を必要とする。
