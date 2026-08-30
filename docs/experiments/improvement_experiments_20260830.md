@@ -27,8 +27,6 @@
 
 **Pre-registered intent:** horse Eloを芝/ダート別に独立更新し、target surfaceのpre-race rating、field平均との差、race内percentileだけを追加する。既存global Eloと他268列は変えない。厳密な同日batch更新と障害除外を維持する。
 
-**Required control:** 新cacheで追加3列を除いた旧268列のschema/valueとbaseline予測を先に再現する。再現できなければIMP-002を評価しない。
-
 **Required control:** 新cacheで旧268列の名前・順序・値が一致すること、同cacheから旧268列だけで再fitしたcontrolが旧artifactを許容誤差内で再現すること、candidateとの差がsurface 3列だけであることを確認する。
 
 **Decision rule:** Log Loss改善のpaired 95% interval下限`>0`をprimaryとし、Brier非悪化、NDCG差`>=-.002`、top-1差`>=-.005`をguardrailとする。surface変更sliceの改善方向はmechanism診断だけに使い、小標本runner slice単独では採用しない。Eloのinitial=`1500`、K=`24`、scale=`400`、同日batch update、芝/ダート分離、障害更新なしを固定する。
@@ -40,6 +38,16 @@
 **Pre-registered intent:** 2023 calibrationだけで固定band `<=9 / 10–13 / 14–16 / 17–18`ごとにtemperatureをfitし、2024へ固定適用する。2023 race数は`296 / 915 / 1683 / 270`。最小200 raceを満たさないbandだけglobal 2023 temperatureへfallbackし、2024を見てbandを統合しない。raw scoreとranking順序は変更しない。
 
 **Decision rule:** ranking metricの完全一致を必須とする。per-race NLL/Brierの4-date block paired bootstrapで、Log Loss改善interval下限`>0`かつpoint改善`>=.002`、Brier非悪化を満たす場合に採用する。200 race以上のbandでLog Lossが`.01`超悪化した場合は保留/棄却。ECEは非加法なので補助reliability診断に留め、単独採用根拠にしない。
+
+## Results
+
+| Experiment | Result | Decision |
+|---|---|---|
+| IMP-001 | drop-control比でBinary NDCG `-.00739` / LL改善`-.01434`、Ranker `-.00440` / `-.00751`。主要95% intervalも悪化側 | reject |
+| IMP-002 | cache旧268列は全533,853 rowsで完全一致。Binaryは未解決。Ranker NDCG `+.00364 [+.00005,+.00714]`、proper score非悪化 | Ranker ranking pathをaccept。ただし全体bestではない |
+| IMP-003 | ranking完全一致。Binary LL `+.00040`悪化、Ranker `+.00070`悪化。ECEは改善したがBrierも悪化 | reject |
+
+full resultとbest config判断は[統合結論](baseline_validation_conclusions_20260830.md)および[機械可読summary](../../experiments/baseline_validation_20260830/improvement_summary.json)をsource of truthとする。
 
 ## Interpretation guardrails
 

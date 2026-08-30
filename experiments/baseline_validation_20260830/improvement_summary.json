@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "analysis_id": "evidence_led_improvements_2024",
+  "run_commit": "e3bdbf406f933f4fda69245f285be93e9835d321",
+  "scope": {
+    "development_races": 3051,
+    "development_runners": 41946,
+    "date_block_length": 4,
+    "bootstrap_resamples": 10000,
+    "retrospective_2025_used": false,
+    "final_odds_used_for_selection": false
+  },
+  "experiments": {
+    "imp_001_compact_form_relative": {
+      "status": "reject",
+      "feature_count": 254,
+      "primary_control": "abl_006_drop_field_relative_253_features",
+      "change": "add one within-race percentile of 90-day decayed mean finish",
+      "binary": {
+        "ndcg_at_3": 0.4838632546283148,
+        "top_1": 0.28580793182563097,
+        "log_loss": 2.09986602240656,
+        "brier": 0.8339188010854254,
+        "control_to_candidate_improvement": {
+          "ndcg_at_3": {"point": -0.007392434872070641, "lower": -0.013188703509725952, "upper": -0.00178954997783349},
+          "log_loss": {"point": -0.01434491645083158, "lower": -0.022403633105346685, "upper": -0.006122683795450013}
+        }
+      },
+      "lambdarank": {
+        "ndcg_at_3": 0.4880310285949173,
+        "top_1": 0.2871189773844641,
+        "log_loss": 2.0921751228193597,
+        "brier": 0.8307376427380223,
+        "control_to_candidate_improvement": {
+          "ndcg_at_3": {"point": -0.004402292117644202, "lower": -0.008793830767129225, "upper": -0.00011638464454001618},
+          "log_loss": {"point": -0.007513013808287283, "lower": -0.012358302762711193, "upper": -0.002828339236269062}
+        }
+      },
+      "prediction_sha256": "ff01e40aa52fa3d30c1ab8d0083eee9d0eb373fc24e0b41f1eba17628727c930"
+    },
+    "imp_002_surface_conditioned_elo": {
+      "status": "accept_for_lambdarank_ranking_signal_not_overall_best",
+      "feature_count": 271,
+      "primary_control": "corrected_268_feature_baseline_rebuilt_from_identical_cache",
+      "cache_control": {
+        "passed": true,
+        "rows": 533853,
+        "control_features": 268,
+        "candidate_features": 271,
+        "identity_mismatches": 0,
+        "feature_value_mismatches": 0,
+        "max_abs_diff": 0.0
+      },
+      "binary": {
+        "ndcg_at_3": 0.4872659396637801,
+        "top_1": 0.28826614224844316,
+        "log_loss": 2.087831769559878,
+        "brier": 0.8303500177573334,
+        "ece": 0.005049622932409043,
+        "control_to_candidate_improvement": {
+          "ndcg_at_3": {"point": 0.000008327859501722212, "lower": -0.004041171509867187, "upper": 0.004230072642020376},
+          "log_loss": {"point": 0.0019655712395070246, "lower": -0.002976821573379749, "upper": 0.00676354453317819}
+        },
+        "decision": "inconclusive"
+      },
+      "lambdarank": {
+        "ndcg_at_3": 0.4900354542895922,
+        "top_1": 0.2831858407079646,
+        "log_loss": 2.086967022122837,
+        "brier": 0.8296254141871381,
+        "ece": 0.0040701136965258095,
+        "control_to_candidate_improvement": {
+          "ndcg_at_3": {"point": 0.003639240409820055, "lower": 0.00004777281374405026, "upper": 0.00714335281715226},
+          "log_loss": {"point": 0.00226681415949459, "lower": -0.0014112823774370398, "upper": 0.005826277771294019}
+        },
+        "decision": "accept_ranking_path"
+      },
+      "surface_change_mechanism": {
+        "runner_count": 4657,
+        "binary_top_selected_hit_rate_control": 0.2013888888888889,
+        "binary_top_selected_hit_rate_candidate": 0.216,
+        "lambdarank_top_selected_hit_rate_control": 0.24074074074074073,
+        "lambdarank_top_selected_hit_rate_candidate": 0.2616822429906542,
+        "usage": "supportive runner-slice diagnostic only"
+      },
+      "prediction_sha256": "89394a263cf539e66ba5f28260efe182878a68f34780d3939d1b9393c48e9ce5"
+    },
+    "imp_003_field_size_band_temperature": {
+      "status": "reject",
+      "change": "four temperatures fitted only on fixed 2023 field-size bands",
+      "ranking_scores_changed": false,
+      "binary": {
+        "global_log_loss": 2.089797340799388,
+        "candidate_log_loss": 2.090198874537976,
+        "global_brier": 0.8312273932151918,
+        "candidate_brier": 0.8313074158413779,
+        "global_ece": 0.005687145627858138,
+        "candidate_ece": 0.004258594206420935,
+        "log_loss_improvement": {"point": -0.0004015337385907536, "lower": -0.00209062658821566, "upper": 0.0013202962116507387}
+      },
+      "lambdarank": {
+        "global_log_loss": 2.0892338362823217,
+        "candidate_log_loss": 2.0899376177424225,
+        "global_brier": 0.8300763536991381,
+        "candidate_brier": 0.830282107504051,
+        "global_ece": 0.004548768601643459,
+        "candidate_ece": 0.004307629754622624,
+        "log_loss_improvement": {"point": -0.0007037814600927561, "lower": -0.001974799758540035, "upper": 0.0005959655977381459}
+      },
+      "note": "ECE improved but both proper scores worsened; medium-band Log Loss worsened with an interval excluding zero for both model families",
+      "metrics_sha256": "e7cfa9b7c9efa336555e2776c37c9d0fe05ed7cb3f8c740cef06476d64a7a0dc"
+    }
+  },
+  "best_current_feature_config": {
+    "experiment_id": "abl_006_drop_field_relative",
+    "feature_count": 253,
+    "decision": "best point-estimate and parsimonious candidate; model-family difference unresolved",
+    "binary": {
+      "ndcg_at_3": 0.4912556895003852,
+      "top_1": 0.2912159947558178,
+      "log_loss": 2.085521105955723,
+      "brier": 0.829847131217045
+    },
+    "lambdarank": {
+      "ndcg_at_3": 0.49243332071256113,
+      "top_1": 0.288102261553589,
+      "log_loss": 2.084662109011077,
+      "brier": 0.8299487342883342
+    },
+    "lambdarank_vs_binary": {
+      "ndcg_at_3": {"point": 0.0011776312121763444, "lower": -0.004474181344571161, "upper": 0.006661925085422112},
+      "log_loss": {"point": 0.0008589969446530787, "lower": -0.0061341448143951574, "upper": 0.008693292641738836}
+    },
+    "prediction_sha256": "53cf05d54ebf3190ab48b6a3373caf0ac46bcc3bbab41c733bb996eb9bff47c1"
+  },
+  "next_priority_hypothesis": "Test the accepted surface-conditioned rating family on the 253-feature field-relative-drop control as a new, separately preregistered interaction hypothesis"
+}
