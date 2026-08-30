@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "experiment_id": "abl_007_drop_rating_value",
+  "parent_experiment_id": "mvp_task16_corrected_20260830",
+  "hypothesis": "Elo, opponent-strength, and past-race value features contribute incremental signal beyond conventional histories",
+  "seed": 42,
+  "model_configs": {
+    "binary": "configs/exp_001_binary.json",
+    "lambdarank": "configs/exp_002_lambdarank.json"
+  },
+  "feature_selection": {
+    "drop": [
+      "rating_value"
+    ]
+  }
+}
+

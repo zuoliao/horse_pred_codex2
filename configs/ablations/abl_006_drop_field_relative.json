@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "experiment_id": "abl_006_drop_field_relative",
+  "parent_experiment_id": "mvp_task16_corrected_20260830",
+  "hypothesis": "Within-race field-relative transformations contribute incremental signal beyond their absolute source features",
+  "seed": 42,
+  "model_configs": {
+    "binary": "configs/exp_001_binary.json",
+    "lambdarank": "configs/exp_002_lambdarank.json"
+  },
+  "feature_selection": {
+    "drop": [
+      "field_relative"
+    ]
+  }
+}
+
