@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "experiment_id": "pv_005_margin_rating_delta",
+  "parent_experiment_id": "pv_001_candidate_signed_time_gap",
+  "hypothesis": "The difference between frozen margin-aware and same-spec ordinal Elo scores exposes margin-specific path dependence more directly than the redundant absolute margin score",
+  "seed": 42,
+  "model_configs": {
+    "binary": "configs/exp_001_binary.json",
+    "lambdarank": "configs/exp_002_lambdarank.json"
+  },
+  "feature_selection": {
+    "include": [
+      "current_context",
+      "horse_performance",
+      "form_workload",
+      "suitability",
+      "connections",
+      "rating_value",
+      "race_content_time",
+      "margin_rating"
+    ]
+  },
+  "candidate_column": "margin_rating__delta_vs_ordinal_score_pre",
+  "definition": "margin_aware_K48_scale200_raw_score_minus_ordinal_K48_scale200_raw_score",
+  "comparators": {
+    "primary": "configs/performance/pv_001_candidate_signed_time_gap.json",
+    "lambdarank_incumbent": "configs/ablations/abl_006_drop_field_relative.json"
+  },
+  "bootstrap": {"moving_block_dates": 4, "resamples": 10000, "seed": 20240830},
+  "acceptance": {
+    "probability_path": {
+      "log_loss_improvement_min": 0.002,
+      "log_loss_improvement_ci_lower_strictly_positive": true,
+      "brier_improvement_min": 0.0,
+      "ndcg_at_3_improvement_min": -0.002,
+      "top_1_improvement_min": -0.005
+    },
+    "ranking_path": {
+      "ndcg_at_3_improvement_ci_lower_strictly_positive": true,
+      "log_loss_improvement_min": -0.002,
+      "brier_improvement_min": -0.001,
+      "top_1_improvement_min": -0.005
+    }
+  },
+  "scope": {
+    "development_year": 2024,
+    "retrospective_2025_used": false,
+    "odds_used": false,
+    "post_pv004_hypothesis": true
+  }
+}
