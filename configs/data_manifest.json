@@ -1,0 +1,196 @@
+{
+  "manifest_version": 1,
+  "dataset_id": "race_results_merged-270923ce",
+  "frozen_at": "2026-08-30T00:00:00+09:00",
+  "source": {
+    "kind": "netkeiba_scrape_existing_local_copy",
+    "provenance_basis": "Schema and sibling acquisition code audited in docs/research/local_existing_dataset.md",
+    "approved_use": "private_local_project_approved",
+    "new_scraping_authorized": false,
+    "redistribution_authorized": false,
+    "external_ai_upload_authorized": false
+  },
+  "path_policy": {
+    "environment_variable": "HORSE_PRED_RAW_CSV",
+    "cli_option": "--raw-path",
+    "absolute_path_in_manifest": false,
+    "repository_data_copy_allowed": false,
+    "tracked_artifacts": [
+      "manifest",
+      "schema",
+      "code",
+      "tests",
+      "aggregate_quality_counts"
+    ]
+  },
+  "raw_file": {
+    "filename": "race_results_merged.csv",
+    "sha256": "270923ce73c4441e64173f242a8719de7d1e9b205508140463ca547ef7b1ca87",
+    "size_bytes": 118918481,
+    "encoding": "utf-8-sig",
+    "has_utf8_bom": true,
+    "newline": "platform-observed-CRLF-compatible-csv",
+    "row_count": 629967,
+    "race_count": 44761,
+    "column_count": 26,
+    "date_min": "2013-01-05",
+    "date_max": "2025-12-28",
+    "schema": [
+      {"name": "raceid", "logical_type": "string", "nullable": false, "role": "race_key"},
+      {"name": "race_class", "logical_type": "string", "nullable": false, "role": "race_context"},
+      {"name": "course_type", "logical_type": "enum_string", "nullable": false, "role": "surface"},
+      {"name": "distance", "logical_type": "integer", "nullable": false, "unit": "metre", "role": "race_context"},
+      {"name": "ground_state", "logical_type": "enum_string", "nullable": false, "role": "result_page_context"},
+      {"name": "around", "logical_type": "enum_string", "nullable": true, "role": "course_direction"},
+      {"name": "weather", "logical_type": "enum_string", "nullable": false, "role": "result_page_context"},
+      {"name": "着順", "logical_type": "outcome_string", "nullable": false, "role": "outcome"},
+      {"name": "枠番", "logical_type": "integer", "nullable": false, "role": "runner_context"},
+      {"name": "馬番", "logical_type": "integer", "nullable": false, "role": "race_runner_key"},
+      {"name": "馬名", "logical_type": "string", "nullable": false, "role": "identity_display"},
+      {"name": "horse_id", "logical_type": "string", "nullable": false, "role": "source_native_horse_key"},
+      {"name": "sex", "logical_type": "enum_string", "nullable": false, "role": "runner_context"},
+      {"name": "age", "logical_type": "integer", "nullable": false, "unit": "year", "role": "runner_context"},
+      {"name": "騎手", "logical_type": "string", "nullable": false, "role": "identity_display"},
+      {"name": "jockey_id", "logical_type": "string", "nullable": false, "role": "source_native_jockey_key"},
+      {"name": "trainer", "logical_type": "string", "nullable": false, "role": "identity_display"},
+      {"name": "タイム", "logical_type": "duration_string", "nullable": true, "unit": "minute:second.tenth", "role": "outcome"},
+      {"name": "着差", "logical_type": "margin_string", "nullable": true, "role": "outcome"},
+      {"name": "通過順位", "logical_type": "passing_order_string", "nullable": true, "role": "outcome"},
+      {"name": "上がり3F", "logical_type": "number", "nullable": true, "unit": "second", "role": "outcome"},
+      {"name": "単勝", "logical_type": "number", "nullable": true, "role": "final_market_only"},
+      {"name": "人気", "logical_type": "integer", "nullable": true, "role": "final_market_only"},
+      {"name": "馬体重", "logical_type": "integer", "nullable": true, "unit": "kilogram", "role": "result_page_context"},
+      {"name": "馬体重増減", "logical_type": "integer", "nullable": true, "unit": "kilogram", "role": "result_page_context"},
+      {"name": "date", "logical_type": "date", "nullable": false, "format": "YYYY-MM-DD", "role": "event_time"}
+    ]
+  },
+  "codebooks": {
+    "venue_from_raceid_positions_5_6": {
+      "01": "sapporo",
+      "02": "hakodate",
+      "03": "fukushima",
+      "04": "niigata",
+      "05": "tokyo",
+      "06": "nakayama",
+      "07": "chukyo",
+      "08": "kyoto",
+      "09": "hanshin",
+      "10": "kokura"
+    },
+    "surface": {
+      "芝": "turf",
+      "ダート": "dirt",
+      "障害": "jump"
+    },
+    "outcome": {
+      "numeric": "finished",
+      "N(降)": "demoted_with_official_position_N",
+      "中": "did_not_finish",
+      "失": "disqualified",
+      "取": "scratched",
+      "除": "excluded",
+      "other": "unknown_preserve_raw"
+    }
+  },
+  "coverage": {
+    "official_reference": {
+      "title": "競走回数（JRAの概要）",
+      "url": "https://www.jra.go.jp/company/about/outline/growth/kyoso/index.html",
+      "accessed": "2026-08-30"
+    },
+    "jra_official_race_counts": {
+      "2013": 3454,
+      "2014": 3451,
+      "2015": 3454,
+      "2016": 3454,
+      "2017": 3455,
+      "2018": 3454,
+      "2019": 3452,
+      "2020": 3456,
+      "2021": 3456,
+      "2022": 3456,
+      "2023": 3456,
+      "2024": 3454,
+      "2025": 3455
+    },
+    "observed_raw_race_counts": {
+      "2013": 3454,
+      "2014": 3451,
+      "2015": 3452,
+      "2016": 3454,
+      "2017": 3419,
+      "2018": 3454,
+      "2019": 3452,
+      "2020": 3456,
+      "2021": 3456,
+      "2022": 3456,
+      "2023": 3456,
+      "2024": 3346,
+      "2025": 3455
+    },
+    "confirmed_shortfalls": {
+      "2015": 2,
+      "2017": 36,
+      "2024": 108,
+      "total": 146
+    },
+    "known_missing_race_id_ranges": [
+      {"year": 2015, "day_prefix": "2015080107", "race_number_start": 7, "race_number_end": 7},
+      {"year": 2015, "day_prefix": "2015080107", "race_number_start": 11, "race_number_end": 11},
+      {"year": 2017, "day_prefix": "2017080311", "race_number_start": 7, "race_number_end": 12},
+      {"year": 2017, "day_prefix": "2017080312", "race_number_start": 1, "race_number_end": 12},
+      {"year": 2017, "day_prefix": "2017080401", "race_number_start": 1, "race_number_end": 12},
+      {"year": 2017, "day_prefix": "2017080402", "race_number_start": 1, "race_number_end": 6},
+      {"year": 2024, "day_prefix": "2024080701", "race_number_start": 1, "race_number_end": 12},
+      {"year": 2024, "day_prefix": "2024080702", "race_number_start": 1, "race_number_end": 12},
+      {"year": 2024, "day_prefix": "2024080703", "race_number_start": 1, "race_number_end": 12},
+      {"year": 2024, "day_prefix": "2024080704", "race_number_start": 1, "race_number_end": 12},
+      {"year": 2024, "day_prefix": "2024080705", "race_number_start": 1, "race_number_end": 12},
+      {"year": 2024, "day_prefix": "2024080706", "race_number_start": 1, "race_number_end": 12},
+      {"year": 2024, "day_prefix": "2024080707", "race_number_start": 1, "race_number_end": 12},
+      {"year": 2024, "day_prefix": "2024080708", "race_number_start": 1, "race_number_end": 12},
+      {"year": 2024, "day_prefix": "2024080709", "race_number_start": 1, "race_number_end": 12}
+    ],
+    "selected_breakdowns": {
+      "2015": {
+        "venue_code": {"01": 144, "02": 144, "03": 240, "04": 288, "05": 551, "06": 503, "07": 288, "08": 562, "09": 492, "10": 240},
+        "surface": {"ダート": 1702, "芝": 1675, "障害": 75}
+      },
+      "2017": {
+        "venue_code": {"01": 144, "02": 144, "03": 240, "04": 312, "05": 539, "06": 492, "07": 312, "08": 492, "09": 504, "10": 240},
+        "surface": {"ダート": 1672, "芝": 1670, "障害": 77}
+      },
+      "2024": {
+        "venue_code": {"01": 168, "02": 144, "03": 240, "04": 335, "05": 528, "06": 492, "07": 348, "08": 611, "09": 192, "10": 288},
+        "surface": {"ダート": 1641, "芝": 1620, "障害": 85}
+      }
+    }
+  },
+  "outcome_audit": {
+    "normalized_runner_counts": {
+      "finished": 624794,
+      "demoted": 24,
+      "did_not_finish": 2935,
+      "disqualified": 2,
+      "scratched": 1006,
+      "excluded": 1206,
+      "unknown": 0
+    },
+    "dead_heat_race_count": 1240,
+    "dead_heat_extra_runner_count": 1264,
+    "pit_c_scoring_ineligible_race_count": 2096,
+    "declared_runner_count": 629967,
+    "starter_count": 627755,
+    "nonstarter_count": 2212
+  },
+  "split": {
+    "frozen_before_model_metrics": true,
+    "warmup": {"start": "2013-01-01", "end": "2013-12-31"},
+    "train": {"start": "2014-01-01", "end": "2021-12-31"},
+    "model_validation": {"start": "2022-01-01", "end": "2022-12-31"},
+    "calibration": {"start": "2023-01-01", "end": "2023-12-31"},
+    "development": {"start": "2024-01-01", "end": "2024-12-31", "coverage_shortfall": 108},
+    "retrospective_test": {"start": "2025-01-01", "end": "2025-12-31", "untouched_claim_allowed": false},
+    "prospective_final": {"start": "2026-01-01", "end": null}
+  }
+}

@@ -1,7 +1,7 @@
 # 開発タスクリスト
 
 **作成日:** 2026-08-30 (JST)  
-**前提:** 調査フェーズと既存ローカルrawの利用判断は完了。モデル・データ基盤の本格実装は未着手。  
+**前提:** 調査フェーズと既存ローカルrawの利用判断は完了。GOV-01～QA-01と初期baseline runnerを実装し、全量実験を進行中。
 **対象:** JRA平地競走、no-odds予測を先行し、購入判断を別層にする。
 
 ## 進行原則
@@ -18,7 +18,7 @@
 | 順序 | ID | タスク | 依存 | 成果物・完了条件 |
 |---:|---|---|---|---|
 | 1 | GOV-01 | データ配置・manifest契約を確定 | なし | 外部pathを設定で注入し、SHA-256、size、row count、schema、source、利用範囲をmanifestへ保存。データ実体がGit対象外であることをtest/checkで確認 |
-| 2 | DATA-01 | raw schemaと型・コードを固定 | GOV-01 | 27 raw列の型、nullable、単位、列意味、race/horse/jockey key、surface/venue codeを文書化。未知値を黙ってdropしない |
+| 2 | DATA-01 | raw schemaと型・コードを固定 | GOV-01 | 26 raw列の型、nullable、単位、列意味、race/horse/jockey key、surface/venue codeを文書化。未知値を黙ってdropしない |
 | 3 | DATA-02 | race coverageを公式結果と監査 | DATA-01 | 既知の不足146レースをrace ID単位で特定。年×場×月×surfaceのcoverage表を生成し、補完・除外・flagの方針を確定 |
 | 4 | DATA-03 | outcome・例外規則を確定 | DATA-01 | 同着、降着、失格、競走中止、取消、除外、返還のlabel・field size・学習対象・精算規則をfixture付きで決定 |
 | 5 | PIT-01 | 予測時点とcolumn availabilityを固定 | DATA-01 | 各raw/derived列を`history_only`、`T_prevday`、`T_close`、`outcome`、`final_market`へ分類。過去rawはPIT-Cと明示 |
@@ -36,7 +36,7 @@
 | 17 | EXP-002 | LightGBM LambdaRank baseline | BASE-01 | Binaryと同一features・splitでranking objectiveだけを変更し、NDCG/top-k/rank diagnosticsを比較 |
 | 18 | PROB-01 | coherent勝率化・calibration比較 | EXP-001, EXP-002 | raw scoreをrace内合計1の勝率へ写像。時間外calibration sliceだけで候補を比較し、Log Loss/Brierで一方式をfreeze |
 | 19 | EVAL-01 | 統合評価reportを生成 | PROB-01 | ranking、確率、校正、race class、距離、surface、field size、final odds帯の診断を同じpredictionsから再現可能に生成 |
-| 20 | BET-01 | final-odds oracle診断を実装 | EVAL-01 | final oddsを選択には使わず、市場比較・oracle診断・固定額精算ロジックだけを検証。実行可能ROIと明確に区別 |
+| 20 | BET-01 | final-odds oracle診断を実装 | EVAL-01 | final oddsを選択には使わず、市場比較・oracle診断だけを検証。selection、精算、ROIは時点付き市場データの別タスクへ分離 |
 | 21 | DEC-01 | 最初のbaseline採否レビュー | EXP-001～BET-01 | Binary/LambdaRankの改善・悪化・不確実性を比較し、次の1仮説を人間が選べるdecision reportを作成 |
 | 22 | DATA-04 | JRA公式による不足項目補完 | DATA-02, 追加source gate | 欠落race、詳細grade、lap、票数、払戻を独立table/feature groupとして補完。raw上書きはしない |
 | 23 | FEAT-05 | JMA気象feature ablation | DEC-01 | 観測所対応・品質flag・時刻意味を保持し、気象feature groupだけを追加した独立experimentを実行 |
@@ -49,9 +49,9 @@
 | マイルストーン | 対象タスク | 到達条件 |
 |---|---|---|
 | M1: データ契約確定 | GOV-01～SPLIT-01 | データ版、coverage、例外、PIT、splitがmetricを見る前に固定される |
-| M2: PIT dataset完成 | EXP-01～QA-01 | 同一race・future leakage testを含む検証suiteが通る |
+| M2: PIT dataset完成 | EXP-01、PIPE-01～QA-01 | 同一race・future leakage testを含む検証suiteが通る |
 | M3: 初期モデル比較 | BASE-01～PROB-01 | BinaryとLambdaRankを同一条件で比較し、coherent probabilityを得る |
 | M4: MVP評価完了 | EVAL-01～DEC-01 | 多面的評価とoracle市場診断を再現可能なartifactとして提示する |
 | M5: 実行可能市場評価 | LIVE-01～LIVE-02 | 締切前snapshotを用いたprospective shadow期間が蓄積される |
 
-最初に着手する実装単位は`GOV-01`である。`DATA-02`、`DATA-03`、`PIT-01`、`SPLIT-01`を閉じるまでは、学習metricを出してsplitや例外規則へ逆向きに最適化しない。
+GOV-01～QA-01のdecision gateはmetric確認前に固定済みである。baseline結果を見てこれらを変更する場合は、新しいexperiment IDと将来評価期間を必要とする。

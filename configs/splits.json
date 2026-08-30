@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "timezone": "Asia/Tokyo",
+  "warmup": {
+    "start": "2013-01-01",
+    "end": "2013-12-31",
+    "scored": false
+  },
+  "train": {
+    "start": "2014-01-01",
+    "end": "2021-12-31"
+  },
+  "model_validation": {
+    "start": "2022-01-01",
+    "end": "2022-12-31",
+    "purpose": "LightGBM early stopping only"
+  },
+  "calibration": {
+    "start": "2023-01-01",
+    "end": "2023-12-31"
+  },
+  "development": {
+    "start": "2024-01-01",
+    "end": "2024-12-31",
+    "coverage_note": "108 official races are missing and must be reported"
+  },
+  "retrospective_test": {
+    "start": "2025-01-01",
+    "end": "2025-12-31",
+    "untouched": false,
+    "note": "Previously inspected in a sibling repository; not a sealed final holdout"
+  },
+  "prospective_final": {
+    "start": "2026-01-01",
+    "end": null,
+    "status": "future_observation_required"
+  }
+}

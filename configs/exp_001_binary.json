@@ -1,0 +1,31 @@
+{
+  "experiment_id": "exp_001_binary",
+  "hypothesis": "Point-in-time history features contain winner signal beyond a uniform field baseline",
+  "model_family": "lightgbm_binary",
+  "seed": 42,
+  "feature_groups": [
+    "race_context",
+    "horse_history_basic",
+    "form_workload",
+    "connections_pit",
+    "field_relative",
+    "rating_strength"
+  ],
+  "parameters": {
+    "objective": "binary",
+    "learning_rate": 0.05,
+    "num_leaves": 31,
+    "min_child_samples": 100,
+    "n_estimators": 500,
+    "subsample": 0.9,
+    "subsample_freq": 1,
+    "colsample_bytree": 0.9,
+    "reg_lambda": 1.0,
+    "verbosity": -1,
+    "deterministic": true,
+    "force_col_wise": true,
+    "n_jobs": -1,
+    "random_state": 42
+  },
+  "early_stopping_rounds": 50
+}

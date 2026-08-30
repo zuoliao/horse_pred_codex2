@@ -1,3 +1,12 @@
 # Local datasets and generated dataset caches
 /data/
 /datasets/
+
+# Generated experiment outputs and local environments
+/artifacts/
+/.venv/
+__pycache__/
+*.py[cod]
+/.pytest_cache/
+/.ruff_cache/
+.DS_Store

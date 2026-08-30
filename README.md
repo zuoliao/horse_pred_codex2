@@ -2,7 +2,7 @@
 
 JRA中央競馬を主対象とする、競馬予測・馬券購入判断支援システムの研究開発リポジトリです。
 
-> **現在の段階:** 調査計画の全workstream、無料データ追加調査、統合結論、既存ローカルrawの監査・利用承認を完了。coverage・PIT・dataset仕様等の実装前decision gate確認待ち。特徴量再生成・モデル実装は未着手。
+> **現在の段階:** 調査、データ契約、coverage・PIT・split仕様を確定し、PIT特徴量、非学習baseline、LightGBM Binary/LambdaRank、校正・統合評価runnerを実装済み。全量baseline実行と結果確定を進行中。
 > **最終更新:** 2026-08-30 (JST)
 
 ## 1. プロジェクトの目的
@@ -548,9 +548,9 @@ raw・中間・加工済みデータと取得cacheはGit管理対象外です。
 ```text
 Phase 0: 要求・設計方針のすり合わせ             完了
 Phase 1: データソース・既存手法の調査           完了
-Phase 2: 既存rawのcoverage/PIT gateと仕様確定           ← 次
-Phase 3: データ取得・point-in-time特徴量基盤
-Phase 4: LightGBM Binary / LambdaRank baseline
+Phase 2: 既存rawのcoverage/PIT gateと仕様確定    完了
+Phase 3: point-in-time特徴量基盤                 実装・検証済み
+Phase 4: LightGBM Binary / LambdaRank baseline   ← 実行中
 Phase 5: 特徴量・rating・calibration改善
 Phase 6: 確率的ランキングおよび高度なモデル
 Phase 7: 購入戦略・リスク管理の改善
@@ -577,13 +577,13 @@ Phase 8: 自動予測処理・Web UI
 | 実験運用 | 決定 | 原則1 experiment = 1 commit |
 | 実験台帳 | 決定 | 機械可読結果からREADME表を自動更新 |
 | データソース | 決定 | 承認済み既存raw 2013～2025を主系統とし、JRA公式結果でcoverage・不足項目を照合・補完。新規取得は別gate |
-| 具体的な予測時点 | 暫定仕様・未採択 | 前日固定版と当日締切前版を分離。実配信・締切監査後に時刻を固定 |
-| split期間 | 調査推奨・未採択 | 長期no-odds予測trackと、短期PIT-A/B市場trackを別manifest・別finalで評価。絶対日付はcoverage監査後に固定 |
-| rating方式 | 調査推奨・未採択 | PIT-safe forward-only Elo/Bradley–Terry-styleから開始し、条件別ratingを順次比較 |
+| 具体的な予測時点 | MVP決定 | 過去結果rawによる保守的PIT-C前日相当。同日の全raceは一括emit後に更新。当日締切前版は別track |
+| split期間 | MVP決定 | 2014～21 train、2022 validation、2023 calibration、2024 development、2025 opt-in retrospective、2026+ prospective final |
+| rating方式 | MVP決定 | PIT-safe forward-only Eloを最初の単一方式として採用 |
 | probabilistic ranking | 調査推奨・延期 | Plackett–Luceを最初の高度baseline候補とするが、順位別biasを検証してから採否判断 |
-| artifact管理 | 未決 | データ量・運用を確認後に決定 |
+| artifact管理 | MVP決定 | config、git/data fingerprint、aggregate metricsを追跡し、raw・model・runner予測はGit対象外 |
 | Web技術 | 未決 | 後続フェーズで決定 |
 
 ## 15. 次の作業
 
-次は、[既存ローカルデータ監査](docs/research/local_existing_dataset.md)と[調査結論](docs/research/research_conclusions.md)に従い、承認済みrawの不足146レース、例外・欠損、PIT semanticsを監査して、dataset・experiment specificationを確定します。JRA公式結果等から新規に体系的取得する場合は、その取得・保存・加工範囲を別途確認します。本格モデル実装の前にこれらのgateを閉じます。
+次は、固定済みmanifest・feature・splitで全量baselineを一度実行し、2024 developmentを主対象にBinary/LambdaRankのranking・確率・校正を比較します。2025 retrospective testは明示opt-in時だけ参照し、仕様再選択には使いません。締切前oddsを使う実行可能な市場評価は、別のprospective snapshot trackで行います。

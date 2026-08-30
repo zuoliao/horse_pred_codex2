@@ -1,0 +1,34 @@
+{
+  "experiment_id": "exp_002_lambdarank",
+  "hypothesis": "Race-group ranking supervision improves within-race ranking over binary winner supervision",
+  "model_family": "lightgbm_lambdarank",
+  "seed": 42,
+  "feature_groups": [
+    "race_context",
+    "horse_history_basic",
+    "form_workload",
+    "connections_pit",
+    "field_relative",
+    "rating_strength"
+  ],
+  "parameters": {
+    "objective": "lambdarank",
+    "metric": "ndcg",
+    "eval_at": [1, 3, 5],
+    "label_gain": [0, 1, 3, 7],
+    "learning_rate": 0.05,
+    "num_leaves": 31,
+    "min_child_samples": 100,
+    "n_estimators": 500,
+    "subsample": 0.9,
+    "subsample_freq": 1,
+    "colsample_bytree": 0.9,
+    "reg_lambda": 1.0,
+    "verbosity": -1,
+    "deterministic": true,
+    "force_col_wise": true,
+    "n_jobs": -1,
+    "random_state": 42
+  },
+  "early_stopping_rounds": 50
+}
