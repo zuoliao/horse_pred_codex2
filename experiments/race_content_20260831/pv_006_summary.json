@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "experiment_id": "pv_006_margin_token_refinement",
+  "run_commit": "ea725d94821886b06dc717dad5adf5e50cb6a3cc",
+  "run_dirty": false,
+  "data_fingerprint": "270923ce73c4441e64173f242a8719de7d1e9b205508140463ca547ef7b1ca87",
+  "scope": {
+    "mapping_years": [2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021],
+    "calibration_year": 2021,
+    "validation_year": 2022,
+    "validation_races": 3176,
+    "validation_runners": 43537,
+    "development_2024_opened": false,
+    "retrospective_2025_used": false,
+    "odds_used": false
+  },
+  "train_token_audit": {
+    "eligible_flat_races": 26585,
+    "clean_races": 26563,
+    "excluded_demotion_or_disqualification_races": 22,
+    "adjacent_distinct_rank_edges": 348745,
+    "recognized_edge_fraction": 1.0,
+    "clock_inversion_count": 0,
+    "token_order_displayed_gap_spearman": 0.9573733152,
+    "equal_clock_edges": 81347,
+    "equal_clock_fraction": 0.2332563908,
+    "equal_clock_token_counts": {
+      "ハナ": 26644,
+      "アタマ": 16959,
+      "クビ": 37574,
+      "1/2": 170
+    },
+    "mapping_gate_passed": true
+  },
+  "frozen_refinement": {
+    "time_margin_token_seconds": {
+      "ハナ": 0.02,
+      "アタマ": 0.04,
+      "クビ": 0.06,
+      "1/2": 0.08
+    },
+    "equal_clock_block_cap_seconds": 0.08,
+    "mapping_hash": "4998d728af91250c3ae5c7d43c3904af4df6a8e02f140d73664756ebbf8fc4db"
+  },
+  "temperature_2021": {
+    "control": 0.5006867103,
+    "candidate": 0.5004095358
+  },
+  "calibrated_metrics_2022": {
+    "control": {
+      "race_log_loss": 2.3839790902,
+      "race_brier": 0.8901649807,
+      "ndcg_at_3": 0.3656247167,
+      "top_1": 0.1786838791
+    },
+    "candidate": {
+      "race_log_loss": 2.3839499037,
+      "race_brier": 0.8901497188,
+      "ndcg_at_3": 0.3664588134,
+      "top_1": 0.1818324937
+    }
+  },
+  "paired_improvement_2022": {
+    "race_log_loss": {
+      "point": 0.0000291865,
+      "lower": -0.0002222257,
+      "upper": 0.0002771754
+    },
+    "race_brier": {
+      "point": 0.0000152619,
+      "lower": -0.0000364822,
+      "upper": 0.0000673286
+    },
+    "ndcg_at_3": {
+      "point": 0.0008340967,
+      "lower": -0.0005850209,
+      "upper": 0.0021792461
+    },
+    "top_1": {
+      "point": 0.0031486146,
+      "lower": 0.0009247842,
+      "upper": 0.0055728417
+    }
+  },
+  "decision": "inconclusive_primary_log_loss_interval_crossed_zero_do_not_open_2024",
+  "local_artifacts": {
+    "train_audit": "artifacts/pv_006_margin_token_audit_20260831_clean/",
+    "study": "artifacts/pv_006_margin_token_refinement_20260831/"
+  }
+}

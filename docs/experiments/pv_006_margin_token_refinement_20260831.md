@@ -71,4 +71,29 @@ always stops after 2022 regardless of result.
 
 Machine-readable local outputs include the train audit, frozen mapping,
 config, per-race 2022 metrics, runner predictions, metrics, and artifact
-manifest. Aggregate results will be appended only after the frozen run.
+manifest.
+
+## Frozen-run result
+
+The clean run used commit `ea725d94821886b06dc717dad5adf5e50cb6a3cc`
+with `dirty=false`. The mapping gate reproduced all train-only counts and all
+eight checks passed. The common 2022 population was 3,176 races / 43,537
+runners. Temperatures fitted on 2021 were `.5006867` for the control and
+`.5004095` for the candidate.
+
+| 2022 calibrated metric | Control | Candidate | Improvement |
+|---|---:|---:|---:|
+| Log Loss | 2.3839791 | 2.3839499 | +.0000292 |
+| Brier | .8901650 | .8901497 | +.0000153 |
+| NDCG@3 | .3656247 | .3664588 | +.0008341 |
+| Top-1 | .1786839 | .1818325 | +.0031486 |
+
+Paired 95% intervals were Log Loss
+`[-.0002222,+.0002772]`, Brier `[-.0000365,+.0000673]`, NDCG@3
+`[-.0005850,+.0021792]`, and Top-1 `[+.0009248,+.0055728]`.
+
+The candidate therefore improved Top-1 significantly and every calibrated
+point estimate, but the preregistered primary Log Loss interval crossed zero.
+The result is **inconclusive**. Do not promote the refinement, do not reject it
+as harmful, and do not open 2024 for this branch. The route is complete at its
+specified 2022 gate.
