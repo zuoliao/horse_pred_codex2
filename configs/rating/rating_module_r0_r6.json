@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "study_id": "rating_module_r0_r6_20260830",
+  "seed": 42,
+  "data": {
+    "warmup_year": 2013,
+    "parameter_selection_years": [2018, 2019, 2020, 2021],
+    "module_validation_year": 2022,
+    "calibration_year": 2023,
+    "development_year": 2024,
+    "retrospective_2025_used": false
+  },
+  "r0": {
+    "family": "pairwise_elo",
+    "initial_rating": 1500.0,
+    "k": 24.0,
+    "scale": 400.0
+  },
+  "r2_grid": {
+    "family": "pairwise_elo",
+    "k": [8.0, 16.0, 24.0, 32.0, 48.0],
+    "scale": [200.0, 400.0, 600.0]
+  },
+  "r3_grid": {
+    "family": "online_top1_pl",
+    "learning_rate": [0.05, 0.1, 0.2, 0.4]
+  },
+  "r4_surface_blend_weights": [0.25, 0.5, 0.75, 1.0],
+  "selection": {
+    "primary": "race_log_loss",
+    "guardrails": {
+      "race_brier_improvement_min": -0.001,
+      "ndcg_at_3_improvement_min": -0.002,
+      "top_1_improvement_min": -0.005
+    },
+    "tie_break_order": ["race_log_loss", "race_brier", "ndcg_at_3", "complexity"]
+  },
+  "r5_outputs": [
+    "modular_rating__score_pre",
+    "modular_rating__raw_win_probability_pre",
+    "modular_rating__global_starts_pre",
+    "modular_rating__condition_starts_pre",
+    "modular_rating__uncertainty_proxy_pre"
+  ],
+  "r6": {
+    "control_experiment": "abl_006_drop_field_relative",
+    "integration": "add_frozen_rating_module_group",
+    "bootstrap_resamples": 10000,
+    "bootstrap_seed": 20240830,
+    "block_length_dates": 4
+  }
+}
