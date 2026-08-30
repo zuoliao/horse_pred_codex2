@@ -34,6 +34,10 @@ from horse_pred.margin_rating_calibration_study import (
     run_margin_rating_calibration_study,
 )
 from horse_pred.margin_rating_study import run_margin_rating_study
+from horse_pred.margin_token_rating_study import (
+    audit_margin_tokens_from_raw,
+    run_margin_token_rating_study,
+)
 from horse_pred.pipeline import run_mvp
 from horse_pred.race_content import (
     build_race_content_augmented_cache,
@@ -175,6 +179,31 @@ def parser() -> argparse.ArgumentParser:
     )
     margin_calibration.add_argument("--output", type=Path, required=True)
     margin_calibration.add_argument("--repo-root", type=Path, default=Path.cwd())
+    margin_token_audit = commands.add_parser(
+        "audit-margin-tokens",
+        help="run the preregistered PV-06 train-only raw margin-token audit",
+    )
+    margin_token_audit.add_argument("--raw-path", type=Path, required=True)
+    margin_token_audit.add_argument(
+        "--config",
+        type=Path,
+        default=Path("configs/performance/pv_006_margin_token_refinement.json"),
+    )
+    margin_token_audit.add_argument("--output", type=Path, required=True)
+    margin_token_audit.add_argument("--repo-root", type=Path, default=Path.cwd())
+    margin_token_study = commands.add_parser(
+        "run-margin-token-rating-study",
+        help="run the preregistered PV-06 equal-clock token rating gate",
+    )
+    margin_token_study.add_argument("--raw-path", type=Path, required=True)
+    margin_token_study.add_argument("--cache", type=Path, required=True)
+    margin_token_study.add_argument(
+        "--config",
+        type=Path,
+        default=Path("configs/performance/pv_006_margin_token_refinement.json"),
+    )
+    margin_token_study.add_argument("--output", type=Path, required=True)
+    margin_token_study.add_argument("--repo-root", type=Path, default=Path.cwd())
     margin_cache = commands.add_parser(
         "build-margin-rating-cache",
         help="build the preregistered PV-04 cache with one frozen margin-rating score",
@@ -395,6 +424,46 @@ def main(argv: Sequence[str] | None = None) -> int:
                     ],
                     "development_2024": result.get("development_2024"),
                     "elapsed_seconds": result["elapsed_seconds"],
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
+        return 0
+    if args.command == "audit-margin-tokens":
+        result = audit_margin_tokens_from_raw(
+            repo_root=args.repo_root,
+            raw_path=args.raw_path,
+            config_path=args.config,
+            output_dir=args.output,
+        )
+        print(
+            json.dumps(
+                {
+                    "years": result["years"],
+                    "mapping_gate": result["mapping_gate"],
+                    "equal_clock": result["equal_clock"],
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
+        return 0
+    if args.command == "run-margin-token-rating-study":
+        result = run_margin_token_rating_study(
+            repo_root=args.repo_root,
+            raw_path=args.raw_path,
+            model_cache_path=args.cache,
+            config_path=args.config,
+            output_dir=args.output,
+        )
+        print(
+            json.dumps(
+                {
+                    "experiment_id": result["experiment_id"],
+                    "mapping_gate": result["mapping_gate"],
+                    "validation_2022": result.get("validation_2022"),
+                    "elapsed_seconds": result.get("elapsed_seconds"),
                 },
                 ensure_ascii=False,
                 indent=2,

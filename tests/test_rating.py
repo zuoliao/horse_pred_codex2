@@ -10,7 +10,27 @@ from horse_pred.rating import (
     RatingSpec,
     _time_margin_elo_deltas,
     build_rating_history,
+    prepare_rating_events,
 )
+
+TOKEN_SECONDS = {
+    "ハナ": 0.02,
+    "アタマ": 0.04,
+    "クビ": 0.06,
+    "1/2": 0.08,
+}
+
+
+def _token_refined_spec() -> RatingSpec:
+    return RatingSpec(
+        family="pairwise_elo",
+        k=48.0,
+        scale=200.0,
+        pairwise_actual="time_margin_token_refined_logistic",
+        time_margin_tau_seconds_per_1000m=0.125,
+        time_margin_token_seconds=TOKEN_SECONDS,
+        time_margin_equal_clock_block_cap_seconds=0.08,
+    )
 
 
 def _row(
@@ -156,6 +176,17 @@ def test_default_ordinal_spec_keeps_legacy_serialization() -> None:
     }
 
 
+def test_token_refined_spec_is_hashable_and_round_trips_serialization() -> None:
+    spec = _token_refined_spec()
+
+    assert hash(spec)
+    assert spec.time_margin_token_seconds == tuple(sorted(TOKEN_SECONDS.items()))
+    assert RatingSpec(**spec.as_dict()) == spec
+    assert spec.as_dict()["time_margin_token_seconds"] == dict(
+        sorted(TOKEN_SECONDS.items())
+    )
+
+
 def test_time_margin_actual_is_continuous_antisymmetric_and_zero_sum() -> None:
     tau = 0.125
     event = RatingEvent(
@@ -227,6 +258,116 @@ def test_time_margin_equal_clock_is_neutral_and_dnf_pair_falls_back() -> None:
     )
     assert deltas["h3"] == pytest.approx(-24.0)
     assert abs(sum(deltas.values())) < 1e-12
+
+
+def test_token_refinement_sums_and_caps_an_equal_clock_rank_block() -> None:
+    event = RatingEvent(
+        race_id="202205010101",
+        race_date=pd.Timestamp("2022-01-01"),
+        surface_key="turf",
+        horse_ids=("h1", "h2", "h3"),
+        finishes=(1.0, 2.0, 3.0),
+        source_positions=(0, 1, 2),
+        result_times_seconds=(100.0, 100.0, 100.0),
+        finish_statuses=("finished", "finished", "finished"),
+        margin_tokens=(None, "クビ", "1/2"),
+        distance_m=1600.0,
+    )
+    deltas = _time_margin_elo_deltas(
+        event, {horse_id: 1500.0 for horse_id in event.horse_ids}, _token_refined_spec()
+    )
+
+    first_edge_seconds = 0.06 * 0.08 / 0.14
+    second_edge_seconds = 0.08 * 0.08 / 0.14
+    first_actual = 1.0 / (
+        1.0 + np.exp(-(first_edge_seconds * 1000.0 / 1600.0) / 0.125)
+    )
+    full_actual = 1.0 / (1.0 + np.exp(-(0.08 * 1000.0 / 1600.0) / 0.125))
+    second_actual = 1.0 / (
+        1.0 + np.exp(-(second_edge_seconds * 1000.0 / 1600.0) / 0.125)
+    )
+    assert deltas["h1"] == pytest.approx(
+        24.0 * ((first_actual - 0.5) + (full_actual - 0.5))
+    )
+    assert deltas["h2"] == pytest.approx(
+        24.0 * ((1.0 - first_actual - 0.5) + (second_actual - 0.5))
+    )
+    assert abs(sum(deltas.values())) < 1e-12
+
+
+def test_token_refinement_handles_dead_heat_carrier_and_exact_fallbacks() -> None:
+    spec = _token_refined_spec()
+    dead_heat = RatingEvent(
+        race_id="202205010101",
+        race_date=pd.Timestamp("2022-01-01"),
+        surface_key="turf",
+        horse_ids=("h1", "h1b", "h3"),
+        finishes=(1.0, 1.0, 3.0),
+        source_positions=(0, 1, 2),
+        result_times_seconds=(100.0, 100.0, 100.0),
+        finish_statuses=("finished", "finished", "finished"),
+        margin_tokens=(None, "同着", "ハナ"),
+        distance_m=1600.0,
+    )
+    dead_heat_deltas = _time_margin_elo_deltas(
+        dead_heat,
+        {horse_id: 1500.0 for horse_id in dead_heat.horse_ids},
+        spec,
+    )
+    assert dead_heat_deltas["h1"] == pytest.approx(dead_heat_deltas["h1b"])
+    assert dead_heat_deltas["h1"] > 0.0 > dead_heat_deltas["h3"]
+    assert abs(sum(dead_heat_deltas.values())) < 1e-12
+
+    for token in (None, "大"):
+        fallback = RatingEvent(
+            race_id="202205010102",
+            race_date=pd.Timestamp("2022-01-01"),
+            surface_key="turf",
+            horse_ids=("h1", "h2"),
+            finishes=(1.0, 2.0),
+            source_positions=(0, 1),
+            result_times_seconds=(100.0, 100.0),
+            finish_statuses=("finished", "finished"),
+            margin_tokens=(None, token),
+            distance_m=1600.0,
+        )
+        assert _time_margin_elo_deltas(
+            fallback, {"h1": 1500.0, "h2": 1500.0}, spec
+        ) == {"h1": 0.0, "h2": 0.0}
+
+
+def test_token_refinement_preserves_positive_clock_actual_and_parses_margin_tokens() -> None:
+    raw = pd.DataFrame(
+        [
+            {
+                **_row("202205010101", "2022-01-01", "h1", 1),
+                "time_raw": "1:40.0",
+                "margin_raw": " ",
+            },
+            {
+                **_row("202205010101", "2022-01-01", "h2", 2),
+                "time_raw": "1:40.2",
+                "margin_raw": " クビ ",
+            },
+        ]
+    )
+    event = prepare_rating_events(raw, through_year=2022)[0]
+    assert event.margin_tokens == (None, "クビ")
+
+    states = {"h1": 1500.0, "h2": 1500.0}
+    token_deltas = _time_margin_elo_deltas(event, states, _token_refined_spec())
+    control_deltas = _time_margin_elo_deltas(
+        event,
+        states,
+        RatingSpec(
+            family="pairwise_elo",
+            k=48.0,
+            scale=200.0,
+            pairwise_actual="time_margin_logistic",
+            time_margin_tau_seconds_per_1000m=0.125,
+        ),
+    )
+    assert token_deltas == control_deltas
 
 
 def test_demotion_forces_whole_race_ordinal_fallback() -> None:

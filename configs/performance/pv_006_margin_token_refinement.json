@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "experiment_id": "pv_006_margin_token_refinement",
+  "seed": 20240830,
+  "data": {
+    "mapping_years": [2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021],
+    "calibration_year": 2021,
+    "validation_year": 2022,
+    "retrospective_2025_used": false
+  },
+  "control": {
+    "family": "pairwise_elo",
+    "initial_rating": 1500.0,
+    "k": 48.0,
+    "scale": 200.0,
+    "pairwise_actual": "time_margin_logistic",
+    "time_margin_tau_seconds_per_1000m": 0.125
+  },
+  "candidate": {
+    "family": "pairwise_elo",
+    "initial_rating": 1500.0,
+    "k": 48.0,
+    "scale": 200.0,
+    "pairwise_actual": "time_margin_token_refined_logistic",
+    "time_margin_tau_seconds_per_1000m": 0.125,
+    "time_margin_token_seconds": {
+      "ハナ": 0.02,
+      "アタマ": 0.04,
+      "クビ": 0.06,
+      "1/2": 0.08
+    },
+    "time_margin_equal_clock_block_cap_seconds": 0.08
+  },
+  "token_refinement": {
+    "ordered_tokens": [
+      "ハナ", "アタマ", "クビ", "1/2", "3/4", "1", "1.1/4",
+      "1.1/2", "1.3/4", "2", "2.1/2", "3", "3.1/2", "4", "5",
+      "6", "7", "8", "9", "10", "大"
+    ],
+    "time_margin_token_seconds": {
+      "ハナ": 0.02,
+      "アタマ": 0.04,
+      "クビ": 0.06,
+      "1/2": 0.08
+    },
+    "time_margin_equal_clock_block_cap_seconds": 0.08,
+    "mapping_hash": "4998d728af91250c3ae5c7d43c3904af4df6a8e02f140d73664756ebbf8fc4db"
+  },
+  "mapping_gate": {
+    "recognized_edge_fraction_min": 1.0,
+    "equal_clock_mapping_fraction_min": 1.0
+  },
+  "selection": {
+    "primary": "race_log_loss_after_2021_temperature",
+    "race_log_loss_improvement_ci_lower_exclusive": 0.0,
+    "guardrails": {
+      "race_brier_improvement_min": -0.001,
+      "ndcg_at_3_improvement_min": -0.002,
+      "top_1_improvement_min": -0.005
+    }
+  },
+  "uncertainty": {
+    "bootstrap_resamples": 10000,
+    "bootstrap_seed": 20240830,
+    "block_length_dates": 4,
+    "confidence_level": 0.95
+  }
+}

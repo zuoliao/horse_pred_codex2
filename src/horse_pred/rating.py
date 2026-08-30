@@ -40,6 +40,8 @@ class RatingSpec:
     surface_blend_weight: float = 0.0
     pairwise_actual: str = "ordinal"
     time_margin_tau_seconds_per_1000m: float | None = None
+    time_margin_token_seconds: tuple[tuple[str, float], ...] = ()
+    time_margin_equal_clock_block_cap_seconds: float | None = None
 
     def __post_init__(self) -> None:
         if self.family not in {"pairwise_elo", "online_top1_pl"}:
@@ -48,16 +50,59 @@ class RatingSpec:
             raise ValueError("rating update parameters must be positive")
         if not 0.0 <= self.surface_blend_weight <= 1.0:
             raise ValueError("surface_blend_weight must be in [0, 1]")
-        if self.pairwise_actual not in {"ordinal", "time_margin_logistic"}:
+        time_margin_actuals = {
+            "time_margin_logistic",
+            "time_margin_token_refined_logistic",
+        }
+        if self.pairwise_actual not in {"ordinal", *time_margin_actuals}:
             raise ValueError(f"unsupported pairwise actual: {self.pairwise_actual}")
         if self.family != "pairwise_elo" and self.pairwise_actual != "ordinal":
             raise ValueError("non-ordinal pairwise actual requires pairwise_elo")
-        if self.pairwise_actual == "time_margin_logistic":
+        if self.pairwise_actual in time_margin_actuals:
             tau = self.time_margin_tau_seconds_per_1000m
             if tau is None or not isfinite(tau) or tau <= 0:
                 raise ValueError("time-margin pairwise actual requires a finite positive tau")
         elif self.time_margin_tau_seconds_per_1000m is not None:
-            raise ValueError("time-margin tau is only valid for time_margin_logistic")
+            raise ValueError("time-margin tau is only valid for a time-margin actual")
+
+        raw_token_mapping = self.time_margin_token_seconds
+        if isinstance(raw_token_mapping, Mapping):
+            token_items = tuple(raw_token_mapping.items())
+        else:
+            token_items = tuple(raw_token_mapping)
+        canonical_items: list[tuple[str, float]] = []
+        for item in token_items:
+            if not isinstance(item, Sequence) or isinstance(item, (str, bytes)) or len(item) != 2:
+                raise ValueError("time-margin token mapping entries must be token/value pairs")
+            raw_token, raw_seconds = item
+            token = str(raw_token).strip()
+            try:
+                seconds = float(raw_seconds)
+            except (TypeError, ValueError) as exc:
+                raise ValueError("time-margin token mapping values must be numeric") from exc
+            if not token or not isfinite(seconds) or seconds <= 0:
+                raise ValueError("time-margin token mapping requires nonempty tokens and finite positive seconds")
+            canonical_items.append((token, seconds))
+        canonical_items.sort(key=lambda item: item[0])
+        if len({token for token, _ in canonical_items}) != len(canonical_items):
+            raise ValueError("time-margin token mapping contains duplicate tokens")
+        object.__setattr__(self, "time_margin_token_seconds", tuple(canonical_items))
+
+        if self.pairwise_actual == "time_margin_token_refined_logistic":
+            if not canonical_items:
+                raise ValueError("token-refined time-margin actual requires a token mapping")
+            raw_cap = self.time_margin_equal_clock_block_cap_seconds
+            try:
+                cap = float(raw_cap) if raw_cap is not None else None
+            except (TypeError, ValueError) as exc:
+                raise ValueError("token-refined time-margin block cap must be numeric") from exc
+            if cap is None or not isfinite(cap) or not 0.0 < cap < 0.1:
+                raise ValueError(
+                    "token-refined time-margin actual requires a finite block cap in (0, 0.1) seconds"
+                )
+            object.__setattr__(self, "time_margin_equal_clock_block_cap_seconds", cap)
+        elif canonical_items or self.time_margin_equal_clock_block_cap_seconds is not None:
+            raise ValueError("time-margin token settings are only valid for token-refined time-margin actual")
 
     @property
     def feature_initial_score(self) -> float:
@@ -77,6 +122,13 @@ class RatingSpec:
             payload["time_margin_tau_seconds_per_1000m"] = (
                 self.time_margin_tau_seconds_per_1000m
             )
+        if self.pairwise_actual == "time_margin_token_refined_logistic":
+            payload["time_margin_token_seconds"] = dict(
+                self.time_margin_token_seconds
+            )
+            payload["time_margin_equal_clock_block_cap_seconds"] = (
+                self.time_margin_equal_clock_block_cap_seconds
+            )
         return payload
 
 
@@ -92,13 +144,18 @@ class RatingEvent:
     source_positions: tuple[int, ...]
     result_times_seconds: tuple[float, ...] = ()
     finish_statuses: tuple[str, ...] = ()
+    margin_tokens: tuple[str | None, ...] = ()
     distance_m: float = np.nan
 
     def __post_init__(self) -> None:
         size = len(self.horse_ids)
         if len(self.finishes) != size or len(self.source_positions) != size:
             raise ValueError("rating event runner fields must have equal length")
-        for values in (self.result_times_seconds, self.finish_statuses):
+        for values in (
+            self.result_times_seconds,
+            self.finish_statuses,
+            self.margin_tokens,
+        ):
             if values and len(values) != size:
                 raise ValueError("rating event content fields must match runner count")
 
@@ -157,6 +214,83 @@ def _logistic(value: float) -> float:
     return weight / (1.0 + weight)
 
 
+def _equal_clock_token_pair_gaps(
+    event: RatingEvent, spec: RatingSpec
+) -> dict[tuple[float, float], float]:
+    """Map clean equal-clock rank pairs to capped sub-tick gaps in raw seconds.
+
+    A margin token belongs to the boundary immediately above its official rank
+    group.  Dead-heated runners may contain ``同着`` markers, so a usable
+    boundary must have exactly one other nonblank token carrier.  Any malformed
+    block is left unmapped and therefore follows the unrefined neutral control.
+    """
+
+    if not event.margin_tokens:
+        return {}
+    token_seconds = dict(spec.time_margin_token_seconds)
+    cap = spec.time_margin_equal_clock_block_cap_seconds
+    if not token_seconds or cap is None:
+        raise AssertionError("validated token-refined spec has no token mapping or cap")
+
+    rank_indices: dict[float, list[int]] = defaultdict(list)
+    for index, finish in enumerate(event.finishes):
+        if np.isfinite(finish):
+            rank_indices[float(finish)].append(index)
+
+    rank_groups: list[tuple[float, float | None, list[int]]] = []
+    for rank in sorted(rank_indices):
+        indices = rank_indices[rank]
+        clocks = [
+            float(event.result_times_seconds[index])
+            for index in indices
+            if np.isfinite(event.result_times_seconds[index])
+        ]
+        clock = clocks[0] if len(clocks) == len(indices) and len(set(clocks)) == 1 else None
+        rank_groups.append((rank, clock, indices))
+
+    pair_gaps: dict[tuple[float, float], float] = {}
+    block_start = 0
+    while block_start < len(rank_groups):
+        block_clock = rank_groups[block_start][1]
+        block_end = block_start + 1
+        if block_clock is not None:
+            while (
+                block_end < len(rank_groups)
+                and rank_groups[block_end][1] == block_clock
+            ):
+                block_end += 1
+        if block_clock is not None and block_end - block_start >= 2:
+            block = rank_groups[block_start:block_end]
+            edge_seconds: list[float] = []
+            valid_block = True
+            for _, _, lower_group_indices in block[1:]:
+                carriers = []
+                for index in lower_group_indices:
+                    token = event.margin_tokens[index]
+                    if token is None:
+                        continue
+                    cleaned = str(token).strip()
+                    if cleaned and cleaned != "同着":
+                        carriers.append(cleaned)
+                if len(carriers) != 1 or carriers[0] not in token_seconds:
+                    valid_block = False
+                    break
+                edge_seconds.append(token_seconds[carriers[0]])
+            if valid_block:
+                total_seconds = sum(edge_seconds)
+                scale = min(1.0, cap / total_seconds)
+                refined_edges = [seconds * scale for seconds in edge_seconds]
+                for upper_index in range(len(block) - 1):
+                    running_gap = 0.0
+                    for lower_index in range(upper_index + 1, len(block)):
+                        running_gap += refined_edges[lower_index - 1]
+                        pair_gaps[(block[upper_index][0], block[lower_index][0])] = (
+                            running_gap
+                        )
+        block_start = block_end
+    return pair_gaps
+
+
 def _time_margin_elo_deltas(
     event: RatingEvent,
     pre_states: Mapping[object, float],
@@ -177,6 +311,12 @@ def _time_margin_elo_deltas(
         for status in event.finish_statuses
     )
     valid_distance = np.isfinite(event.distance_m) and event.distance_m > 0
+    token_pair_gaps = (
+        _equal_clock_token_pair_gaps(event, spec)
+        if spec.pairwise_actual == "time_margin_token_refined_logistic"
+        and not force_ordinal
+        else {}
+    )
     divisor = float(len(horse_ids) - 1)
     deltas: dict[object, float] = defaultdict(float)
     for index, horse_i in enumerate(horse_ids):
@@ -203,6 +343,19 @@ def _time_margin_elo_deltas(
             if continuous_eligible:
                 margin = (time_j - time_i) * 1000.0 / event.distance_m
                 official_direction = 1.0 if finish_i < finish_j else -1.0
+                if margin == 0.0 and token_pair_gaps:
+                    better_rank = min(finish_i, finish_j)
+                    worse_rank = max(finish_i, finish_j)
+                    refined_seconds = token_pair_gaps.get(
+                        (better_rank, worse_rank)
+                    )
+                    if refined_seconds is not None:
+                        margin = (
+                            official_direction
+                            * refined_seconds
+                            * 1000.0
+                            / event.distance_m
+                        )
                 if margin == 0.0 or margin * official_direction > 0.0:
                     actual_i = _logistic(margin / tau)
             expected_i = 1.0 / (
@@ -224,7 +377,10 @@ def _race_updates(
     event: RatingEvent | None = None,
 ) -> dict[object, float]:
     if spec.family == "pairwise_elo":
-        if spec.pairwise_actual == "time_margin_logistic":
+        if spec.pairwise_actual in {
+            "time_margin_logistic",
+            "time_margin_token_refined_logistic",
+        }:
             if event is None:
                 raise ValueError("time-margin pairwise actual requires a rating event")
             return _time_margin_elo_deltas(event, pre_states, spec)
@@ -417,7 +573,13 @@ def prepare_rating_events(
         "course_type",
         "race_class",
     ]
-    for optional in ("time_raw", "status", "distance_m", "distance"):
+    for optional in (
+        "time_raw",
+        "status",
+        "margin_raw",
+        "distance_m",
+        "distance",
+    ):
         if optional in normalized.columns and optional not in columns:
             columns.append(optional)
     work = normalized.loc[:, columns].copy(deep=False)
@@ -456,6 +618,13 @@ def prepare_rating_events(
             )
             statuses.loc[finish_text.str.contains("降", na=False)] = "demoted"
             statuses.loc[finish_text.isin(["失", "失格"])] = "disqualified"
+        if "margin_raw" in race.columns:
+            raw_margin_tokens = race["margin_raw"].astype("string").str.strip()
+            margin_tokens = raw_margin_tokens.where(
+                raw_margin_tokens.notna() & raw_margin_tokens.ne("")
+            )
+        else:
+            margin_tokens = pd.Series(pd.NA, index=race.index, dtype="string")
         distance_column = "distance_m" if "distance_m" in race.columns else "distance"
         distance_values = (
             pd.to_numeric(race[distance_column], errors="coerce").dropna().unique()
@@ -477,6 +646,12 @@ def prepare_rating_events(
                     float(times.iloc[index]) for index in active
                 ),
                 finish_statuses=tuple(str(statuses.iloc[index]) for index in active),
+                margin_tokens=tuple(
+                    None
+                    if pd.isna(margin_tokens.iloc[index])
+                    else str(margin_tokens.iloc[index])
+                    for index in active
+                ),
                 distance_m=distance_m,
             )
         )
