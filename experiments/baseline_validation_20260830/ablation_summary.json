@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "analysis_id": "semantic_feature_ablation_2024",
+  "baseline": {
+    "binary": {"ndcg_at_3": 0.487258, "top_1": 0.281383, "race_log_loss": 2.089797, "race_brier": 0.831227},
+    "lambdarank": {"ndcg_at_3": 0.486396, "top_1": 0.280400, "race_log_loss": 2.089234, "race_brier": 0.830076}
+  },
+  "scope": {"races": 3051, "retrospective_2025_used": false, "paired_date_block_resamples": 10000},
+  "experiments": {
+    "abl_001_drop_current_context": {
+      "remaining_features": 247,
+      "binary": {"ndcg_at_3": 0.484892, "top_1": 0.279253, "race_log_loss": 2.099214, "race_brier": 0.833303},
+      "lambdarank": {"ndcg_at_3": 0.485880, "top_1": 0.279253, "race_log_loss": 2.093745, "race_brier": 0.831309}
+    },
+    "abl_002_drop_horse_performance": {
+      "remaining_features": 237,
+      "dependency_aware_drop_count": 31,
+      "binary": {"ndcg_at_3": 0.487691, "top_1": 0.288922, "race_log_loss": 2.099004, "race_brier": 0.832879},
+      "lambdarank": {"ndcg_at_3": 0.486250, "top_1": 0.281875, "race_log_loss": 2.093784, "race_brier": 0.831017}
+    },
+    "abl_003_drop_form_workload": {
+      "remaining_features": 211,
+      "dependency_aware_drop_count": 57,
+      "binary": {"ndcg_at_3": 0.483876, "top_1": 0.288430, "race_log_loss": 2.100380, "race_brier": 0.832921},
+      "lambdarank": {"ndcg_at_3": 0.482763, "top_1": 0.276467, "race_log_loss": 2.099627, "race_brier": 0.832412}
+    },
+    "abl_004_drop_suitability": {
+      "remaining_features": 253,
+      "binary": {"ndcg_at_3": 0.489211, "top_1": 0.289249, "race_log_loss": 2.092776, "race_brier": 0.831657},
+      "lambdarank": {"ndcg_at_3": 0.487961, "top_1": 0.284825, "race_log_loss": 2.093808, "race_brier": 0.832067}
+    },
+    "abl_005_drop_connections": {
+      "remaining_features": 132,
+      "dependency_aware_drop_count": 136,
+      "binary": {"ndcg_at_3": 0.458817, "top_1": 0.260406, "race_log_loss": 2.150696, "race_brier": 0.842791},
+      "lambdarank": {"ndcg_at_3": 0.457820, "top_1": 0.259423, "race_log_loss": 2.155683, "race_brier": 0.843873}
+    },
+    "abl_006_drop_field_relative": {
+      "remaining_features": 253,
+      "binary": {"ndcg_at_3": 0.491256, "top_1": 0.291216, "race_log_loss": 2.085521, "race_brier": 0.829847},
+      "lambdarank": {"ndcg_at_3": 0.492433, "top_1": 0.288102, "race_log_loss": 2.084662, "race_brier": 0.829949},
+      "decision": "candidate improvement; only group whose removal improves every point metric in both families"
+    },
+    "abl_007_drop_rating_value": {
+      "remaining_features": 260,
+      "binary": {"ndcg_at_3": 0.486247, "top_1": 0.282366, "race_log_loss": 2.096592, "race_brier": 0.833119},
+      "lambdarank": {"ndcg_at_3": 0.488523, "top_1": 0.283841, "race_log_loss": 2.100595, "race_brier": 0.833219}
+    }
+  },
+  "key_paired_intervals": {
+    "drop_connections_binary_ndcg": [-0.038216, -0.018706],
+    "drop_connections_binary_log_loss_improvement": [-0.077285, -0.045527],
+    "drop_form_lambdarank_log_loss_improvement": [-0.016805, -0.004016],
+    "drop_field_relative_lambdarank_ndcg": [0.001888, 0.010276],
+    "drop_field_relative_lambdarank_top_1": [0.000641, 0.014779]
+  }
+}
