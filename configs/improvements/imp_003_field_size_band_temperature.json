@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "experiment_id": "imp_003_field_size_band_temperature",
+  "parent_experiment_id": "mvp_task16_corrected_20260830",
+  "hypothesis": "Field-size-band-specific temperatures fitted on 2023 improve 2024 probability quality over one global temperature without changing model ranking",
+  "seed": 20240830,
+  "field_size_bands": {
+    "labels": [
+      "small",
+      "medium",
+      "large",
+      "very_large"
+    ],
+    "upper_bounds": [
+      9,
+      13,
+      16
+    ]
+  },
+  "minimum_calibration_races_per_band": 200,
+  "bootstrap": {
+    "scheme": "moving_date_block",
+    "block_length_dates": 4,
+    "resamples": 10000
+  }
+}
