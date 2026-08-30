@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "experiment_id": "imp_005_control_lean_global_elo",
+  "parent_experiment_id": "abl_006_drop_field_relative",
+  "hypothesis": "The expected-actual race-value cache reproduces the accepted 253-feature lean control when the opt-in race-value family is excluded",
+  "seed": 42,
+  "model_configs": {
+    "binary": "configs/exp_001_binary.json",
+    "lambdarank": "configs/exp_002_lambdarank.json"
+  },
+  "feature_selection": {
+    "include": [
+      "current_context",
+      "horse_performance",
+      "form_workload",
+      "suitability",
+      "connections",
+      "rating_value"
+    ]
+  }
+}

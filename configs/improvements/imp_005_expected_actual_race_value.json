@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "experiment_id": "imp_005_expected_actual_race_value",
+  "parent_experiment_id": "imp_005_control_lean_global_elo",
+  "hypothesis": "A 90-day decayed mean of past performance surprise relative to global Elo expectation adds incremental 2024 information beyond rating level, raw form, and the existing career race-value proxy",
+  "seed": 42,
+  "model_configs": {
+    "binary": "configs/exp_001_binary.json",
+    "lambdarank": "configs/exp_002_lambdarank.json"
+  },
+  "feature_selection": {
+    "include": [
+      "current_context",
+      "horse_performance",
+      "form_workload",
+      "suitability",
+      "connections",
+      "rating_value",
+      "race_value_expected_actual"
+    ]
+  }
+}
