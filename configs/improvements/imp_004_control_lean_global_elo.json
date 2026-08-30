@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "experiment_id": "imp_004_control_lean_global_elo",
+  "parent_experiment_id": "abl_006_drop_field_relative",
+  "hypothesis": "The 271-column surface-rating cache reproduces the accepted 253-feature field-relative-drop control when the opt-in rating family is excluded",
+  "seed": 42,
+  "model_configs": {
+    "binary": "configs/exp_001_binary.json",
+    "lambdarank": "configs/exp_002_lambdarank.json"
+  },
+  "feature_selection": {
+    "include": [
+      "current_context",
+      "horse_performance",
+      "form_workload",
+      "suitability",
+      "connections",
+      "rating_value"
+    ]
+  }
+}

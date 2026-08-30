@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "experiment_id": "imp_004_lean_surface_conditioned_rating",
+  "parent_experiment_id": "imp_004_control_lean_global_elo",
+  "hypothesis": "Surface-conditioned horse Elo adds incremental 2024 information after the noisy 15-column field-relative family is removed",
+  "seed": 42,
+  "model_configs": {
+    "binary": "configs/exp_001_binary.json",
+    "lambdarank": "configs/exp_002_lambdarank.json"
+  },
+  "feature_selection": {
+    "include": [
+      "current_context",
+      "horse_performance",
+      "form_workload",
+      "suitability",
+      "connections",
+      "rating_value",
+      "surface_conditioned_rating"
+    ]
+  }
+}
