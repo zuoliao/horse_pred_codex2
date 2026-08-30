@@ -28,7 +28,7 @@ from horse_pred.evaluation import (
     final_odds_oracle_diagnostic,
     runner_binary_scores,
 )
-from horse_pred.features import FeatureDataset, build_features
+from horse_pred.features import FeatureConfig, FeatureDataset, build_features
 from horse_pred.modeling import (
     STANDARD_SPLIT_YEARS,
     apply_temperature,
@@ -207,6 +207,7 @@ def run_mvp(
     ranker_config_path: str | Path = "configs/exp_002_lambdarank.json",
     include_retrospective_test: bool = False,
     model_frame_cache_path: str | Path | None = None,
+    feature_config: FeatureConfig | None = None,
 ) -> dict[str, Any]:
     """Run audit, PIT features, both LightGBM models, calibration, and EVAL-01."""
 
@@ -239,7 +240,12 @@ def run_mvp(
     # Preserve every normalized race through PIT feature construction.  The
     # feature builder owns the race-level flat/jump decision so a jump race
     # with a turf/dirt course label cannot update flat historical state.
-    features = build_features(normalized, split_config=split_config)
+    effective_feature_config = feature_config or FeatureConfig()
+    features = build_features(
+        normalized,
+        config=effective_feature_config,
+        split_config=split_config,
+    )
     del normalized
     model_frame = prepare_model_frame(features)
     if model_frame_cache_path is not None:
@@ -279,6 +285,9 @@ def run_mvp(
         "dead_heat_race_count": int(
             model_frame.groupby("race_id", sort=False)["winner_label"].sum().gt(1).sum()
         ),
+        "experimental_options": {
+            "surface_conditioned_elo": effective_feature_config.surface_conditioned_elo,
+        },
     }
     write_json(output / "feature_schema.json", feature_schema)
 

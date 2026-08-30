@@ -23,6 +23,7 @@ from horse_pred.data_health import (
     population_selection_audit,
 )
 from horse_pred.diagnostics import run_baseline_diagnostics
+from horse_pred.features import FeatureConfig
 from horse_pred.pipeline import run_mvp
 from horse_pred.uncertainty import run_uncertainty_analysis
 
@@ -68,6 +69,11 @@ def parser() -> argparse.ArgumentParser:
         "--model-frame-cache",
         type=Path,
         help="optional ignored local pickle cache for later ablation/diagnostic runs",
+    )
+    run.add_argument(
+        "--surface-conditioned-elo",
+        action="store_true",
+        help="materialize the opt-in turf/dirt-specific Elo feature group",
     )
     uncertainty = commands.add_parser(
         "analyze-uncertainty", help="run the fixed 2024 paired block bootstrap"
@@ -141,6 +147,9 @@ def main(argv: Sequence[str] | None = None) -> int:
             ranker_config_path=args.ranker_config,
             include_retrospective_test=args.include_retrospective_test,
             model_frame_cache_path=args.model_frame_cache,
+            feature_config=FeatureConfig(
+                surface_conditioned_elo=args.surface_conditioned_elo
+            ),
         )
         summary = {
             "output": str(args.output.resolve()),
