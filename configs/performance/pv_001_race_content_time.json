@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "study_id": "race_content_time_m0_m4_20260831",
+  "experiment_id": "pv_001_signed_time_gap_decay_90d",
+  "parent_experiment_id": "abl_006_drop_field_relative",
+  "hypothesis": "A 90-day decayed mean of signed, distance-normalized past-race time gaps adds information about dominant wins and close losses beyond the accepted lean finish/rating history",
+  "data": {
+    "warm_up_year": 2013,
+    "model_fit_years": [2014, 2021],
+    "representation_screen_years": [2018, 2021],
+    "model_validation_year": 2022,
+    "calibration_year": 2023,
+    "one_shot_development_year": 2024,
+    "retrospective_2025_used": false
+  },
+  "race_content": {
+    "time_format": "M:SS.t",
+    "unit": "seconds_per_1000m",
+    "absolute_cap": 5.0,
+    "decay_half_life_days": 90,
+    "exclude_race_if_status_present": ["demoted", "disqualified"],
+    "numeric_finishers_only": true,
+    "dead_heat_winner_score": 0.0,
+    "same_date_update": "batch_after_all_races"
+  },
+  "candidate_column": "race_content__decay_90d__mean_signed_time_gap_per_1000m",
+  "model_configs": {
+    "binary": "configs/exp_001_binary.json",
+    "lambdarank": "configs/exp_002_lambdarank.json"
+  },
+  "control_feature_groups": [
+    "current_context",
+    "horse_performance",
+    "form_workload",
+    "suitability",
+    "connections",
+    "rating_value"
+  ],
+  "candidate_feature_groups": [
+    "current_context",
+    "horse_performance",
+    "form_workload",
+    "suitability",
+    "connections",
+    "rating_value",
+    "race_content_time"
+  ],
+  "bootstrap": {
+    "unit": "race_date",
+    "moving_block_dates": 4,
+    "resamples": 10000,
+    "seed": 20240830
+  },
+  "acceptance": {
+    "probability_path": {
+      "log_loss_improvement_min": 0.002,
+      "log_loss_improvement_ci_lower_strictly_positive": true,
+      "brier_improvement_min": 0.0,
+      "ndcg_at_3_improvement_min": -0.002,
+      "top_1_improvement_min": -0.005
+    },
+    "ranking_path": {
+      "ndcg_at_3_improvement_ci_lower_strictly_positive": true,
+      "log_loss_improvement_min": -0.002,
+      "brier_improvement_min": -0.001,
+      "top_1_improvement_min": -0.005
+    }
+  }
+}
