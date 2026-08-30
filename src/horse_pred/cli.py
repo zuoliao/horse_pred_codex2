@@ -77,7 +77,20 @@ def main(argv: Sequence[str] | None = None) -> int:
             ranker_config_path=args.ranker_config,
             include_retrospective_test=args.include_retrospective_test,
         )
-        print(json.dumps(metrics, ensure_ascii=False, indent=2))
+        summary = {
+            "output": str(args.output.resolve()),
+            "elapsed_seconds": metrics["elapsed_seconds"],
+            "data": metrics["data"],
+            "models": {
+                name: {
+                    "best_iteration": payload["best_iteration"],
+                    "temperature": payload["temperature"],
+                }
+                for name, payload in metrics["models"].items()
+            },
+            "evaluated_splits": list(metrics["splits"]),
+        }
+        print(json.dumps(summary, ensure_ascii=False, indent=2))
         return 0
     raise AssertionError(f"unhandled command: {args.command}")
 

@@ -909,7 +909,6 @@ def train_ranker(
         "group": list(groups.group_sizes),
         "feature_name": list(feature_columns),
         "eval_group": [list(validation_groups.group_sizes)],
-        "eval_at": [1, 3, 5],
         "eval_metric": "ndcg",
         **_lightgbm_validation_data(
             model,
@@ -917,6 +916,8 @@ def train_ranker(
             ranking_relevance_targets(validation_positions),
         ),
     }
+    if params is None or "eval_at" not in params:
+        fit_options["eval_at"] = [1, 3, 5]
     if early_stopping_rounds is not None:
         if early_stopping_rounds < 1:
             raise ValueError("early_stopping_rounds must be positive or None")

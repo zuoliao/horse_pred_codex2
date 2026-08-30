@@ -19,6 +19,7 @@ from horse_pred.data import (
     load_manifest,
     load_raw,
     normalize_raw,
+    sha256_file,
     verify_audit_against_manifest,
     verify_raw_file,
 )
@@ -457,6 +458,7 @@ def run_mvp(
     write_json(output / "configs" / "split.json", split_config)
     write_json(output / "configs" / "binary.json", binary_config)
     write_json(output / "configs" / "lambdarank.json", ranker_config)
+    _write_artifact_manifest(output)
     output.rename(final_output)
     return metrics
 
@@ -594,4 +596,22 @@ def _write_market_oracle_inputs(output: Path, frame: pd.DataFrame) -> None:
     available = [column for column in columns if column in frame]
     frame.loc[:, available].to_csv(
         output / "final_market_oracle.csv.gz", index=False, compression="gzip"
+    )
+
+
+def _write_artifact_manifest(output: Path) -> None:
+    files = []
+    for path in sorted(candidate for candidate in output.rglob("*") if candidate.is_file()):
+        if path.name == "artifact_manifest.json":
+            continue
+        files.append(
+            {
+                "path": str(path.relative_to(output)),
+                "size_bytes": path.stat().st_size,
+                "sha256": sha256_file(path),
+            }
+        )
+    write_json(
+        output / "artifact_manifest.json",
+        {"schema_version": 1, "files": files},
     )
