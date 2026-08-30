@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "experiment_id": "pv_004_margin_rating_score",
+  "run_commit": "66158b5",
+  "run_dirty": false,
+  "data_fingerprint": "270923ce73c4441e64173f242a8719de7d1e9b205508140463ca547ef7b1ca87",
+  "cache_gate": {
+    "rows": 533853,
+    "baseline_features": 269,
+    "candidate_features": 270,
+    "old_feature_exact": true,
+    "pre2025_nonmissing": 489674,
+    "retrospective_2025_nonmissing": 0,
+    "pv03_reference_max_abs_diff": 0.0,
+    "control_predictions_exact": true
+  },
+  "development_2024": {
+    "candidate_binary": {"features": 255, "ndcg_at_3": 0.4975941770, "top_1": 0.2940019666, "race_log_loss": 2.0787582709, "race_brier": 0.8281073754},
+    "candidate_lambdarank": {"features": 255, "ndcg_at_3": 0.4962109733, "top_1": 0.2941658473, "race_log_loss": 2.0772956902, "race_brier": 0.8284834397}
+  },
+  "primary_improvement_vs_pv001": {
+    "binary": {
+      "ndcg_at_3": {"point": 0.0000290177, "lower": -0.0052361627, "upper": 0.0052108198},
+      "top_1": {"point": -0.0024582104, "lower": -0.0121698145, "upper": 0.0076264294},
+      "race_log_loss": {"point": -0.0000867464, "lower": -0.0056102969, "upper": 0.0053469873},
+      "race_brier": {"point": -0.0004340658, "lower": -0.0021928088, "upper": 0.0013338830}
+    },
+    "lambdarank": {
+      "ndcg_at_3": {"point": 0.0020786756, "lower": -0.0027792047, "upper": 0.0073847061},
+      "top_1": {"point": 0.0036053753, "lower": -0.0049784604, "upper": 0.0126672751},
+      "race_log_loss": {"point": 0.0005356713, "lower": -0.0053345388, "upper": 0.0058735230},
+      "race_brier": {"point": -0.0003786103, "lower": -0.0022813283, "upper": 0.0014966494}
+    }
+  },
+  "lambdarank_secondary_vs_lean253": {
+    "ndcg_at_3": {"point": 0.0037776526, "lower": -0.0016194389, "upper": 0.0091867862},
+    "top_1": {"point": 0.0060635857, "lower": -0.0042322841, "upper": 0.0159011014},
+    "race_log_loss": {"point": 0.0073664188, "lower": 0.0005849250, "upper": 0.0140052475},
+    "race_brier": {"point": 0.0014652945, "lower": -0.0004462009, "upper": 0.0033411139},
+    "probability_path_passed": true
+  },
+  "feature_diagnostics": {
+    "binary_gain_fraction": 0.0233418761,
+    "binary_gain_rank": 8,
+    "lambdarank_gain_fraction": 0.0410215865,
+    "lambdarank_gain_rank": 5,
+    "spearman_vs_existing_elo_train": 0.9689694358,
+    "spearman_vs_pv001_train": 0.7381987199,
+    "spearman_vs_existing_elo_2024": 0.9709567476,
+    "spearman_vs_pv001_2024": 0.6978621629
+  },
+  "decision": {
+    "binary": "inconclusive_no_incremental_value_not_adopted",
+    "lambdarank": "inconclusive_vs_pv001_secondary_vs_lean_passed_not_promoted",
+    "next_hypothesis": "test_margin_score_delta_vs_same_spec_ordinal_as_one_separate_feature"
+  }
+}

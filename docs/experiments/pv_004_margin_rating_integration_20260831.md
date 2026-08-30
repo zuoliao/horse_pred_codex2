@@ -64,3 +64,47 @@ Feature correlations, availability, gain importance and condition slices are
 diagnostics only. A high correlation alone cannot reject the feature, and feature
 importance alone cannot accept it. Any supported result remains subject to 2026+
 prospective confirmation and makes no betting-return claim.
+
+## Result
+
+All cache gates passed: 533,853 rows and all 269 old cache features were exact, the
+new score covered all 489,674 pre-2025 scoring rows, 2025 nonmissing count was zero,
+and the fresh 2024 score reproduced PV-03 with maximum difference zero. The
+254-feature control also reproduced both PV-01 model predictions, iterations,
+temperatures and metrics exactly.
+
+Primary 2024 comparison against PV-01:
+
+| Family | Candidate metrics (NDCG / Top-1 / LL / Brier) | Improvement (NDCG / Top-1 / LL / Brier) |
+|---|---|---|
+| Binary | .497594 / .294002 / 2.078758 / .828107 | +.000029 / -.002458 / -.000087 / -.000434 |
+| LambdaRank | .496211 / .294166 / 2.077296 / .828483 | +.002079 / +.003605 / +.000536 / -.000379 |
+
+Paired primary intervals:
+
+- Binary NDCG `+.000029 [-.005236,+.005211]`; Log Loss
+  `-.000087 [-.005610,+.005347]`.
+- LambdaRank NDCG `+.002079 [-.002779,+.007385]`; Log Loss
+  `+.000536 [-.005335,+.005874]`.
+
+Neither family passed the probability or ranking path against PV-01, so the one
+absolute margin-rating score has **no demonstrated incremental value** and is not
+adopted. This is an inconclusive near-null comparison, not evidence of material harm.
+
+The fixed LambdaRank comparison against the conservative lean 253-column incumbent
+did pass the probability path: NDCG +.003778 `[-.001619,+.009187]`, Log Loss +.007366
+`[+.000585,+.014005]`, Brier +.001465, and Top-1 +.006064. However, PV-01 already
+accounts for most of this combined improvement; because PV-04 did not pass its
+primary 255-versus-254 comparison, the preregistered rule does not promote it as a
+new incumbent.
+
+The added feature nevertheless took 2.33% of Binary gain (rank 8/255) and 4.10% of
+LambdaRank gain (rank 5/255). High importance without out-of-sample improvement is
+consistent with substitution for existing features. Its Spearman correlation with
+the existing ordinal Elo was .969 on 2014–2021 and about .971 in 2022/2024; correlation
+with PV-01 was .738 on train and .698 in 2024. The absolute score is therefore highly
+redundant. A separately preregistered delta-versus-same-spec-ordinal representation
+is a more targeted next test; it must not be treated as part of PV-04.
+
+Complete ignored artifacts are `artifacts/pv_004_*`; the tracked aggregate is
+`experiments/race_content_20260831/pv_004_summary.json`.
