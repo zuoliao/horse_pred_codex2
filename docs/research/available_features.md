@@ -2,9 +2,30 @@
 
 ## 1. 目的と前提
 
-本書は、初期の JRA 中央競馬モデルで候補となる情報を、JRA-VAN Data Lab./JV-Link を主ソースとして整理する。調査日は **2026-08-30** である。取得できる生項目と、そこから構築する特徴量を分け、予測時点より後の情報を使わないことを最優先する。
+本書は、初期の JRA 中央競馬モデルで候補となる情報を整理する。調査日は **2026-08-30** である。取得できる生項目と、そこから構築する特徴量を分け、予測時点より後の情報を使わないことを最優先する。
+
+追加調査で、無料優先MVPの条件付き主候補をJRA公式全レース成績PDF（2002年以降）へ変更した。以下のJRA-VAN詳細は、無料coreを越える有料拡張時の最大coverageとして保持する。統合判断は [free_data_mvp.md](free_data_mvp.md) を参照する。
 
 本書の「利用可」は、データとして存在するという意味であり、すべてを初期モデルへ投入するという意味ではない。ID は結合キーに限定し、単勝オッズ等の市場情報は合意済み方針どおり一次予測モデルから除外する。
+
+### 無料優先MVPのfeature境界
+
+JRAへの定期取得・保存・加工MLのlicense gateが通ることを条件に、無料coreでは次を扱える。
+
+| Feature group | 無料coreでの可否 | 主なsource / PIT | 制約 |
+|---|---:|---|---|
+| `race_context` | ○ | JRA成績PDF、現行出馬表 | 長期は結果版PIT-C。制度変遷を保持 |
+| `horse_history_basic` | ○ | 2002+の確定済み過去結果 | 時計、着差、上がり、通過、lap、過去馬体重をevent順に集計 |
+| `connections_history` | ○ | 過去結果の騎手・調教師 | 安定IDがなく名称変更・同名を監査 |
+| `field_relative` / rating | ○ | 過去結果のみでforward update | 相手のtarget後成績を混入させない |
+| `form_workload` / suitability | ○ | 過去日付・距離・条件 | 出走はtraining loadのproxyにすぎない |
+| `weather_jma` | ○ | 気象庁CSV | JRA公表weather/goingを置換せず別群 |
+| `pedigree_history` | △ | 現行出馬表、許諾後のJBIS等 | 長期の深い時点血統・公式crosswalk不足 |
+| `race_day_state` | △ | 許諾後のprospective JRA snapshot | 過去PDFの馬体重・馬場は発表時刻不明 |
+| `training` | × | 無料で全馬・全期間の構造化sourceなし | JRA-VAN等の有料拡張 |
+| `market_snapshot` | ×（長期） | final oddsはJRA結果PDF | final値はoracle診断のみ。締切前系列は今後蓄積 |
+
+無料構成で使える派生特徴の詳細と、調教・長期odds・変更履歴・ID等の不足は [無料データ優先MVP](free_data_mvp.md) の4～6節に定義した。
 
 ### 調査した質問
 

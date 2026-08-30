@@ -20,11 +20,12 @@
 
 ただし、次の重要な修正が必要である。
 
-1. **長期成績データがあることと、当時見えていた状態・オッズを長期再現できることは別である。** JRA-VANの時系列オッズは公式保証が1年であり、長期の実行可能ROI検証を当然には作れない。
-2. **Binaryのraw確率とLambdaRank scoreを、そのままEVへ渡さない。** race内合計1のcoherentな最終勝率ベクトルを明示的に作り、確率評価を通過したものだけを購入判断へ渡す。
-3. **`P(win) × 暫定オッズ`は真のEVではない。** JRAはpari-mutuelで表示価格を固定できないため、これは `snapshot EV proxy` と呼ぶ。
-4. **過去レース価値に二つの時点意味を持たせる。** 過去レース当時に凍結したex-ante評価に加え、ターゲット予測時点までに確定・公表された相手の後続成績によるas-of再評価も概念上はPIT整合にできる。ただし、ターゲットごとの再構築、版管理、transaction-time品質の制約を満たす場合に限る。
-5. **前日モデルと当日モデルを分ける。** 馬体重、天候・馬場、当日変更は、発表前の予測へ遡及投入しない。
+1. **無料予測trackを先に置く。** 条件付き主候補はJRA公式全レース成績PDF（2002+）で、no-oddsの長期PIT-C baselineに使う。体系的取得・保存・加工MLはJRAへの書面照会後とし、許諾できなければJRA-VANへ切り替える。
+2. **長期成績データがあることと、当時見えていた状態・オッズを長期再現できることは別である。** 無料PDFには締切前odds履歴がなく、JRA-VANの時系列oddsも公式保証が1年である。長期の実行可能ROI検証を当然には作れない。
+3. **Binaryのraw確率とLambdaRank scoreを、そのままEVへ渡さない。** race内合計1のcoherentな最終勝率ベクトルを明示的に作り、確率評価を通過したものだけを購入判断へ渡す。
+4. **`P(win) × 暫定オッズ`は真のEVではない。** JRAはpari-mutuelで表示価格を固定できないため、これは `snapshot EV proxy` と呼ぶ。
+5. **過去レース価値に二つの時点意味を持たせる。** 過去レース当時に凍結したex-ante評価に加え、ターゲット予測時点までに確定・公表された相手の後続成績によるas-of再評価も概念上はPIT整合にできる。ただし、ターゲットごとの再構築、版管理、transaction-time品質の制約を満たす場合に限る。
+6. **前日モデルと当日モデルを分ける。** 馬体重、天候・馬場、当日変更は、発表前の予測へ遡及投入しない。
 
 ## 2. 統合した調査成果
 
@@ -39,6 +40,11 @@
 | F | [probability_and_calibration.md](probability_and_calibration.md) | proper score、校正、coherent確率 |
 | G | [betting_market.md](betting_market.md) | JRA払戻、市場暗黙確率、暫定オッズ |
 | H | [backtesting_and_leakage.md](backtesting_and_leakage.md) | 時間分割、リーク、ROI不確実性、試行管理 |
+| A追加 | [free_data_mvp.md](free_data_mvp.md) | 無料優先MVPの統合判断、7問への回答、decision gate |
+| A追加 | [free_data_netkeiba.md](free_data_netkeiba.md) | netkeiba無料層、URL/ID、規約、通信制限、PIT |
+| A追加 | [free_data_japan_sources.md](free_data_japan_sources.md) | JRA/JBIS/競馬ラボ/NAR/JMA等の国内比較 |
+| A追加 | [free_data_public_datasets.md](free_data_public_datasets.md) | Kaggle/GitHub、公開API、海外公式dataのprovenance |
+| 横断review | [free_data_synthesis_review.md](free_data_synthesis_review.md) | JRA PDF主候補案の批判レビュー、A/B/C判定 |
 
 各workstreamの完了後、モデル→確率→市場→精算の接続、データPIT、疲労・適性の外的妥当性を別担当者が横断レビューした。レビューで発見した、過去レース価値の過剰な凍結、無情報なcalibration-in-the-large、snapshot EVの用語、同着・取消・ROI bootstrapの曖昧さは担当文書と本結論へ反映した。
 
@@ -46,7 +52,8 @@
 
 | 結論 | 信頼度 | 根拠と限界 |
 |---|---:|---|
-| JRA-VAN/JV-Linkを個人研究MVPの主ソースにする | 高 | 公式SDK、仕様、料金、2026-08-07に質問された特定条件下の個人研究を可とする公式Staff回答。ただし派生成果公開等は未確認 |
+| 無料長期予測trackでJRA成績PDF 2002+を条件付き主候補にする | 中～高 | 公式一次文書、全成績・主要field・まとまったPDF。構造化難度、安定ID、PIT、機械取得・保存・ML許諾が弱い |
+| JRA-VAN/JV-Linkを厳密PIT・市場trackの有料主系統にする | 高 | 公式SDK、仕様、料金、2026-08-07に質問された特定条件下の個人研究を可とする公式Staff回答。ただし派生成果公開等は未確認 |
 | JRA Web/netkeiba/JBISを無許諾スクレイピングしない | 高 | 閲覧可能性は自動取得・保存・ML許諾を意味せず、包括的な公式許諾/APIを確認できなかった |
 | LightGBM BinaryとLambdaRankを併設する | 中～高 | LightGBM公式仕様と表形式一般の根拠は強い。競馬文献はwinner分類優位とLTR優位で衝突し、現代JRAの直接比較はない |
 | online Elo/BTを最初の相手調整ratingにする | 中 | 理論と他競技の動的rating根拠はあるが、現代JRAの方式比較はない |
@@ -60,41 +67,53 @@
 
 ### 4.1 主ソース
 
-**JRA-VAN Data Lab./JV-Link**を主ソースとする。
+無料優先MVPでは、**JRA公式全レース成績PDF（2002年以降）**を長期no-odds予測baselineの条件付き主ソースとする。
+
+- 主催者公式の確定結果で、競走条件、出走馬、斤量、馬体重、時計・着差、通過・上がり、race-level lap、最終単勝odds・人気、払戻、票数等を一つの系統から得られる。
+- raceごとのHTML巡回より少ない文書数で全開催を確認できる。一方、年度によりPDFの文書単位・命名・text抽出順が異なり、安定した外部ID/schemaもない。
+- これは `PIT-C event reconstruction` であり、当時のpre-race版、変更時刻、締切前oddsを再現しない。
+- JRAはopen-data/ML license、公開API、機械取得rateを明示していない。全履歴の体系的取得、長期保存、数値抽出、個人ML、派生成果公開の用途を具体化して書面照会し、回答前は少数手動PoCに留める。
+
+**JRA-VAN Data Lab./JV-Link**は、無料coreの限界を越える最優先の有料upgradeとする。
 
 - 2026-08-30時点で月額2,090円（税込）。40年超のJRA公式データを掲げる。[公式製品ページ](https://jra-van.jp/dlb/)
 - JV-LinkはWindows 10/11日本語版のActiveX/COMで、正規インターフェース経由の取得が必要。[公式システム概要](https://jra-van.jp/dlb/sdv/about.html)
 - 公式Staffは、正規SDK/JV-Link、個人のローカル研究、質問対象の調教データを使い、生データを外部AIへ送らないという具体的な質問条件を規約上問題ないと回答した。この回答範囲を他の利用形態へ一般化しない。[公式開発者コミュニティ回答](https://developer.jra-van.jp/t/topic/964)
 - 一方、利用規約第7条は私的利用外の複製・改変・公表・第三者利用を強く制限する。[JRA-VAN利用規約](https://jra-van.jp/info/rule.html)
 
-したがって、公開可否を書面確認するまでは、保守策として生データ、復元可能な派生データ、学習済みモデル、個別予測を公開リポジトリや外部AI/SaaSへ置かない。規約がこれらをすべて同じ法的扱いで明示禁止した、という意味ではない。コード公開とデータ・artifact公開を分ける。サービス利用地域を日本国内に限定する条項もあるため、取得ホストと保存・処理先の所在を確認し、許諾なしに海外cloud regionへraw dataを転送しない。複数人共有、クラウド保存、第三者向けWeb表示、モデル配布、有償利用へ進む前に、具体的用途を記載してJRA-VAN/JRADBへ書面確認する。
+JRA-VANを導入した場合、公開可否を書面確認するまでは、保守策として生データ、復元可能な派生データ、学習済みモデル、個別予測を公開リポジトリや外部AI/SaaSへ置かない。規約がこれらをすべて同じ法的扱いで明示禁止した、という意味ではない。コード公開とデータ・artifact公開を分ける。サービス利用地域を日本国内に限定する条項もあるため、取得hostと保存・処理先の所在を確認し、許諾なしに海外cloud regionへraw dataを転送しない。複数人共有、cloud保存、第三者向けWeb表示、model配布、有償利用へ進む前に、具体的用途を記載してJRA-VAN/JRADBへ書面確認する。
 
 ### 4.2 補助ソース
 
-- **JRA公式Web:** 公式成績・例外・払戻の目視照合に使う。自動取得源にしない。
+- **JRA現行出馬表/当日Web:** 許諾後、prospective PIT-Aの候補。出馬表PDFは原則8週間で、後日archiveではない。
+- **気象庁CSV:** 公共データ利用規約、出典・加工表示、品質flagを守り、降水・気温・風等の独立補完候補とする。JRA公表weather/goingを置換しない。
 - **JBIS:** 血統・生産・セリの照合候補。大量取得・加工MLは事前許諾が必要。
 - **netkeiba:** コメント、独自指数、調教表示等は有用だが、公開バルクAPI、PITスナップショット、自動取得許諾を確認できない。MVP取得源にしない。
 - **JRDB:** 独自指数・調教・パドックの増分を後で一特徴群ずつ検証する候補。履歴、PIT、オッズ依存、ML利用許諾を契約前に確認する。
 - **NAR公式DL:** JRA馬の地方歴補完候補。JRA主対象のベースライン後へ延期し、利用条件とID対応を確認する。
 
-スクレイピングを許容する根拠は今回得られていない。可視ページを機械取得可能と解釈しない。
+可視ページ、規則的URL、robots許可/不在を機械取得・保存・MLの許諾と解釈しない。無許諾のnetkeiba/JBIS/競馬ラボscraping、競馬ブックのprogram取込、upstream権利不明のKaggle/GitHub JRA datasetは不採用とする。
 
 ## 5. 期待できる履歴と、期待してはいけない履歴
 
 | データ | 公式仕様・確認結果 | プロジェクト上の意味 |
 |---|---|---|
-| 主なレース・馬・払戻等 | 原則1986年以降。1994-07より前は一部項目未整備 | 長期の結果・履歴基盤。ただし全項目が同品質ではない |
-| 最終単勝・複勝・枠連・馬連オッズ | 1993-06以降 | 事後市場比較には使えるが、実行可能選択には使えない |
-| 木曜時点SNAP/SNPN | 2004年以降、オンライン保持保証1年 | 関係者・馬情報の時点版。ただし長期任意時点を保証しない |
-| 坂路調教 | 2003年以降 | 独立feature group候補。未収録を負荷ゼロにしない |
-| ウッドチップ調教 | 美浦2021-07-27、栗東2021-12-07以降 | 履歴が短く東西開始差があるため後続実験 |
-| 時系列オッズ | 単勝・複勝・枠連・馬連、約5～10分間隔、公式保証1年 | 実行可能ROI評価の最大制約。まず実取得最古日・欠損を監査 |
+| JRA Web結果 | 1986+。2000年以前は一部情報が不完全または表示差 | 無料照合。単一schemaの主取得には向かない |
+| JRA全レース成績PDF | 2002+。結果、馬体重、通過・上がり、lap、最終odds・払戻等 | 無料PIT-C主候補。自動取得・保存・MLはlicense gate |
+| JRA現行出馬表PDF | 原則8週間掲載 | 許諾後に今後のPIT-Aを蓄積。過去へ遡れない |
+| JRA-VANの主なレース・馬・払戻等 | 原則1986+。1994-07より前は一部項目未整備 | 有料upgradeの長期結果・履歴基盤 |
+| JRA-VAN最終単複枠・馬連odds | 1993-06+ | 事後市場比較には使えるが、実行可能選択には使えない |
+| JRA-VAN木曜時点SNAP/SNPN | 2004+、online保持保証1年 | 関係者・馬情報の時点版。ただし長期任意時点を保証しない |
+| JRA-VAN坂路/wood調教 | 坂路2003+。woodは美浦2021-07-27+、栗東2021-12-07+ | 無料では困難な独立feature群 |
+| JRA-VAN時系列odds | 単複枠・馬連、約5～10分間隔、公式保証1年 | 実行可能ROI評価の最大制約。導入初日から継続保存 |
 
-「1986年以降」は完全なtransaction-time履歴を意味しない。初回セットアップの過去データは、後日訂正を反映した最新既知版でありうる。データ取得後、項目×年×競馬場×レース種別の欠損率、訂正、コード変遷を測るまで、学習開始年と具体split年を確定しない。
+「2002年以降の公式PDF」も「JRA-VANの1986年以降」も、完全なtransaction-time履歴を意味しない。PDFは結果版、JRA-VAN初回setupは後日訂正を反映したlatest-known版でありうる。項目×年×競馬場×レース種別の欠損率、PDF layout、訂正、コード変遷を測るまで、学習開始年と具体split年を確定しない。
 
 ## 6. 予測時点とPIT品質
 
 ### 6.1 二つの予測プロダクト
+
+無料の長期PDFだけで再現できるのは、target以前の確定結果から作る `PIT-C` のno-odds予測である。下表の `T_prevday` / `T_close` を厳密に再現するには、許諾後のprospective snapshotまたはJRA-VANが必要である。結果PDFの当日馬体重・天候・馬場を、発表時刻の証拠なしに過去の `T_close` へ投入しない。
 
 | 版 | 暫定cutoff | 目的 | 主な利用情報 |
 |---|---|---|---|
@@ -103,9 +122,9 @@
 
 18:00とT-10は研究上の暫定値であり、公式締切保証ではない。JV-Linkの実配信、`published_at`、受信遅延、特徴生成時間、購入導線を計測後、T-15またはT-10を一つ事前登録する。実発走時刻から逆算して都合の良いスナップショットを選ばない。cutoff時点の`scheduled_start_version`で一度閉じ、閉鎖後の発走延期で再判断する場合は別`decision_snapshot_id`として事前規則化する。
 
-主な運用対象は`T_close`、比較用・フォールバックは`T_prevday`とする。ただし長期の`T_close`相当履歴は不完全なので、次の二つを別manifest・別coverage・別finalとして扱う。
+主な将来運用対象は`T_close`、比較用・fallbackは`T_prevday`とする。ただし長期の`T_close`相当履歴は不完全なので、次の二つを別manifest・別coverage・別finalとして扱う。
 
-- **Prediction track:** 長期PIT-Cを含むno-odds予測研究。長期の予測仮説比較には使えるが、実行可能ROIの証拠にしない。
+- **Free prediction track:** 許諾済みJRA PDF 2002+を中心とする長期PIT-Cのno-odds予測研究。長期の予測仮説比較には使えるが、実行可能ROIの証拠にしない。
 - **Executable-market track:** PIT-Bでのsource-time replayと、PIT-Aでのend-to-end operational/shadow評価。PIT-Bは意思決定情報時点には整合しうるが、当方の当時受信遅延・処理・購入可能性までは証明しない。実運用可能性の主張はPIT-Aに限定する。
 
 ### 6.2 時刻と品質
@@ -155,6 +174,8 @@ results and official payouts ---------> labels / settlement only
 | `market_snapshot` | 時点単勝オッズ、取得できる範囲の票数、鮮度 | 主モデル外、比較・判断専用。票数はschema/coverage監査後 |
 
 生の馬ID、騎手ID、調教師ID、父ID等はモデルへ入れない。これらは時点正しい履歴結合とstate更新のキーにのみ使い、数値・縮約統計・supportへ変換する。未経験馬はpopulation prior、観測数、uncertainty、missing indicatorで扱う。
+
+無料JRA PDF trackの初期対象は、`race_context`、`horse_history_basic`、名称監査付き`connections_pit`、`field_relative`、`rating_strength`、`form_workload`、粗い`suitability`、`weather_jma`とする。`training`、長期`market_snapshot`、深い`pedigree_history`、時刻付き`race_day_state`は無料coreに含めず、許諾済みprospective dataまたは有料sourceの独立ablationとする。
 
 ### 7.3 フォーム・疲労・適性の解釈
 
@@ -291,6 +312,8 @@ q^{mkt}_{i,t}=\frac{1/o_{i,t}}{\sum_j 1/o_{j,t}}
 同一decision snapshot、同一as-of field、同一race集合で、uniform `1/n`、市場、no-odds modelを比較する。final oddsは`final-market oracle diagnostic`だけに使う。
 
 ### 11.2 固定初期ルール
+
+このルールは、許諾済みのcutoff付きodds snapshotを持つprospective/executable-market trackだけに適用する。無料の長期PDFにあるfinal oddsで過去の購入馬を選ばない。
 
 ```text
 券種:                 単勝
@@ -441,43 +464,45 @@ Plackett–Luceは最初の高度な確率順位baseline候補だが、日本を
 
 本調査は実装開始の無条件承認ではない。Phase 2で次を解消し、ユーザーが仕様を受け入れてからデータ基盤へ進む。
 
-1. **License gate:** (a) 正規JV-Linkを使う日本国内の個人ローカル・非共有・非公開研究にscopeを固定する、または (b) 保存、共有、Web表示、特徴・予測・model artifact公開の具体用途についてJRA-VAN/JRADBの書面許諾を得る、のいずれかをpass条件とする。
-2. **Environment gate:** 日本国内のWindows JV-Link取得ホストと、モデル環境へ渡す許容済みローカル境界を文書化する。所在・転送可否を確認できないcloudは使わず、確認不能なら単一国内local hostへfallbackする。
-3. **Coverage gate:** 契約後のsample取得で項目別開始年、欠損、訂正、コード変遷、時系列オッズ最古日・鮮度を監査する。長期オッズが不足しても予測baselineは続けるが、長期実行可能ROIを主張せず、PIT-Aのprospective/shadow蓄積へ切り替える。
-4. **Timestamp gate:** `T_prevday`と`T_close`、発走変更時再判断、max odds stalenessを固定する。鮮度超過・snapshot欠測時はno-bet、必要なら明示的な`T_prevday`予測表示へfallbackし、後のオッズで補完しない。
-5. **Outcome gate:** 同着、取消、競走中止、失格、降着、返還の実頻度を測り、上記規約を最終確定する。
-6. **Split gate:** coverage監査後、train/calibration/development/finalの絶対日付を、metric集計前にmanifestへ固定する。
-7. **Publication gate:** 非公開に固定しない成果について、データ、派生特徴、予測、学習済みmodel、aggregate reportの各区分を具体的に示し、公開前に書面許諾または明確な公式根拠を得る。
+1. **Free license gate:** JRAへ、成績PDF・現行出馬表・当日値の対象、件数、頻度、raw長期保存、数値抽出、個人ローカルML、特徴・予測・model・aggregate公開を具体的に照会する。回答前は少数手動PoCまでとし、体系的backfillを行わない。
+2. **Source fallback gate:** JRA PDFの必要用途が不許可または不明確なら、民間scrapeや出所不明datasetへ迂回せず、(a) 正規JV-Linkを使う日本国内の個人ローカル・非共有・非公開研究にscopeを固定する、または (b) JRA-VAN/JRADBへ具体用途の書面許諾を得る。
+3. **Environment gate:** 無料source・有料sourceのいずれでも、許諾された取得host、保存・処理境界、cloud/国外転送、backupを文書化する。JRA-VAN利用時は日本国内のWindows JV-Link hostを含める。
+4. **Coverage gate:** 少数sampleで年×場×項目の欠損、PDF layout、同着・取消・非完走、ID解決率、訂正、コード変遷を監査する。有料化時は時系列odds最古日・鮮度も監査する。
+5. **Timestamp gate:** 無料長期PDFはPIT-Cと明示する。prospective trackでは`T_prevday`と`T_close`、発走変更時再判断、max odds stalenessを固定し、後のoddsで補完しない。
+6. **Outcome gate:** 同着、取消、競走中止、失格、降着、返還の実頻度を測り、上記規約を最終確定する。
+7. **Split gate:** coverage監査後、train/calibration/development/finalの絶対日付を、metric集計前にmanifestへ固定する。
+8. **Publication gate:** 非公開に固定しない成果について、データ、派生特徴、予測、学習済みmodel、aggregate reportの各区分を具体的に示し、公開前に書面許諾または明確な公式根拠を得る。
 
 ## 18. 推奨する最初の実験順
 
 各段階を一つの解釈可能な変更として進める。
 
-1. license / environment / coverage / timestamp / outcome / split gateを閉じる。
-2. core PIT dataset契約とinvariant test仕様を確定する。
+1. free license / source fallback / environment / coverage / timestamp / outcome / split gateを閉じる。
+2. `free_pdf_pit_c`のcore contractとinvariant test仕様を確定する。
 3. 同一features・splitでBinary rawとLambdaRank rawを比較する。
 4. base modelを固定してcoherence/calibration mappingだけを比較する。
-5. probability指標で`q`をfreezeし、同一時点のmarket baselineと比較する。
-6. 固定1.10 snapshot-proxy ruleを公式払戻で精算する。
-7. `rating_strength`等のfeature groupを一群ずつablationする。
+5. probability指標で`q`をfreezeし、final-odds oracle市場baselineと比較する。これはbet選択ではない。
+6. 許諾後のprospective snapshotが蓄積してから、固定1.10 snapshot-proxy ruleを公式払戻で精算する。
+7. `rating_strength`、`weather_jma`等の無料feature groupを一群ずつablationする。
+8. 無料coreを固定後、調教・時点odds・deep pedigree等の有料増分を一群ずつ比較する。
 
 model、calibrator、thresholdを同じ実験で同時変更しない。
 
 ## 19. 最大の実装リスク
 
 1. **過去snapshot不足:** 長期予測性能と長期実行可能ROIを同じ証拠として扱えない。
-2. **規約境界:** 個人研究は確認できたが、クラウド、共同利用、派生成果公開は未確認。
-3. **Windows依存:** JV-Link ActiveX/COMにより取得と学習環境の分離が必要。
-4. **PIT-Cの訂正:** 長期historyは当時配信版を完全再現しない可能性がある。
-5. **score/probability混同:** LambdaRank scoreやbinary raw probabilityを無言でEV利用すると、確率品質の根拠が崩れる。
-6. **late odds movement:** snapshot proxyで選んだ馬の最終払戻倍率は変わる。
-7. **rare-event variance:** 高オッズ・高proxyの少数betはROI区間が非常に広くなりうる。
-8. **interaction sparsity:** 距離・馬場・course・脚質を細分すると支持例が急減する。
-9. **trial multiplicity:** feature、rating、校正、閾値の多数試行が開示されなければholdout結果も過大評価される。
-10. **concept drift:** クラス制度、course改修、計時・配信、競走人口、市場行動が変化する。
+2. **無料sourceの規約境界:** JRA PDF/Webの体系的取得・保存・加工MLは明示許諾がなく、回答次第で無料案が止まる。
+3. **PDF構造化:** 年代ごとに文書単位・命名・text抽出順が異なり、安定IDもないため、抽出誤りとentity誤結合を監査する必要がある。
+4. **有料fallbackのWindows依存:** JV-Link ActiveX/COMにより取得と学習環境の分離が必要。
+5. **PIT-Cの訂正:** 長期historyは当時配信版を完全再現しない可能性がある。
+6. **score/probability混同:** LambdaRank scoreやbinary raw probabilityを無言でEV利用すると、確率品質の根拠が崩れる。
+7. **late odds movement:** snapshot proxyで選んだ馬の最終払戻倍率は変わる。
+8. **rare-event variance:** 高オッズ・高proxyの少数betはROI区間が非常に広くなりうる。
+9. **interaction sparsity:** 距離・馬場・course・脚質を細分すると支持例が急減する。
+10. **trial multiplicity / concept drift:** 多数試行と制度・course・市場変化がholdout解釈を歪める。
 
 ## 20. 最終勧告
 
-次フェーズで行うべきことは、大規模モデル実装ではなく、上記decision gatesを満たす**データ契約・PIT・dataset・experiment specificationの確定**である。その後、最小の共通point-in-time datasetでBinaryとLambdaRankの二つのbaselineを作る。
+次フェーズで行うべきことは、大規模モデル実装ではなく、JRAへの具体的な利用照会、少数手動PDFによるcoverage/抽出監査、`free_pdf_pit_c`とprospective trackの**data contract・PIT・dataset・experiment specificationの確定**である。その後に初めて、最小の共通datasetでBinaryとLambdaRankの二つのbaselineを作る。
 
-利益可能性について現時点で肯定も否定もできない。特に時系列オッズの公式保証が1年であるため、長期の実行可能収益性は、取得可能履歴の監査と、今後蓄積するPIT-A snapshotによるshadow/prospective評価が不可欠である。予測性能の改善と市場後収益の証拠を別々に積み上げる方針が、今回の一次情報と文献に最も整合する。
+利益可能性について現時点で肯定も否定もできない。無料履歴には締切前odds系列がなく、有料JRA-VANでも時系列oddsの公式保証は1年である。長期の実行可能収益性は、今後蓄積するPIT-A snapshotによるshadow/prospective評価が不可欠である。無料PIT-Cで予測性能を先に検証し、市場後収益の証拠を別trackで積み上げる方針が、今回の一次情報と無料優先条件に最も整合する。

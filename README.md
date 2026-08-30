@@ -2,7 +2,7 @@
 
 JRA中央競馬を主対象とする、競馬予測・馬券購入判断支援システムの研究開発リポジトリです。
 
-> **現在の段階:** 調査計画の全workstreamと統合結論を完了。実装前decision gateの確認・仕様承認待ち。データ契約・取得およびモデル実装は未着手。
+> **現在の段階:** 調査計画の全workstream、無料データ追加調査、統合結論を完了。JRAの無料データ利用条件と実装前decision gateの確認待ち。体系的データ取得・モデル実装は未着手。
 > **最終更新:** 2026-08-30 (JST)
 
 ## 1. プロジェクトの目的
@@ -519,9 +519,14 @@ JRA、JRA-VAN、netkeiba、JBIS、その他候補について、以下を確認�
 
 ### 12.4 調査成果
 
-2026-08-30に `docs/research_plan.md` のworkstream A～Hを完了し、個別結果と横断的な結論を `docs/research/` に保存しました。
+2026-08-30に `docs/research_plan.md` のworkstream A～Hと、無料データ優先MVPの追加調査を完了し、個別結果と横断的な結論を `docs/research/` に保存しました。
 
 - [調査結論と実装前仕様](docs/research/research_conclusions.md)
+- [無料データ優先MVPの統合判断](docs/research/free_data_mvp.md)
+- [無料データ源の横断的批判レビュー](docs/research/free_data_synthesis_review.md)
+- [netkeiba重点調査](docs/research/free_data_netkeiba.md)
+- [国内無料データ源比較](docs/research/free_data_japan_sources.md)
+- [公開dataset・API調査](docs/research/free_data_public_datasets.md)
 - [データソース](docs/research/data_sources.md)
 - [利用可能な特徴量](docs/research/available_features.md)
 - [Point-in-Time設計](docs/research/point_in_time.md)
@@ -532,14 +537,14 @@ JRA、JRA-VAN、netkeiba、JBIS、その他候補について、以下を確認�
 - [JRA市場・market probability](docs/research/betting_market.md)
 - [backtest・leakage・評価](docs/research/backtesting_and_leakage.md)
 
-主な調査推奨は、JRA-VAN/JV-Linkを個人研究MVPの主ソース候補とし、前日版と当日締切前版を分離し、raw model scoreからrace内で整合する勝率を明示的に作り、時点付き暫定オッズによる選択と公式払戻による精算を分けることです。これらは実装前のdecision gateとユーザー承認を経て確定します。
+主な調査推奨は、無料の長期no-odds予測trackではJRA公式全レース成績PDF（2002年以降）を条件付き主候補とし、体系的取得・保存・加工MLはJRAへの書面確認後に開始することです。無料PDFはPIT-Cに限定し、締切前oddsを含む実行可能市場trackは、許諾済みprospective snapshotまたは有料JRA-VAN/JV-Linkで分離します。netkeiba等の無許諾scrapingとupstream権利不明の公開JRA datasetは採用しません。
 
 ## 13. 開発フェーズ案
 
 ```text
 Phase 0: 要求・設計方針のすり合わせ             完了
 Phase 1: データソース・既存手法の調査           完了
-Phase 2: 調査結果を反映した仕様確定と初期リポジトリ作成  ← 次（承認待ち）
+Phase 2: 無料データlicense/coverage gateと仕様確定       ← 次（承認待ち）
 Phase 3: データ取得・point-in-time特徴量基盤
 Phase 4: LightGBM Binary / LambdaRank baseline
 Phase 5: 特徴量・rating・calibration改善
@@ -567,7 +572,7 @@ Phase 8: 自動予測処理・Web UI
 | 評価 | 決定 | ranking、確率、校正、条件別、市場比較、backtestを併用 |
 | 実験運用 | 決定 | 原則1 experiment = 1 commit |
 | 実験台帳 | 決定 | 機械可読結果からREADME表を自動更新 |
-| データソース | 調査推奨・未採択 | 個人研究MVPはJRA-VAN/JV-Link。利用主体・保存・派生成果公開のdecision gateあり |
+| データソース | 調査推奨・未採択 | 無料予測trackはJRA公式成績PDF 2002+が条件付き主候補。書面確認が通らなければJRA-VANへfallback |
 | 具体的な予測時点 | 暫定仕様・未採択 | 前日固定版と当日締切前版を分離。実配信・締切監査後に時刻を固定 |
 | split期間 | 調査推奨・未採択 | 長期no-odds予測trackと、短期PIT-A/B市場trackを別manifest・別finalで評価。絶対日付はcoverage監査後に固定 |
 | rating方式 | 調査推奨・未採択 | PIT-safe forward-only Elo/Bradley–Terry-styleから開始し、条件別ratingを順次比較 |
@@ -577,4 +582,4 @@ Phase 8: 自動予測処理・Web UI
 
 ## 15. 次の作業
 
-次は、[調査結論](docs/research/research_conclusions.md)のretain/modify/rejectと実装前decision gateを人間が確認し、Phase 2のデータ契約・PIT・dataset・experiment specificationを確定します。承認前にデータ取得基盤やモデルの本格実装へ進みません。
+次は、[無料データ統合判断](docs/research/free_data_mvp.md)と[調査結論](docs/research/research_conclusions.md)を人間が確認し、JRAへ成績PDF・出馬表・当日値の定期取得、長期保存、数値抽出、個人ML、成果公開を具体的に照会します。その回答と少数手動sampleのcoverage監査を反映して、PIT・dataset・experiment specificationを確定します。承認前に体系的取得基盤やモデル実装へ進みません。
