@@ -6,7 +6,7 @@ Read `README.md`, `AGENTS.md`, this file, and relevant `docs/` before changing m
 
 ## Current state
 
-The corrected LightGBM baseline validation round is complete through data/evaluation health, 2024 uncertainty, semantic ablation, SHAP/permutation diagnostics, conditional errors, and five limited improvement experiments. The latest staged rating/race-value round completed IMP-004 and IMP-005.
+The corrected LightGBM baseline validation and standalone rating-module R0–R6 are complete. This includes data/evaluation health, 2024 uncertainty, semantic ablation, diagnostics, five limited improvements, training-period-only rating selection, frozen PIT rating generation, and LightGBM integration evaluation.
 
 - Primary selection period: 2024 development, 3,051 races / 41,946 runners / 106 dates.
 - 2025: 0 rows used for hypothesis, feature, calibration, model, or accept/reject decisions. Cached retrospective rows are removed immediately after load.
@@ -16,6 +16,10 @@ The corrected LightGBM baseline validation round is complete through data/evalua
 - Point-estimate best model: LambdaRank on that config (NDCG@3 .4924, Log Loss 2.0847), but Binary has better Top-1/Brier and paired family intervals cross zero.
 - Surface-conditioned Elo adds a supported LambdaRank ranking signal relative to the corrected 268-feature baseline, but adding the same 3-column family to the lean 253-feature config was rejected for both families in IMP-004.
 - IMP-005 added one 90-day decayed global-Elo expected-vs-actual race-value. Binary was inconclusive with all point metrics worse; LambdaRank was rejected. The feature was highly redundant with 90-day mean finish and is not adopted.
+- R0 reproduced the existing global Elo on all 489,674 pre-2025 scored runners exactly at the stored float32 contract.
+- R2 selected global pairwise Elo K=48/scale=200 using only annual 2018–2021 scores. R3 top-choice PL and R4 surface blending were rejected on 2022. R5 froze the selected global spec and fitted temperature 0.5187 on 2023 only.
+- R5 standalone 2024 calibrated metrics: NDCG@3 .3533, Top-1 .1693, Log Loss 2.4015, Brier .89459, ECE .00774.
+- R6 added the frozen five-column rating group to the lean LightGBM. Binary was rejected on the Brier guardrail; LambdaRank NDCG significantly worsened. The module remains a standalone baseline but is not in the current best LightGBM.
 - Final odds remain an oracle-only diagnostic. No executable ROI or betting claim exists.
 
 ## Critical correction and population limits
@@ -39,7 +43,7 @@ Known selection limits:
 - Integrated decision report: `docs/experiments/baseline_validation_conclusions_20260830.md`
 - Tracked machine source of truth: `experiments/baseline_validation_20260830/`
 
-Local complete artifacts are under `artifacts/` and intentionally ignored. Local model-frame caches are `data/model_frame_20260830_corrected.pkl` (268), `data/model_frame_surface_elo_20260830.pkl` (271), and `data/model_frame_race_value_surprise_20260830.pkl` (269); all are ignored.
+Local complete artifacts are under `artifacts/` and intentionally ignored. Rating artifacts are `artifacts/rating_module_r0_r5_20260830/`, `artifacts/r6_*`; the augmented cache is `data/model_frame_rating_module_r6_20260830.pkl` (273). Existing corrected/surface/race-value caches remain local and ignored.
 
 ## Improvement outcomes
 
@@ -51,15 +55,24 @@ Local complete artifacts are under `artifacts/` and intentionally ignored. Local
 
 These are nominal intervals across five hypotheses and two model families. They retain 2024 selection optimism and require prospective confirmation.
 
+## Rating module R0–R6 outcome
+
+- Protocol/config: `docs/experiments/rating_module_r0_r6.md`, `configs/rating/rating_module_r0_r6.json`.
+- Tracked summary: `experiments/rating_module_20260830/summary.json`.
+- Frozen module: global pairwise Elo, initial 1500, K 48, scale 200, no surface blend. Algorithm/spec is fixed; state continues chronological race-by-race updates.
+- R6 Binary improvement: NDCG +.00207 `[-.00352,+.00757]`, LL +.00042 `[-.00603,+.00707]`, Brier −.00121; reject.
+- R6 Rank improvement: NDCG −.00430 `[-.00808,−.00047]`, LL −.00444; reject.
+- Current best remains `abl_006_drop_field_relative`, 253 features, with Binary/LambdaRank both retained.
+
 ## Exact next task
 
-First audit and specify one independent experiment:
+Do not automatically retune or add more rating variants against 2024. R0–R6 is complete and the latest user goal has been achieved.
 
-> Control = `abl_006_drop_field_relative` (253 features). Candidate = the same config plus only a 90-day decayed opponent-only pre-race field-strength feature.
+If the user authorizes another feature hypothesis, the cleanest untested candidate remains:
 
-Before preregistration, correct the concept and naming: current `horse_history__career__mean_opponent_elo` stores a self-inclusive field mean, not an opponent-only mean. Define the opponent-only value, verify equal-rating and unequal-rating fixtures, same-day batching, nonstarter/jump exclusion, and default 268-column backward compatibility. Do not silently change the accepted default feature; expose the new recent value as an opt-in one-column group. Use the same 2024 4-date moving-block bootstrap (10,000), do not inspect 2025, and keep Binary/LambdaRank results separate. Do not add outcome residual windows, class, margin, time, or surface features in the same experiment.
+> A 90-day decayed opponent-only pre-race field-strength feature, separate from outcome residuals.
 
-The rationale is that IMP-005's outcome residual was almost a transform of recent finish. Recent opponent strength is already accumulated internally but only career field mean is exposed. Surface/global shrinkage remains secondary because choosing shrinkage after IMP-004 would be a more arbitrary 2024-tuned follow-up. If the new experiment is not authorized, stop at the current validated reference rather than moving to data expansion, DNN, purchase strategy, or UI.
+Before that experiment, correct the concept and naming: current `horse_history__career__mean_opponent_elo` stores a self-inclusive field mean. Define opponent-only values, add equal/unequal-rating PIT fixtures, preserve default 268 columns, and keep the candidate one-column opt-in. Because 2024 has already supported many selections, consider freezing further 2024 iteration and waiting for 2026+ prospective data. Do not move to data expansion, DNN, purchase strategy, or UI without a new phase decision.
 
 ## Useful commands
 
@@ -102,4 +115,6 @@ uv run horse-pred run-mvp \
 - Surface-cache control: 533,853 rows; old 268 column names/order/values/NaN positions exact; mismatch count 0; max absolute difference 0.
 - Race-value-cache control: 533,853 rows; old 268 column names/order/values/NaN positions exact; mismatch count 0; max absolute difference 0. The 253-feature control reproduced `abl_006` with prediction/metric max difference 0.
 - IMP-005 full local comparison: `artifacts/imp_005_primary_comparison/comparison.json`; tracked aggregate: `experiments/rating_race_value_20260830/imp_005_summary.json`.
-- Latest verification before final documentation: 103 tests passed and Ruff passed. Rerun after documentation changes before handoff.
+- R6 cache control: 533,853 rows; old 268 columns exact; new columns 5; 2025 nonmissing 0. The R6 control reproduced `abl_006` exactly.
+- Formal R0–R5 run commit: `ce6d5ccb465d7462eeb3872887fa19891a1e732f`, dirty=false. R6 run commit: `3d530258dbe51d985f54f5460e4824cbf4ff80a0`, dirty=false.
+- Latest verification before final documentation: 109 tests passed and Ruff passed. Rerun after documentation changes before handoff.

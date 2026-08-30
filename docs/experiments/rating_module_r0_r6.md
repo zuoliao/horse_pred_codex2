@@ -79,3 +79,24 @@ R6では、R5 artifact SHA-256=`0967d04a30b75812015e9d00ed68a71ec344424c4f4099a3
 Candidate追加列はscore、raw coherent win probability、global starts、surface-condition starts、`1/sqrt(global starts+1)` uncertainty proxyである。新273列cacheから旧268列の値・順序・NaN位置が全行一致し、同cacheの253列controlが`abl_006`を予測・metric差`<=1e-12`で再現することを実行gateとする。
 
 R6採否はIMP-004/005と同じ二経路を使う。Probability pathはLog Loss改善point `>=.002`かつpaired 95% interval下限`>0`、Brier非悪化、NDCG `>=−.002`、Top-1 `>=−.005`。Ranking pathはNDCG改善interval下限`>0`、Log Loss `>=−.002`、Brier `>=−.001`、Top-1 `>=−.005`。2025 rows used=`0`、odds used=`false`を必須とする。
+
+## R6 result
+
+273-column cacheは533,853 rowsで、旧268列の順序・値・NaN位置が完全一致した（mismatch `0`、最大差`0`）。2025の新5列は全て欠損。253-feature controlも`abl_006_drop_field_relative`をrunner、予測、metric、best iteration、temperatureまで完全再現した。
+
+| Model | Candidate NDCG@3 | NDCG improvement [95% CI] | Candidate Log Loss | LL improvement [95% CI] | Brier improvement | Top-1 improvement | Decision |
+|---|---:|---:|---:|---:|---:|---:|---|
+| Binary | .49333 | +.00207 `[-.00352,+.00757]` | 2.08510 | +.00042 `[-.00603,+.00707]` | −.00121 | −.00164 | reject |
+| LambdaRank | .48814 | −.00430 `[-.00808,−.00047]` | 2.08910 | −.00444 `[-.00919,+.00039]` | −.00085 | −.00328 | reject |
+
+Binaryはranking pointが改善したが区間下限は0未満で、Log Loss改善も`.002`未満、Brierはranking-path guardrail `−.001`を外れた。LambdaRankはNDCG interval全体が悪化側である。両familyとも採用しない。
+
+新raw win probabilityはgain importanceがBinaryで2位・12.6%、LambdaRankで4位・4.46%と強く利用された。しかし新scoreは旧global EloとSpearman `.975`、新probabilityは旧horse-minus-field Eloと`.800`で、既存rating/race-relative情報との重複が大きい。standalone moduleが予測力を持つことと、既存LightGBMへ追加情報を与えることは別だった。
+
+## Final conclusion
+
+R0–R6のsoftware、PIT artifact、standalone評価、LightGBM integrationは完了した。固定moduleは透明な独立benchmarkおよび将来の他model入力候補として保持する。現LightGBM bestは253-feature `abl_006_drop_field_relative`のままで、module 5列はdefault featureへ昇格させない。
+
+R2のK48/scale200はgrid境界だったため、より高速な更新が最適という可能性は残る。ただし2024 R6結果を見てgridを拡張しない。追加rating研究を行う場合は、新しい事前登録のもと2018–2021 selectionと2022 validationだけでdynamic decayまたはuncertainty-aware方式を検証し、2024へ反復適合させない。
+
+Tracked source of truth: [`experiments/rating_module_20260830/summary.json`](../../experiments/rating_module_20260830/summary.json)。full predictions、models、cache、bootstrap artifactは`artifacts/`と`data/`にlocal保存しGit対象外とする。

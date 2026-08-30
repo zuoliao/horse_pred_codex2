@@ -9,6 +9,8 @@
 - `src/horse_pred/modeling.py`: group/split検証、非学習baseline、LightGBM Binary/LambdaRank、確率写像、校正。
 - `src/horse_pred/evaluation.py`: ranking、確率、校正、条件別、市場oracle診断。
 
+独立rating研究では`src/horse_pred/rating.py`がforward-only stateとrace確率、`src/horse_pred/rating_study.py`が2018–2021 parameter選択、2022方式検証、2023校正、2024固定評価を担う。2025は処理しない。詳細は[`rating_module_r0_r6.md`](experiments/rating_module_r0_r6.md)。
+
 ## 2. 固定時間分割
 
 | split | 絶対期間 | 用途 | 禁止事項 |

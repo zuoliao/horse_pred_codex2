@@ -2,7 +2,7 @@
 
 JRA中央競馬を主対象とする、競馬予測・馬券購入判断支援システムの研究開発リポジトリです。
 
-> **現在の段階:** 障害混入を修正したLightGBM baselineについて、2024限定のデータ健全性、block bootstrap、feature ablation、SHAP/permutation、条件別error、限定改善5実験まで完了。現bestはfield-relative 15列を除く253特徴configで、Binary/LambdaRankのfamily差は未解決。
+> **現在の段階:** corrected LightGBM baselineの診断・限定改善5実験に加え、独立rating module R0–R6を完了。rating単体は確立したがLightGBM追加は棄却され、現bestはfield-relative 15列を除く253特徴configのまま。
 > **最終更新:** 2026-08-30 (JST)
 
 ## 1. プロジェクトの目的
@@ -453,6 +453,8 @@ README.md
 | `imp_004_lean_surface_conditioned_rating` | LGBM Binary + T | 256 | 2.0874 | .83106 | .4942 | .2902 | NDCG pointは上昇したがBrier guardrail違反、reject |
 | `imp_005_expected_actual_race_value` | LGBM Binary + T | 254 | 2.0872 | .83082 | .4897 | .2879 | 全point悪化、区間跨ぎでinconclusive。採用せず |
 | `imp_005_expected_actual_race_value` | LGBM LambdaRank + T | 254 | 2.0876 | .83044 | .4885 | .2852 | NDCG/Log Loss guardrail違反、reject |
+| `r6_frozen_rating_module` | LGBM Binary + T | 258 | 2.0851 | .83105 | .4933 | .2896 | NDCG point改善もBrier guardrail違反、reject |
+| `r6_frozen_rating_module` | LGBM LambdaRank + T | 258 | 2.0891 | .83080 | .4881 | .2848 | NDCG差 `−.00430 [-.00808,-.00047]`、reject |
 
 [baseline機械可読summary](experiments/baseline_validation_20260830/improvement_summary.json)、[rating/race-value追加実験](experiments/rating_race_value_20260830/)、[統合結論](docs/experiments/baseline_validation_conclusions_20260830.md)を参照してください。旧Task 16 reportは障害混入修正前のためsupersededである。final oddsは事後oracle専用で、実行可能ROIは評価していません。
 
@@ -577,7 +579,7 @@ Phase 1: データソース・既存手法の調査           完了
 Phase 2: 既存rawのcoverage/PIT gateと仕様確定    完了
 Phase 3: point-in-time特徴量基盤                 実装・検証済み
 Phase 4: LightGBM Binary / LambdaRank baseline   完了
-Phase 5: 特徴量・rating・calibration改善         進行中（診断・限定5実験完了）
+Phase 5: 特徴量・rating・calibration改善         進行中（rating module R0–R6完了）
 Phase 6: 確率的ランキングおよび高度なモデル
 Phase 7: 購入戦略・リスク管理の改善
 Phase 8: 自動予測処理・Web UI
@@ -605,11 +607,11 @@ Phase 8: 自動予測処理・Web UI
 | データソース | 決定 | 承認済み既存raw 2013～2025を主系統とし、JRA公式結果でcoverage・不足項目を照合・補完。新規取得は別gate |
 | 具体的な予測時点 | MVP決定 | 過去結果rawによる保守的PIT-C前日相当。同日の全raceは一括emit後に更新。当日締切前版は別track |
 | split期間 | MVP決定 | 2014～21 train、2022 validation、2023 calibration、2024 development、2025 opt-in retrospective、2026+ prospective final |
-| rating方式 | MVP決定 | PIT-safe global Eloをbaselineとする。芝/ダート別Eloは268列Rankerで追加signalを示したが、lean 253列との組合せは両family reject |
+| rating方式 | MVP決定 | 独立moduleは学習期間選択のglobal pairwise Elo（K48/scale200）を固定。standalone 2024校正LL=2.4015。LightGBMへの5列追加は両family reject |
 | probabilistic ranking | 調査推奨・延期 | Plackett–Luceを最初の高度baseline候補とするが、順位別biasを検証してから採否判断 |
 | artifact管理 | MVP決定 | config、git/data fingerprint、aggregate metricsを追跡し、raw・model・runner予測はGit対象外 |
 | Web技術 | 未決 | 後続フェーズで決定 |
 
 ## 15. 次の作業
 
-corrected baselineの健全性、不確実性、feature-group ablation、model/error診断、限定改善5実験は完了しました。surface rating 3列とlean configの合成、90日Elo期待差race-value 1列はいずれも採用されず、bestは`abl_006_drop_field_relative`の253列です。次はrace-valueをoutcome残差とopponent field strengthへ分離し、現self-inclusive field meanをopponent-only定義へ正したうえで、recent opponent strength 1列を独立仮説として検討します。2025は使用せず、2026+ prospective final方針を維持します。締切前oddsを使う実行可能な市場評価は別trackです。
+独立rating module R0–R6は完了しました。R0は既存Eloを完全再現し、R2〜R5で学習期間だけからglobal pairwise Elo K48/scale200と2023 temperatureを固定しました。rating単体はUniform/History-rateより強い基準ですが、R6のLightGBM追加5列はBinaryのBrierとLambdaRankのrankingを悪化させたため採用しません。bestは`abl_006_drop_field_relative`の253列です。これ以上2024でrating式を事後調整せず、次に進むなら未検証のopponent-only recent field strengthを独立仮説とするか、rating moduleを2026+ prospectiveまで凍結します。

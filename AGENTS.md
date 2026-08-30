@@ -12,9 +12,9 @@ Before making architecture or modeling decisions, read `README.md` and all relev
 
 ## Current phase
 
-The project is currently in the **validated LightGBM baseline and early feature-hypothesis phase**. The research plan, implementation specification, corrected baseline, 2024 uncertainty, semantic ablations, model/error diagnostics, and the first three limited improvement experiments are complete.
+The project is currently in the **validated LightGBM baseline and modular rating phase**. The corrected baseline, uncertainty, semantic ablations, diagnostics, five limited improvements, and standalone rating stages R0–R6 are complete.
 
-Use `docs/experiments/baseline_validation_conclusions_20260830.md` and `docs/handoff.md` as the current decision state. Continue with small preregistered LightGBM/PIT feature hypotheses; do not jump to data expansion, DNN, complex betting strategy, or UI without an explicit phase decision.
+Use `docs/experiments/rating_module_r0_r6.md`, `docs/experiments/baseline_validation_conclusions_20260830.md`, and `docs/handoff.md` as the current decision state. The frozen rating module is a valid standalone baseline, but its five-column LightGBM integration was rejected. Do not retune rating against 2024 or jump to data expansion, DNN, complex betting strategy, or UI without an explicit phase decision.
 
 ## Core design decisions already agreed
 

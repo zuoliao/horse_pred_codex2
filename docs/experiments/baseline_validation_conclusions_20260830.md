@@ -12,6 +12,8 @@
 
 限定改善5件のうち、surface-conditioned Eloは268列baselineに対するLambdaRankのranking経路だけで事前基準を満たした。ただし253特徴lean configへ同じ3列を追加したIMP-004は両familyで棄却した。Elo期待差を90日減衰したrace-value 1列もBinary inconclusive、LambdaRank rejectで、現bestは変わらない。
 
+その後の独立rating module R0–R6では、学習期間だけからglobal pairwise Elo K48/scale200を選び、2023校正後の2024 standalone Log Loss `2.4015`を得た。しかしLightGBMへ5列を追加したR6はBinary Brier guardrail違反、LambdaRank NDCG有意悪化で両family rejectとなった。rating moduleは独立baselineとして保持するが、current best LightGBMには追加しない。
+
 ## 1. Baselineをどこまで信用できるか
 
 ### Evidence
