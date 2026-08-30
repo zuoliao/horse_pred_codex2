@@ -4,6 +4,8 @@
 **対象:** JRA中央競馬の平地競走  
 **状態:** 調査・比較・仕様提案のみ。スクレイパー実装、大量取得、学習は未着手。
 
+> **2026-08-30 追補:** ユーザーは、`/Users/zuoliao/Documents/GitHub/horse_codex/data/data` にある既存データを、本非公開・私的プロジェクト内で利用してよいことを明示した。この利用承認により、以下の一般公開ソース比較とは別に、既存rawを無料MVP主データとして採用する。詳細は[既存ローカルデータセットの監査](local_existing_dataset.md)を参照する。この承認は新規scrapingや外部公開へは一般化しない。
+
 ## 1. 結論
 
 ### 事実
@@ -20,8 +22,8 @@
 
 ユーザーの「まず無料を最大限活用する」という優先順位を反映し、次の二段階案を採用する。
 
-1. **無料MVPの主データ候補はJRA公式の全レース成績PDF（2002年以降）とする。** これは結果・ラベル・履歴特徴・最終市場診断用の `PIT-C event reconstruction` を作る候補であり、完全な当時版や実行可能な市場backtestを意味しない。
-2. **実際の体系的な取得開始はlicense gate後とする。** JRAへ、個人・非商用・ローカル研究におけるPDFの定期取得、長期保存、数値抽出、特徴量化、ML、成果物の扱いを具体的に照会する。明示許諾が得られない場合、無料案は「権利が明確な主データ源」には昇格できず、正規JRA-VAN/JV-Linkへ切り替える。
+1. **無料MVPの主データは承認済み既存raw（2013～2025年）とする。** 結果・ラベル・履歴特徴・最終市場診断用の `PIT-C event reconstruction` を作る。既存`features.csv`はリークがあるため使わず、rawから再生成する。
+2. **JRA公式全レース成績PDF（2002年以降）は照合・補完候補とする。** 新規の体系的取得はlicense gate後とし、既存rawの不足race、grade、lap、払戻等を優先して補完する。
 
 この判断は「JRA Webの自動取得が許諾済み」という結論ではない。**費用ゼロで技術的・内容的に最も適した候補**と、**利用条件まで解決した採用済みソース**を区別する。
 
@@ -29,7 +31,8 @@
 
 | ソース | 主な項目・期間 | odds・調教・lap・馬体重 | PIT / 技術 | 利用条件・リスク | 無料MVP判定 |
 |---|---|---|---|---|---|
-| JRA全レース成績PDF | 2002+。全出走結果、条件、関係者、時計、着差、通過、払戻等 | final win odds、票数、race lap、上がり、馬体重あり。構造化調教なし | 年・開催別PDFは比較的安定。結果なのでPIT-C | open-data/ML許諾、bulk rateなし。robotsはpath制限なし | **条件付き主候補** |
+| 承認済み既存raw | 2013～2025、629,967出走、44,761レース。race/horse/jockey ID、結果、時計、通過等 | final win odds、上がり、馬体重あり。lap・調教なし | CSV、PIT-C。少なくとも146レース不足 | 本非公開・私的プロジェクト内利用をユーザー承認。新規取得・公開は別 | **主データとして採用** |
+| JRA全レース成績PDF | 2002+。全出走結果、条件、関係者、時計、着差、通過、払戻等 | final win odds、票数、race lap、上がり、馬体重あり。構造化調教なし | 年・開催別PDFは比較的安定。結果なのでPIT-C | open-data/ML許諾、bulk rateなし。robotsはpath制限なし | **公式照合・補完候補** |
 | JRA現行出馬表・当日Web | 現在の枠、馬番、斤量、騎手、属性、変更、馬体重、馬場、odds等 | 当日情報あり。履歴snapshotなし | 出馬表PDFは8週間。HTML URLはopaque、値は更新される | 定期取得・保存・MLは要照会 | **許諾後のprospective補完** |
 | netkeiba無料 | 中央検索1956+。近年結果、馬・血統・関係者 | final odds、lap、馬体重あり。最新odds・調教等は有料 | stable-looking IDはあるが外部API仕様なし。旧年field差、PITなし | 多数requestの通信制限FAQ。自動取得・保存・ML許諾なし | **目視照合** |
 | JBIS | 馬は原則1984年生+、JRA結果1986+。血統・繁殖・セールが強い | 結果、通過、lap、馬体重、人気・払戻。調教/時系列oddsなし | API/PITなし。一般crawl-delay 600秒、`/csv/`等を除外 | 「そのまま」の個人利用等。加工MLは要照会 | **血統等の目視照合** |
@@ -45,7 +48,16 @@
 
 ## 3. 推奨する無料データ構成
 
-### A. 条件付き主系統
+### A. 採用済み主系統
+
+`承認済み既存raw 2013～2025`
+
+- content hashでデータ版を固定する。
+- 障害を除外し、取消・除外・非完走を状態として保持する。
+- 既存`features.csv`を流用せず、target・final market・pre-race candidateを分離して再生成する。
+- JRA公式年次競走数との差146レースをcoverage gateで解消する。
+
+### B. 公式照合・補完系統
 
 `JRA公式全レース成績PDF 2002+`
 
@@ -54,7 +66,7 @@
 - PDF単位でsource URL、取得日時、content hash、HTTP metadata、対象開催を記録する。
 - 体系的取得はJRAへの照会回答後に開始する。本調査では少数の仕様確認しか行っていない。
 
-### B. prospective系統
+### C. prospective系統
 
 `JRA公式の現行出馬表/当日公表値`
 
@@ -62,7 +74,7 @@
 - Web画面の後日最新版ではなく、当方が実際に観測した `ingested_at` 付きsnapshotを残す。
 - 長期結果PDFと混ぜず、`PIT-A observed` として別trackにする。
 
-### C. 明示条件が比較的良い無料補完
+### D. 明示条件が比較的良い無料補完
 
 `気象庁の過去気象CSV`
 
@@ -70,7 +82,7 @@
 - JRA公表の天候・馬場を置換しない。局地雨、散水、観測地点差があるため独立feature groupとする。
 - station metadata、observation time、download time、quality/homogeneity flag、加工表示を保持する。
 
-### D. 許諾後だけ追加する補完
+### E. 許諾後だけ追加する補完
 
 - NAR公式CSV: JRA出走馬の地方遠征・転入歴。馬名だけで結合せず、生年月日、性、父、母、母父等でmatch evidenceを持つ。
 - JBIS/JRHA: 血統・生産・セールの欠損照合。bulk特徴化は別途許諾が必要。
@@ -78,19 +90,19 @@
 
 ## 4. 無料構成で作れるfeature
 
-JRA公式PDFの取得・加工がlicense gateを通ることを条件に、次を構築できる。
+承認済みrawだけで作れる項目と、JRA公式結果等の補完後に作れる項目を分ける。補完項目は追加sourceのlicense/coverage gateを通った場合だけ採用する。
 
 ### 今回レースの静的・事前情報
 
 - 競馬場、開催、race number、芝/ダート、距離、コース区分
-- race class/grade、年齢・性・賞金・斤量条件、field size
-- 枠、馬番、性齢、負担重量、騎手、調教師
-- current racecardで公表される範囲の生年月日、父母系、馬主、生産者、賞金・戦績概要
+- rawのrace class、年齢・性条件、field size
+- 枠、馬番、性齢、騎手、調教師
+- 詳細grade、負担重量、賞金条件、生年月日、父母系、馬主、生産者はrawだけでは不足し、補完後の候補
 
 ### 過去走から再構成できる情報
 
 - 着順、相対着順、着差、走破時計、上がり、通過順位
-- race-level lap、前後半・pace proxy、field size
+- field size、通過順由来の展開proxy。race-level lapと前後半paceはJRA公式等による補完後の候補
 - 当時の距離、surface、course、class、weather、going、枠、斤量、騎手、馬体重・増減
 - 最終単勝オッズ・人気、払戻、票数。ただし一次予測modelから除外し、市場診断・結果側に分離
 - horse/jockey/trainerの過去のみの複数窓・条件別・指数減衰集計
@@ -135,7 +147,7 @@ JRA公式PDFの取得・加工がlicense gateを通ることを条件に、次�
 
 したがって、無料MVPの評価を二つに分ける。
 
-1. **Long-horizon prediction track:** JRA結果PDFによるPIT-C。ranking、Log Loss、Brier、calibration、final-odds oracle診断を行う。長期実行可能ROIは主張しない。
+1. **Long-horizon prediction track:** 承認済みrawを中心とし、JRA公式結果で照合・補完するPIT-C。ranking、Log Loss、Brier、calibration、final-odds oracle診断を行う。長期実行可能ROIは主張しない。
 2. **Prospective executable-market track:** 許諾後、今後の `PIT-A` snapshotを蓄積し、同一cutoffの予測・odds・変更を結ぶ。十分な期間まではshadow evaluationとする。
 
 ## 7. スクレイピング・取得運用のリスク
@@ -188,18 +200,18 @@ JRA公式PDFの取得・加工がlicense gateを通ることを条件に、次�
 
 本格取得・実装前に、次を閉じる。
 
-1. **JRA license gate:** 対象PDF/Web、件数、頻度、raw保存、数値抽出、個人ローカルML、予測・model・aggregate公開を示して回答を保存する。
-2. **Free-core gate:** 許諾が得られればJRA PDF 2002+を主系統とする。得られなければ、無料JRA再配布datasetへ迂回せず、JRA-VANへ切り替える。
-3. **Coverage gate:** 小規模sampleで年×場×fieldの欠損、PDF layout、例外、同着、取消、非完走、ID解決率を監査する。
-4. **PIT gate:** 長期PDFはPIT-C、今後の観測snapshotはPIT-Aとしてmanifestと評価を分離する。
+1. **Existing-data license gate（完了）:** 既存ローカルrawの本非公開・私的プロジェクト内利用を承認済みと記録する。
+2. **Additional-source gate:** JRA PDF/Web等から新規に体系的取得する場合だけ、件数、頻度、保存、抽出、ML、公開範囲を確認する。
+3. **Coverage gate:** 公式年次race listと照合し、既知の不足146レース、年×場×fieldの欠損、例外、同着、取消、非完走、ID解決率を監査する。
+4. **PIT gate:** 承認済みrawと長期結果PDFはPIT-C、今後の観測snapshotはPIT-Aとしてmanifestと評価を分離する。
 5. **Odds gate:** final oddsはoracle診断専用。実行可能market評価はcutoff付きprospective dataだけとする。
 6. **Supplement gate:** JMAは出典・加工表示と品質flagを保持する。NAR/JBIS等は別許諾・別feature groupとする。
 7. **Publication gate:** raw data、復元可能派生物、予測、model、集計報告を分け、公開可否をsourceごとに確認する。
 
 ## 10. 具体的な回答
 
-1. **無料MVPに最も適した主データ源:** 技術・項目面ではJRA公式全レース成績PDF（2002+）。ただし利用許諾確認前は「条件付き候補」であり、明確なopen datasetではない。netkeibaより一次性・結果確定性・PDFのまとまりで優先する。
-2. **推奨構成:** JRA結果PDF + 許諾後のJRA prospective出馬表/当日snapshot + JMA気象CSV。NAR地方歴、JBIS/JRHA血統・セールは許諾後の補完。民間サイトは目視照合。
+1. **無料MVPに最も適した主データ源:** 利用承認済み既存raw 2013～2025。機械可読でIDと主要結果項目が揃うため、JRA PDFの全面構造化より先に採用する。既存featuresは使わず再生成する。
+2. **推奨構成:** 承認済みraw + JRA公式結果によるcoverage・grade・lap・払戻の照合/補完 + JMA気象CSV + 今後のprospective snapshot。NAR地方歴、JBIS/JRHA血統・セールは許諾後の補完。
 3. **無料feature:** race context、全過去走成績、時計・着差・上がり・通過・lap、過去馬体重、関係者PIT集計、form/workload、適性、相手強度、最終市場診断、JMA気象。
 4. **困難feature:** 構造化調教、長期の締切前odds、歴史的pre-race版・変更履歴、安定ID/schema、深い時点血統、paddock/comment/馬具等。
 5. **historical odds:** final oddsによる事後診断までは可能。歴史的T-10 oddsによる実行可能backtestは不可。今後の許諾済みsnapshot蓄積が必要。

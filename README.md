@@ -2,7 +2,7 @@
 
 JRA中央競馬を主対象とする、競馬予測・馬券購入判断支援システムの研究開発リポジトリです。
 
-> **現在の段階:** 調査計画の全workstream、無料データ追加調査、統合結論を完了。JRAの無料データ利用条件と実装前decision gateの確認待ち。体系的データ取得・モデル実装は未着手。
+> **現在の段階:** 調査計画の全workstream、無料データ追加調査、統合結論、既存ローカルrawの監査・利用承認を完了。coverage・PIT・dataset仕様等の実装前decision gate確認待ち。特徴量再生成・モデル実装は未着手。
 > **最終更新:** 2026-08-30 (JST)
 
 ## 1. プロジェクトの目的
@@ -522,6 +522,8 @@ JRA、JRA-VAN、netkeiba、JBIS、その他候補について、以下を確認�
 2026-08-30に `docs/research_plan.md` のworkstream A～Hと、無料データ優先MVPの追加調査を完了し、個別結果と横断的な結論を `docs/research/` に保存しました。
 
 - [調査結論と実装前仕様](docs/research/research_conclusions.md)
+- [既存ローカルデータセットの監査と採用判断](docs/research/local_existing_dataset.md)
+- [開発タスクリスト](docs/development_plan.md)
 - [無料データ優先MVPの統合判断](docs/research/free_data_mvp.md)
 - [無料データ源の横断的批判レビュー](docs/research/free_data_synthesis_review.md)
 - [netkeiba重点調査](docs/research/free_data_netkeiba.md)
@@ -537,14 +539,16 @@ JRA、JRA-VAN、netkeiba、JBIS、その他候補について、以下を確認�
 - [JRA市場・market probability](docs/research/betting_market.md)
 - [backtest・leakage・評価](docs/research/backtesting_and_leakage.md)
 
-主な調査推奨は、無料の長期no-odds予測trackではJRA公式全レース成績PDF（2002年以降）を条件付き主候補とし、体系的取得・保存・加工MLはJRAへの書面確認後に開始することです。無料PDFはPIT-Cに限定し、締切前oddsを含む実行可能市場trackは、許諾済みprospective snapshotまたは有料JRA-VAN/JV-Linkで分離します。netkeiba等の無許諾scrapingとupstream権利不明の公開JRA datasetは採用しません。
+無料の長期no-odds予測trackでは、ユーザーが本非公開・私的プロジェクト内での利用を承認した既存ローカルraw（2013～2025年、629,967出走、44,761レース）を主データとして採用します。既存`features.csv`にはリークがあるため流用せず、rawからPIT準拠で再生成します。JRA公式結果はcoverage・grade・lap・払戻等の照合・補完に使い、締切前oddsを含む実行可能市場trackはprospective snapshotまたは有料JRA-VAN/JV-Linkで分離します。この承認は新規scrapingや外部公開には一般化しません。
+
+raw・中間・加工済みデータと取得cacheはGit管理対象外です。Gitにはsource manifest、fingerprint、schema、構築設定、品質集計、コード、テストのみを保存します。
 
 ## 13. 開発フェーズ案
 
 ```text
 Phase 0: 要求・設計方針のすり合わせ             完了
 Phase 1: データソース・既存手法の調査           完了
-Phase 2: 無料データlicense/coverage gateと仕様確定       ← 次（承認待ち）
+Phase 2: 既存rawのcoverage/PIT gateと仕様確定           ← 次
 Phase 3: データ取得・point-in-time特徴量基盤
 Phase 4: LightGBM Binary / LambdaRank baseline
 Phase 5: 特徴量・rating・calibration改善
@@ -572,7 +576,7 @@ Phase 8: 自動予測処理・Web UI
 | 評価 | 決定 | ranking、確率、校正、条件別、市場比較、backtestを併用 |
 | 実験運用 | 決定 | 原則1 experiment = 1 commit |
 | 実験台帳 | 決定 | 機械可読結果からREADME表を自動更新 |
-| データソース | 調査推奨・未採択 | 無料予測trackはJRA公式成績PDF 2002+が条件付き主候補。書面確認が通らなければJRA-VANへfallback |
+| データソース | 決定 | 承認済み既存raw 2013～2025を主系統とし、JRA公式結果でcoverage・不足項目を照合・補完。新規取得は別gate |
 | 具体的な予測時点 | 暫定仕様・未採択 | 前日固定版と当日締切前版を分離。実配信・締切監査後に時刻を固定 |
 | split期間 | 調査推奨・未採択 | 長期no-odds予測trackと、短期PIT-A/B市場trackを別manifest・別finalで評価。絶対日付はcoverage監査後に固定 |
 | rating方式 | 調査推奨・未採択 | PIT-safe forward-only Elo/Bradley–Terry-styleから開始し、条件別ratingを順次比較 |
@@ -582,4 +586,4 @@ Phase 8: 自動予測処理・Web UI
 
 ## 15. 次の作業
 
-次は、[無料データ統合判断](docs/research/free_data_mvp.md)と[調査結論](docs/research/research_conclusions.md)を人間が確認し、JRAへ成績PDF・出馬表・当日値の定期取得、長期保存、数値抽出、個人ML、成果公開を具体的に照会します。その回答と少数手動sampleのcoverage監査を反映して、PIT・dataset・experiment specificationを確定します。承認前に体系的取得基盤やモデル実装へ進みません。
+次は、[既存ローカルデータ監査](docs/research/local_existing_dataset.md)と[調査結論](docs/research/research_conclusions.md)に従い、承認済みrawの不足146レース、例外・欠損、PIT semanticsを監査して、dataset・experiment specificationを確定します。JRA公式結果等から新規に体系的取得する場合は、その取得・保存・加工範囲を別途確認します。本格モデル実装の前にこれらのgateを閉じます。

@@ -1,0 +1,57 @@
+# 開発タスクリスト
+
+**作成日:** 2026-08-30 (JST)  
+**前提:** 調査フェーズと既存ローカルrawの利用判断は完了。モデル・データ基盤の本格実装は未着手。  
+**対象:** JRA平地競走、no-odds予測を先行し、購入判断を別層にする。
+
+## 進行原則
+
+- raw・中間・加工済みdatasetはGit管理せず、manifest、fingerprint、schema、設定、品質集計、コード、テストを管理する。
+- canonical sourceは承認済みの`race_results_merged.csv`とし、既存`features.csv`は学習入力に使わない。
+- 特徴量はrace単位で履歴stateを更新し、target raceおよびfuture dataを参照しない。
+- オッズ、人気、当該レース結果はprimary prediction modelから分離する。
+- 時間分割をmetric確認前に固定し、final holdoutで反復調整しない。
+- モデル実験は原則として、1 experiment = 1 hypothesis = 1 reproducible commitとする。
+
+## タスクリスト
+
+| 順序 | ID | タスク | 依存 | 成果物・完了条件 |
+|---:|---|---|---|---|
+| 1 | GOV-01 | データ配置・manifest契約を確定 | なし | 外部pathを設定で注入し、SHA-256、size、row count、schema、source、利用範囲をmanifestへ保存。データ実体がGit対象外であることをtest/checkで確認 |
+| 2 | DATA-01 | raw schemaと型・コードを固定 | GOV-01 | 27 raw列の型、nullable、単位、列意味、race/horse/jockey key、surface/venue codeを文書化。未知値を黙ってdropしない |
+| 3 | DATA-02 | race coverageを公式結果と監査 | DATA-01 | 既知の不足146レースをrace ID単位で特定。年×場×月×surfaceのcoverage表を生成し、補完・除外・flagの方針を確定 |
+| 4 | DATA-03 | outcome・例外規則を確定 | DATA-01 | 同着、降着、失格、競走中止、取消、除外、返還のlabel・field size・学習対象・精算規則をfixture付きで決定 |
+| 5 | PIT-01 | 予測時点とcolumn availabilityを固定 | DATA-01 | 各raw/derived列を`history_only`、`T_prevday`、`T_close`、`outcome`、`final_market`へ分類。過去rawはPIT-Cと明示 |
+| 6 | SPLIT-01 | 時間分割とholdout方針を事前登録 | DATA-02, PIT-01 | warm-up/train/calibration/development/retrospective testの絶対日付をmanifestへ固定。既利用の2025年を完全未使用finalと呼ばず、2026年以降のprospective final方針を記録 |
+| 7 | EXP-01 | experiment artifact仕様を確定 | GOV-01, SPLIT-01 | experiment ID、config、commit hash、data fingerprint、seed、metrics、predictions、importanceを保存するschemaと単一実行commandの仕様を作成 |
+| 8 | PIPE-01 | raw loader・正規化層を実装 | DATA-01, DATA-03 | 決定論的にrace/runner/result/final_marketへ分離。文字コード、数値parse、非完走、同着をtestで保証 |
+| 9 | PIPE-02 | PIT-safe履歴state engineを実装 | PIPE-01, PIT-01 | race開始前stateから特徴を出し、race全体の結果を一括更新。同一race内リークとfuture-row追加不変性のtestを通過 |
+| 10 | FEAT-01 | 最小race/runner contextを実装 | PIPE-02 | venue、surface、distance、class、sex/age、枠・馬番、field size等をfeature group化。利用時点をschemaに記録 |
+| 11 | FEAT-02 | horse history・form/workloadを実装 | PIPE-02 | 全履歴を保持し、複数走数窓、14～365日窓、指数減衰、休養日数、累積距離、条件別成績を作成 |
+| 12 | FEAT-03 | connection・field-relative特徴を実装 | PIPE-02 | jockey/trainerの過去のみ集計とfield内相対値をrace batch更新で作成。生entity IDはmodel featureから除外 |
+| 13 | FEAT-04 | forward-only rating・race strengthを実装 | PIPE-02 | 単純EloまたはBT-style ratingを一方式だけ導入し、相手強度と過去走価値をtarget以前だけで生成 |
+| 14 | QA-01 | canonical dataset検証suiteを完成 | FEAT-01～04, SPLIT-01 | forbidden列、timestamp、同一race更新、future append invariance、split境界、duplicate、欠損率、feature coverageのtestを全通過 |
+| 15 | BASE-01 | 非学習baselineを評価 | QA-01, EXP-01 | 一様勝率、簡単な履歴勝率等を同一splitで評価し、NDCG、Log Loss、Brier、校正、条件別指標をartifact化 |
+| 16 | EXP-001 | LightGBM Binary baseline | BASE-01 | `P(win)`二値分類を固定features・splitで実行。race内確率和、校正、ranking、市場帯別診断を記録 |
+| 17 | EXP-002 | LightGBM LambdaRank baseline | BASE-01 | Binaryと同一features・splitでranking objectiveだけを変更し、NDCG/top-k/rank diagnosticsを比較 |
+| 18 | PROB-01 | coherent勝率化・calibration比較 | EXP-001, EXP-002 | raw scoreをrace内合計1の勝率へ写像。時間外calibration sliceだけで候補を比較し、Log Loss/Brierで一方式をfreeze |
+| 19 | EVAL-01 | 統合評価reportを生成 | PROB-01 | ranking、確率、校正、race class、距離、surface、field size、final odds帯の診断を同じpredictionsから再現可能に生成 |
+| 20 | BET-01 | final-odds oracle診断を実装 | EVAL-01 | final oddsを選択には使わず、市場比較・oracle診断・固定額精算ロジックだけを検証。実行可能ROIと明確に区別 |
+| 21 | DEC-01 | 最初のbaseline採否レビュー | EXP-001～BET-01 | Binary/LambdaRankの改善・悪化・不確実性を比較し、次の1仮説を人間が選べるdecision reportを作成 |
+| 22 | DATA-04 | JRA公式による不足項目補完 | DATA-02, 追加source gate | 欠落race、詳細grade、lap、票数、払戻を独立table/feature groupとして補完。raw上書きはしない |
+| 23 | FEAT-05 | JMA気象feature ablation | DEC-01 | 観測所対応・品質flag・時刻意味を保持し、気象feature groupだけを追加した独立experimentを実行 |
+| 24 | LIVE-01 | prospective snapshot仕様・収集 | PIT-01, 追加source gate | 出馬表、変更、馬体重、馬場、oddsについて`published_at/ingested_at`付きPIT-Aを保存。rate/cache/diff方針を固定 |
+| 25 | LIVE-02 | shadow evaluation | LIVE-01, PROB-01 | 固定cutoff・固定model・固定EV proxyで購入せずに予測を記録し、十分な将来期間で実行可能性を評価 |
+| 26 | PAID-01 | JRA-VAN導入判断 | DEC-01, LIVE-01 | 無料構成の欠損と追加価値を定量化し、調教、正規ID、速報、時系列oddsのどれを検証するか一特徴群ずつ決定 |
+
+## 直近のマイルストーン
+
+| マイルストーン | 対象タスク | 到達条件 |
+|---|---|---|
+| M1: データ契約確定 | GOV-01～SPLIT-01 | データ版、coverage、例外、PIT、splitがmetricを見る前に固定される |
+| M2: PIT dataset完成 | EXP-01～QA-01 | 同一race・future leakage testを含む検証suiteが通る |
+| M3: 初期モデル比較 | BASE-01～PROB-01 | BinaryとLambdaRankを同一条件で比較し、coherent probabilityを得る |
+| M4: MVP評価完了 | EVAL-01～DEC-01 | 多面的評価とoracle市場診断を再現可能なartifactとして提示する |
+| M5: 実行可能市場評価 | LIVE-01～LIVE-02 | 締切前snapshotを用いたprospective shadow期間が蓄積される |
+
+最初に着手する実装単位は`GOV-01`である。`DATA-02`、`DATA-03`、`PIT-01`、`SPLIT-01`を閉じるまでは、学習metricを出してsplitや例外規則へ逆向きに最適化しない。
