@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "experiment_id": "pv_003_margin_rating_temporal_calibration",
+  "seed": 20240830,
+  "data": {
+    "warmup_year": 2013,
+    "margin_scale_years": [2014, 2015, 2016, 2017],
+    "rolling_calibration_evaluation_pairs": [
+      [2018, 2019],
+      [2019, 2020],
+      [2020, 2021],
+      [2021, 2022]
+    ],
+    "final_calibration_year": 2023,
+    "development_year": 2024,
+    "retrospective_2025_used": false
+  },
+  "control": {
+    "family": "pairwise_elo",
+    "initial_rating": 1500.0,
+    "k": 48.0,
+    "scale": 200.0,
+    "pairwise_actual": "ordinal"
+  },
+  "candidate": {
+    "family": "pairwise_elo",
+    "initial_rating": 1500.0,
+    "k": 48.0,
+    "scale": 200.0,
+    "pairwise_actual": "time_margin_logistic",
+    "time_margin_tau_seconds_per_1000m": 0.125
+  },
+  "selection": {
+    "primary": "race_log_loss_after_previous_year_temperature",
+    "minimum_positive_evaluation_years": 3,
+    "annual_macro_log_loss_improvement_exclusive": 0.0,
+    "latest_year_log_loss_improvement_ci_lower_exclusive": 0.0,
+    "annual_macro_brier_improvement_min": -0.001
+  },
+  "development_selection": {
+    "race_log_loss_improvement_ci_lower_exclusive": 0.0,
+    "guardrails": {
+      "race_brier_improvement_min": -0.001,
+      "ndcg_at_3_improvement_min": -0.002,
+      "top_1_improvement_min": -0.005
+    }
+  },
+  "uncertainty": {
+    "bootstrap_resamples": 10000,
+    "bootstrap_seed": 20240830,
+    "block_length_dates": 4,
+    "confidence_level": 0.95
+  }
+}
