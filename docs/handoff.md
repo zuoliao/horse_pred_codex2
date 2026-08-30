@@ -6,7 +6,7 @@ Read `README.md`, `AGENTS.md`, this file, and relevant `docs/` before changing m
 
 ## Current state
 
-The corrected LightGBM baseline validation, standalone rating-module R0–R6, and time-content stages PV-00/PV-01 are complete. This includes data/evaluation health, 2024 uncertainty, semantic ablation, diagnostics, five limited improvements, training-period-only rating selection, frozen PIT rating generation, a four-field past-performance audit, and one frozen time-content LightGBM comparison.
+The corrected LightGBM baseline validation, standalone rating-module R0–R6, and time/margin stages PV-00 through PV-05 are complete. This includes data/evaluation health, 2024 uncertainty, semantic ablation, diagnostics, training-period rating selection, frozen PIT rating generation, the accepted PV-01 time-history feature, a margin-aware rating actual, temporal calibration, and two deliberately one-column LightGBM integration tests.
 
 - Primary selection period: 2024 development, 3,051 races / 41,946 runners / 106 dates.
 - 2025: 0 rows used for hypothesis, feature, calibration, model, or accept/reject decisions. Cached retrospective rows are removed immediately after load.
@@ -23,6 +23,10 @@ The corrected LightGBM baseline validation, standalone rating-module R0–R6, an
 - R6 added the frozen five-column rating group to the lean LightGBM. Binary was rejected on the Brier guardrail; LambdaRank NDCG significantly worsened. The module remains a standalone baseline but is not in the current best LightGBM.
 - PV-00 found complete parseable clocks for all 515,983 numeric finishers/demotions in 2013–2023 flat data; 25.66% of fourths were within .3 seconds. Last-3F and passing order also have near-complete coverage but remain separate hypotheses.
 - PV-01 added one 90-day decayed signed time-gap feature. Binary passed both preregistered paths: NDCG +.00631 `[+.00145,+.01117]`, LL +.00685 `[+.00050,+.01312]`, Brier +.00217. LambdaRank was inconclusive with all point metrics better.
+- PV-02 replaced only the R5 ordinal pair actual with `sigmoid(distance-normalized clock gap / .125)`. It significantly improved 2022 ranking but significantly worsened raw Log Loss, so it stopped before 2023/2024 as preregistered.
+- PV-03 tested the identified calibration mechanism independently. Previous-year temperatures improved Log Loss in every 2019–2022 evaluation (macro +.00909); 2024 candidate LL was 2.39570 versus ordinal 2.40153, improvement +.00583 `[+.00197,+.00975]`. The calibrated margin-aware rating is the supported standalone replacement.
+- PV-04 added only the absolute margin-rating raw score to PV-01. Binary was near-null; LambdaRank points improved but intervals crossed zero. The feature was highly redundant with existing Elo (`rho≈.97`) and was not adopted.
+- PV-05 added only margin score minus same-spec ordinal score. Probability points improved (LambdaRank LL 2.07606, Brier .82641) but the PV-01 paired intervals crossed zero and the preregistered minimum was missed. It remains prospective-only and is not adopted.
 - Final odds remain an oracle-only diagnostic. No executable ROI or betting claim exists.
 
 ## Critical correction and population limits
@@ -45,6 +49,7 @@ Known selection limits:
 - Improvement preregistration/results: `docs/experiments/improvement_experiments_20260830.md`
 - Integrated decision report: `docs/experiments/baseline_validation_conclusions_20260830.md`
 - Time/margin/sectional audit, PV-01 protocol and result: `docs/experiments/race_content_time_m0_m4_20260831.md`
+- PV-02 through PV-05 protocols/results: `docs/experiments/pv_002_margin_aware_rating_20260831.md`, `docs/experiments/pv_003_margin_rating_temporal_calibration_20260831.md`, `docs/experiments/pv_004_margin_rating_integration_20260831.md`, `docs/experiments/pv_005_margin_rating_delta_20260831.md`
 - Tracked machine source of truth: `experiments/baseline_validation_20260830/`
 - Tracked PV-01 summary: `experiments/race_content_20260831/summary.json`
 
@@ -69,7 +74,7 @@ These are nominal intervals across five hypotheses and two model families. They 
 - R6 Rank improvement: NDCG −.00430 `[-.00808,−.00047]`, LL −.00444; reject.
 - R6 did not change the then-current best; PV-01 later superseded the Binary config only.
 
-## Race-content PV-00/PV-01 outcome
+## Race-content and margin-rating PV-00–PV-05 outcome
 
 - Protocol/config: `docs/experiments/race_content_time_m0_m4_20260831.md`, `configs/performance/pv_001_race_content_time.json`.
 - Frozen feature: sole winner gets positive gap to fastest nonwinner; nonwinners get negative gap to official winner; normalize per 1000m, clip to `[-5,+5]`, exclude demotion/DQ races, dead-heat winner 0, 90-day decayed historical mean.
@@ -78,12 +83,17 @@ These are nominal intervals across five hypotheses and two model families. They 
 - Binary candidate: NDCG .49757, Top-1 .29646, LL 2.07867, Brier .82767. Accept for the current development baseline, subject to 2026+ confirmation.
 - LambdaRank candidate: NDCG .49413, Top-1 .29056, LL 2.07783, Brier .82810. All points improved, but primary intervals crossed zero; retain as inconclusive.
 - Feature gain share: Binary 3.60%, LambdaRank 6.44%. Spearman with existing 90-day mean finish is −.812, so it is related but less redundant than IMP-005 (−.938).
+- PV-02 train-only tau: median positive adjacent-rank gap `.125 sec/1000m`; 26,563 clean 2014–2021 races, 268,522 positive gaps, 81,809 equal-clock gaps, zero inversions.
+- PV-03 frozen standalone spec: global pairwise Elo, initial 1500, K48, scale200, logistic time-margin actual tau .125, same-date batch, own previous-year/2023 temperature. 2024 calibrated NDCG .35634, Top-1 .16798, LL 2.39570, Brier .89355.
+- PV-04 absolute-score integration did not pass versus PV-01. Binary deltas NDCG/LL `+.00003/−.00009`; Ranker `+.00208/+.00054`, both primary intervals crossed zero.
+- PV-05 delta integration did not pass versus PV-01. Binary deltas NDCG/LL `−.00131/+.00057`; Ranker `−.00099/+.00178`, both primary intervals crossed zero. Do not promote its favorable probability point metrics as a supported improvement.
+- Tracked machine summaries are `experiments/race_content_20260831/summary.json` and `pv_002_summary.json` through `pv_005_summary.json`. Local artifacts are `artifacts/pv_002_*` through `artifacts/pv_005_*`.
 
 ## Exact next task
 
-Do not retune PV-01 against 2024. The exact next stage is PV-02: test whether replacing only the frozen standalone rating's hard ordinal pairwise actual with a continuous, antisymmetric time-margin actual improves the rating on train/2022 evidence. Keep R5 initialization/K/scale, same-date batch, populations and probability mapping fixed. Determine the margin scale from 2014–2021 time-difference distribution before evaluation, preregister it, and stop before 2024 if 2022 is clearly worse. Do not integrate with LightGBM unless PV-02 is supported; that would be a separate PV-03.
+Do not try more arithmetic variants of the rating score on 2024. PV-04/PV-05 already show that the supported standalone margin rating has no demonstrated incremental value beyond PV-01 LightGBM at current sample size.
 
-After PV-02, the next independent candidates are margin-token refinement for 0.1-second clock ties, race-relative last-3F history, and first/last passing-position gain. Do not combine them. Graded LambdaRank labels are last because they change only the Ranker objective and require integer bins. The opponent-only field-strength idea remains available but is lower priority after the direct content result. Do not move to data expansion, DNN, purchase strategy, or UI without a new phase decision.
+The exact next stage is a train-only audit and preregistration of raw `着差` tokens as a refinement for the 0.1-second clock resolution. Quantify token vocabulary/ordering, mapping reliability, coverage and anomalies using 2014–2021 only; define one deterministic numeric refinement without outcome-metric tuning; then use 2022 as the first performance gate. Do not mix it with last-3F, passing order, condition-specific tau, graded LambdaRank, or another rating representation. If the margin-token mapping is not defensible, move to race-relative last-3F history as the next separate hypothesis. Keep 2025 unused and retain 2026+ prospective final.
 
 ## Useful commands
 
@@ -110,6 +120,12 @@ uv run horse-pred build-race-content-cache \
   --baseline-cache data/model_frame_20260830_corrected.pkl \
   --output data/model_frame_race_content_time_20260831.pkl
 
+# Reproduce PV-03 standalone temporal-calibration study
+uv run horse-pred run-margin-rating-calibration-study \
+  --raw-path /path/to/race_results_merged.csv \
+  --cache data/model_frame_20260830_corrected.pkl \
+  --output artifacts/pv_003_margin_rating_temporal_calibration_20260831
+
 # Rebuild opt-in surface Elo cache (long-running)
 uv run horse-pred run-mvp \
   --raw-path /path/to/race_results_merged.csv \
@@ -135,4 +151,6 @@ uv run horse-pred run-mvp \
 - R6 cache control: 533,853 rows; old 268 columns exact; new columns 5; 2025 nonmissing 0. The R6 control reproduced `abl_006` exactly.
 - Formal R0–R5 run commit: `ce6d5ccb465d7462eeb3872887fa19891a1e732f`, dirty=false. R6 run commit: `3d530258dbe51d985f54f5460e4824cbf4ff80a0`, dirty=false.
 - PV-01 cache SHA-256: `85e92160f0a79f7286409bd4c006a0f0a1310ff67ff845e6fdc75d1894834eb9`; old cache SHA-256 `8d2cd52aea7e77a5b8d3fbeed1436cdffd92699f8c668b26daaec16b70ada62f`.
-- Latest verification before final documentation: 116 tests passed, Ruff passed, compileall passed. Rerun after documentation changes before handoff.
+- PV-03 run commit `79905d8fa6afa84b4b53d520984926df1f8e342b`, dirty=false. PV-04 cache/run commit `66158b5`, dirty=false. PV-05 cache/run commit `e161d4e`, dirty=false.
+- PV-04 cache SHA-256 `525ccf39ae654d78e72d2909bcc4ec184165f86d91fa7828466793887b1e7b96`; PV-05 delta cache SHA-256 `e9c6c0ccd5c9b5aeb20c4dfc1f95ea92e121937dba000975c1535d6f04c1ccfd`.
+- Latest code verification before final documentation: 127 tests passed, Ruff passed, compileall passed. Rerun once after these documentation edits.

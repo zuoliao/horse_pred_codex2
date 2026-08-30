@@ -14,9 +14,11 @@ This is a staged study, not one bundled model change:
 |---|---|---|
 | M0 / PV-00 | The local time, margin, last-3F and passing-order fields can support PIT-safe historical content | Aggregate quality audit only |
 | M1 / PV-01 | Signed past-race time gaps add information beyond finish/rating history | One opt-in historical feature |
-| M2 / PV-02 | A continuous margin-aware pairwise actual improves the frozen standalone rating | Rating actual only; no LightGBM integration |
-| M3 / PV-03 | A supported margin-aware rating adds incremental LightGBM information | Only if PV-02 is supported |
-| M4 / PV-04 | Fixed margin bins improve LambdaRank ranking | Label experiment last; Binary unchanged |
+| M2 / PV-02 | A continuous margin-aware pairwise actual improves the frozen standalone rating | Raw mapping rejected: ranking up, probability down |
+| M3 / PV-03 | Temporal calibration repairs the changed rating-score scale | Supported standalone on rolling years and 2024 |
+| M4 / PV-04 | Absolute margin-aware score adds incremental LightGBM information | Inconclusive versus PV-01; not adopted |
+| M5 / PV-05 | Margin-minus-ordinal score isolates the margin-specific state | Probability points up, intervals cross zero; not adopted |
+| M6 / future | Raw margin tokens refine equal-clock results | Next separate train/2022 hypothesis |
 
 Raw margin refinement, last-3F, passing position, absolute speed figures and track variants are separate hypotheses. They are not mixed into PV-01.
 
@@ -89,9 +91,9 @@ These are standalone ranking diagnostics, not LightGBM improvement claims. They 
 
 ## M2 and M4 design constraints
 
-If PV-01 is complete, PV-02 may replace only the frozen rating's hard pairwise actual with a continuous antisymmetric value such as `sigmoid(time_difference / tau)`. `K`, scale, initialization and update timing remain fixed so the effect is identifiable. It must first beat the frozen rating standalone; LightGBM integration is PV-03, not part of PV-02.
+PV-02 through PV-05 executed this branch in smaller stages. The hard-actual replacement changed score scale, so PV-02's raw probability gate failed despite significantly better 2022 ranking. PV-03 then preregistered previous-year temperature calibration and supported the margin-aware rating standalone. PV-04 and PV-05 tested one absolute score and one margin-minus-ordinal score separately inside the PV-01 LightGBM; neither established incremental value.
 
-PV-04 is last because LightGBM LambdaRank requires integer relevance and a global `label_gain`; continuous margin cannot be passed directly. A fixed-bin experiment also changes the training objective away from the current win/top-three emphasis and applies only to LambdaRank. Its evaluation must retain the current fixed ranking metrics rather than redefining success around the new label.
+Graded LambdaRank remains last because it requires integer relevance and a global `label_gain`; continuous margin cannot be passed directly. A fixed-bin experiment also changes the training objective away from the current win/top-three emphasis and applies only to LambdaRank. Its evaluation must retain the current fixed ranking metrics rather than redefining success around the new label.
 
 ## M1 result
 
