@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "experiment_id": "imp_001_compact_form_relative",
+  "parent_experiment_id": "mvp_task16_corrected_20260830",
+  "hypothesis": "Replacing the noisy 15-column field-relative group with three race-percentile transforms of the strongest point-in-time form and same-surface features improves 2024 generalization",
+  "seed": 42,
+  "model_configs": {
+    "binary": "configs/exp_001_binary.json",
+    "lambdarank": "configs/exp_002_lambdarank.json"
+  },
+  "feature_selection": {
+    "drop": [
+      "field_relative"
+    ]
+  },
+  "derived_features": [
+    {
+      "operation": "within_race_percentile",
+      "source": "horse_history__decay_30d__mean_finish",
+      "output": "experimental__decay_30d_mean_finish__race_percentile"
+    },
+    {
+      "operation": "within_race_percentile",
+      "source": "horse_history__decay_90d__mean_finish",
+      "output": "experimental__decay_90d_mean_finish__race_percentile"
+    },
+    {
+      "operation": "within_race_percentile",
+      "source": "horse_history__same_surface__mean_finish",
+      "output": "experimental__same_surface_mean_finish__race_percentile"
+    }
+  ]
+}
