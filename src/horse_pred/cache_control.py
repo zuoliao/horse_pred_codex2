@@ -33,6 +33,13 @@ SURFACE_RATING_COLUMNS: tuple[str, ...] = (
 RACE_VALUE_COLUMNS: tuple[str, ...] = (
     "race_value__decay_90d__mean_global_elo_surprise",
 )
+MODULAR_RATING_COLUMNS: tuple[str, ...] = (
+    "modular_rating__score_pre",
+    "modular_rating__raw_win_probability_pre",
+    "modular_rating__global_starts_pre",
+    "modular_rating__condition_starts_pre",
+    "modular_rating__uncertainty_proxy_pre",
+)
 
 
 def _positional_mismatch_count(left: Sequence[str], right: Sequence[str]) -> int:
@@ -301,6 +308,30 @@ def compare_race_value_cache_control(
         comparison_name="expected_actual_race_value_cache_control",
         count_key="candidate_race_value",
         contract_key="race_value",
+        output_path=output_path,
+        chunk_size=chunk_size,
+        expected_baseline_feature_count=expected_baseline_feature_count,
+    )
+
+
+def compare_modular_rating_cache_control(
+    baseline_cache_path: str | Path,
+    candidate_cache_path: str | Path,
+    *,
+    output_path: str | Path | None = None,
+    chunk_size: int = 10_000,
+    expected_baseline_feature_count: int = 268,
+) -> dict[str, Any]:
+    """Verify that a rating-module cache differs only by its five frozen columns."""
+
+    return _compare_opt_in_cache_control(
+        baseline_cache_path,
+        candidate_cache_path,
+        expected_experimental_columns=MODULAR_RATING_COLUMNS,
+        experimental_prefix="modular_rating__",
+        comparison_name="modular_rating_cache_control",
+        count_key="candidate_modular_rating",
+        contract_key="modular_rating",
         output_path=output_path,
         chunk_size=chunk_size,
         expected_baseline_feature_count=expected_baseline_feature_count,

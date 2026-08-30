@@ -45,6 +45,7 @@ _GENERATED_PREFIXES: tuple[str, ...] = (
     "rating__",
     "surface_rating__",
     "race_value__",
+    "modular_rating__",
 )
 
 FEATURE_PREFIXES: Mapping[str, tuple[str, ...]] = {
@@ -56,6 +57,7 @@ FEATURE_PREFIXES: Mapping[str, tuple[str, ...]] = {
     "rating_strength": ("rating__",),
     "surface_conditioned_rating": ("surface_rating__",),
     "race_value_expected_actual": ("race_value__",),
+    "rating_module": ("modular_rating__",),
 }
 
 # This is documentation and a defensive check.  Safety does not depend on
@@ -1058,6 +1060,9 @@ def feature_groups(frame: pd.DataFrame) -> dict[str, tuple[str, ...]]:
         "race_value_expected_actual": tuple(
             column for column in frame if column.startswith("race_value__")
         ),
+        "rating_module": tuple(
+            column for column in frame if column.startswith("modular_rating__")
+        ),
     }
     return groups
 
@@ -1106,6 +1111,8 @@ def semantic_feature_groups_v2(
         groups["surface_conditioned_rating"] = []
     if any(column.startswith("race_value__") for column in feature_columns):
         groups["race_value_expected_actual"] = []
+    if any(column.startswith("modular_rating__") for column in feature_columns):
+        groups["rating_module"] = []
     for column in feature_columns:
         if column.startswith("context__"):
             group = "current_context"
@@ -1122,6 +1129,8 @@ def semantic_feature_groups_v2(
             group = "surface_conditioned_rating"
         elif column.startswith("race_value__"):
             group = "race_value_expected_actual"
+        elif column.startswith("modular_rating__"):
+            group = "rating_module"
         elif column.startswith("horse_history__same_"):
             group = "suitability"
         elif column.startswith("horse_history__") and any(

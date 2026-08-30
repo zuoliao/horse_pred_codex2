@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 
 from horse_pred.cache_control import (
+    compare_modular_rating_cache_control,
     compare_race_value_cache_control,
     compare_surface_elo_cache_control,
 )
@@ -188,3 +189,31 @@ def test_race_value_cache_control_passes_for_exact_control_values(tmp_path) -> N
     assert result["feature_counts"]["candidate_race_value"] == 1
     assert result["feature_schema"]["race_value_contract_matches"]
     assert result["feature_schema"]["race_value_columns"] == [race_value_column]
+
+
+def test_modular_rating_cache_control_passes_for_five_columns(tmp_path) -> None:
+    baseline = _frame()
+    candidate = baseline.copy()
+    columns = [
+        "modular_rating__score_pre",
+        "modular_rating__raw_win_probability_pre",
+        "modular_rating__global_starts_pre",
+        "modular_rating__condition_starts_pre",
+        "modular_rating__uncertainty_proxy_pre",
+    ]
+    for index, column in enumerate(columns):
+        candidate[column] = float(index)
+    baseline_path = tmp_path / "baseline.pkl"
+    candidate_path = tmp_path / "candidate.pkl"
+    _write_cache(baseline_path, baseline, ["feature_a", "feature_b"])
+    _write_cache(candidate_path, candidate, ["feature_a", "feature_b", *columns])
+
+    result = compare_modular_rating_cache_control(
+        baseline_path,
+        candidate_path,
+        expected_baseline_feature_count=2,
+    )
+
+    assert result["passed"]
+    assert result["feature_counts"]["candidate_modular_rating"] == 5
+    assert result["feature_schema"]["modular_rating_contract_matches"]
