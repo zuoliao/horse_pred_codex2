@@ -7,13 +7,20 @@ import json
 from collections.abc import Sequence
 from pathlib import Path
 
+from horse_pred.artifacts import write_json
 from horse_pred.cached_experiment import run_cached_experiment
 from horse_pred.data import (
     audit_csv,
     load_manifest,
+    load_raw,
+    normalize_raw,
     resolve_raw_path,
     verify_audit_against_manifest,
     verify_raw_file,
+)
+from horse_pred.data_health import (
+    build_race_population_table,
+    population_selection_audit,
 )
 from horse_pred.pipeline import run_mvp
 from horse_pred.uncertainty import run_uncertainty_analysis
@@ -27,6 +34,15 @@ def parser() -> argparse.ArgumentParser:
     audit.add_argument("--raw-path", type=Path)
     audit.add_argument("--manifest", type=Path, default=Path("configs/data_manifest.json"))
     audit.add_argument("--skip-sha256", action="store_true")
+
+    population = commands.add_parser(
+        "audit-population", help="audit flat/jump and non-starter race selection"
+    )
+    population.add_argument("--raw-path", type=Path)
+    population.add_argument(
+        "--manifest", type=Path, default=Path("configs/data_manifest.json")
+    )
+    population.add_argument("--output", type=Path, required=True)
 
     run = commands.add_parser(
         "run-mvp", help="run PIT features, both LightGBM models, calibration, and evaluation"
@@ -80,6 +96,20 @@ def main(argv: Sequence[str] | None = None) -> int:
         report = audit_csv(raw_path, manifest)
         verify_audit_against_manifest(report, manifest)
         print(json.dumps({"fingerprint": fingerprint, "audit": report}, ensure_ascii=False, indent=2))
+        return 0
+    if args.command == "audit-population":
+        manifest = load_manifest(args.manifest)
+        raw_path = resolve_raw_path(
+            args.raw_path,
+            environment_variable=manifest["path_policy"]["environment_variable"],
+        )
+        fingerprint = verify_raw_file(raw_path, manifest)
+        raw = load_raw(raw_path, expected_sha256=manifest["raw_file"]["sha256"])
+        races = build_race_population_table(normalize_raw(raw))
+        report = population_selection_audit(races)
+        report["fingerprint"] = fingerprint
+        write_json(args.output, report)
+        print(json.dumps(report, ensure_ascii=False, indent=2))
         return 0
     if args.command == "run-mvp":
         manifest_path = args.manifest
