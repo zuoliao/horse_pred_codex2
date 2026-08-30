@@ -135,7 +135,7 @@ def run_rating_study(
         validate="one_to_one",
     )
     differences = (
-        r0_control["global_state_pre"].astype(float)
+        r0_control["global_state_pre"].astype("float32")
         - r0_control["rating__horse_elo_pre"].astype(float)
     ).abs()
     r0_result = {
@@ -143,6 +143,7 @@ def run_rating_study(
         "runner_count": len(r0_control),
         "max_abs_diff": float(differences.max()),
         "mismatch_count": int(differences.ne(0.0).sum()),
+        "comparison_dtype": "float32_existing_feature_contract",
         "spec": r0_spec.as_dict(),
     }
     if not r0_result["passed"]:
