@@ -9,7 +9,7 @@ from typing import Any
 
 import pandas as pd
 
-from horse_pred.artifacts import write_artifact_manifest, write_json
+from horse_pred.artifacts import git_state, write_artifact_manifest, write_json
 from horse_pred.data import load_manifest, load_raw, normalize_raw, sha256_file, verify_raw_file
 from horse_pred.dataset_cache import read_model_frame_cache
 from horse_pred.evaluation import (
@@ -110,6 +110,7 @@ def run_rating_study(
         raise FileExistsError(f"refusing to overwrite rating study: {output}")
     output.mkdir(parents=True)
     config = json.loads((root / config_path).read_text(encoding="utf-8"))
+    run_git_state = git_state(root)
     manifest = load_manifest(root / "configs/data_manifest.json")
     verify_raw_file(raw_path, manifest)
     model_frame, model_meta = read_model_frame_cache(root / model_cache_path)
@@ -269,6 +270,18 @@ def run_rating_study(
         "temperature_2023": calibrator.temperature,
         "feature_columns": config["r5_outputs"],
     })
+    write_json(
+        output / "run_meta.json",
+        {
+            "schema_version": 1,
+            "study_id": config["study_id"],
+            "git": run_git_state,
+            "seed": config["seed"],
+            "data_fingerprint": manifest["raw_file"]["sha256"],
+            "retrospective_2025_used": False,
+            "odds_used": False,
+        },
+    )
     result = {
         "schema_version": 1,
         "study_id": config["study_id"],
