@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "experiment_id": "pv_005_margin_rating_delta",
+  "run_commit": "e161d4e",
+  "run_dirty": false,
+  "cache_gate": {
+    "rows": 533853,
+    "old_feature_exact": true,
+    "pre2025_nonmissing": 489674,
+    "retrospective_2025_nonmissing": 0,
+    "control_prediction_max_abs_diff": 0.0,
+    "delta_zero_count": 49133,
+    "delta_std": 0.0690289354
+  },
+  "development_2024": {
+    "candidate_binary": {"features": 255, "ndcg_at_3": 0.4962569716, "top_1": 0.2923631596, "race_log_loss": 2.0780977233, "race_brier": 0.8272421938},
+    "candidate_lambdarank": {"features": 255, "ndcg_at_3": 0.4931431822, "top_1": 0.2879383809, "race_log_loss": 2.0760562328, "race_brier": 0.8264084611}
+  },
+  "primary_improvement_vs_pv001": {
+    "binary": {
+      "ndcg_at_3": {"point": -0.0013081877, "lower": -0.00649348, "upper": 0.00419061},
+      "top_1": {"point": -0.0040970174, "lower": -0.01454173, "upper": 0.00705936},
+      "race_log_loss": {"point": 0.0005738012, "lower": -0.00723135, "upper": 0.00808452},
+      "race_brier": {"point": 0.0004311158, "lower": -0.00221652, "upper": 0.00303722}
+    },
+    "lambdarank": {
+      "ndcg_at_3": {"point": -0.0009891155, "lower": -0.00573729, "upper": 0.00386257},
+      "top_1": {"point": -0.0026220911, "lower": -0.01207806, "upper": 0.00780720},
+      "race_log_loss": {"point": 0.0017751287, "lower": -0.00343771, "upper": 0.00679519},
+      "race_brier": {"point": 0.0016963684, "lower": -0.00007689, "upper": 0.00344445}
+    }
+  },
+  "lambdarank_secondary_vs_lean253": {
+    "race_log_loss": {"point": 0.0086058762, "lower": 0.00080347, "upper": 0.01665784},
+    "race_brier": {"point": 0.0035402732, "lower": 0.00090829, "upper": 0.00623604},
+    "probability_path_passed": true
+  },
+  "feature_diagnostics": {
+    "spearman_vs_pv001": -0.3669295402,
+    "spearman_vs_existing_elo": -0.5695505248,
+    "binary_gain_fraction": 0.0176126239,
+    "binary_gain_rank": 12,
+    "lambdarank_gain_fraction": 0.0197747174,
+    "lambdarank_gain_rank": 9
+  },
+  "decision": {
+    "binary": "inconclusive_not_adopted",
+    "lambdarank": "inconclusive_vs_pv001_not_promoted",
+    "close_2024_rating_representation_branch": true,
+    "next_hypothesis": "train_only raw margin-token refinement for equal-clock results"
+  }
+}
