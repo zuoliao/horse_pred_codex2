@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "audit_id": "baseline_data_health_20260830",
+  "raw_data_sha256": "270923ce73c4441e64173f242a8719de7d1e9b205508140463ca547ef7b1ca87",
+  "blocking_issue": {
+    "status": "fixed_pending_corrected_baseline_result",
+    "issue": "surface-only filtering admitted obstacle races whose course_type was turf or dirt",
+    "true_obstacle_races_all_years": 1633,
+    "explicit_jump_surface_races": 924,
+    "surface_coded_obstacle_races": 709,
+    "surface_coded_obstacle_surface": {"芝": 190, "ダート": 519},
+    "old_2024_scored_obstacle_races": 36,
+    "old_2024_scored_runners": 388,
+    "corrected_2024_scored_flat_races": 3051,
+    "fix_commit": "810a003"
+  },
+  "known_missing": {
+    "race_count": 146,
+    "all_kyoto": true,
+    "date_cluster_count": 14,
+    "by_year": {"2015": 2, "2017": 36, "2024": 108},
+    "surface_all_years": {"芝": 63, "ダート": 75, "障害": 8},
+    "starters_all_years": 1991,
+    "development_2024": {
+      "all_races": 108,
+      "flat_races": 103,
+      "jump_races": 5,
+      "flat_starters": 1419,
+      "jump_starters": 62,
+      "all_starters": 1481,
+      "flat_mean_field_size": 13.776699029126213,
+      "dates": [
+        "2024-11-30", "2024-12-01", "2024-12-07", "2024-12-08",
+        "2024-12-14", "2024-12-15", "2024-12-21", "2024-12-22",
+        "2024-12-28"
+      ],
+      "venue": "京都",
+      "surface_flat": {"芝": 45, "ダート": 58},
+      "distance_band_flat": {
+        "le_1399": 20,
+        "1400_1799": 33,
+        "1800_2199": 47,
+        "ge_2200": 3
+      },
+      "class_flat": {
+        "maiden": 32,
+        "newcomer": 17,
+        "class_1": 18,
+        "class_2": 18,
+        "class_3": 9,
+        "open_or_graded": 9
+      },
+      "field_size_band_flat": {"le_9": 7, "10_12": 26, "13_15": 29, "ge_16": 41}
+    }
+  },
+  "development_2024_population": {
+    "official_flat_races_reconstructed": 3327,
+    "raw_flat_races": 3224,
+    "raw_coverage": 0.9690411782386534,
+    "strict_pit_c_scored_races": 3051,
+    "strict_scored_coverage": 0.917042380523694,
+    "missing_flat_share": 0.030960324616771866,
+    "missing_kyoto_share": 0.1456859971711457,
+    "missing_december_share": 0.3729508196721312
+  },
+  "nonstarter_selection": {
+    "all_years": {
+      "flat_races": 43128,
+      "excluded_races": 2048,
+      "excluded_rate": 0.04748655166017436,
+      "scratch_runners": 984,
+      "excluded_runners": 1178
+    },
+    "development_2024": {
+      "flat_races": 3224,
+      "excluded_races": 173,
+      "excluded_rate": 0.05366004962779156,
+      "scratch_races": 81,
+      "exclusion_races": 97,
+      "both_races": 5,
+      "scratch_runners": 82,
+      "excluded_runners": 99,
+      "declared_field_mean_scored": 13.748,
+      "declared_field_mean_excluded": 14.029,
+      "final_starter_mean_excluded": 12.983
+    }
+  },
+  "decisions": {
+    "old_task16_reference_valid": false,
+    "strict_no_nonstarter_primary_retained": true,
+    "starter_only_status": "post-scratch-field oracle sensitivity only",
+    "feature_ablation_after_corrected_baseline_allowed": true,
+    "binary_vs_ranker_small_difference_decision_grade": false,
+    "retrospective_2025_used": false
+  }
+}
