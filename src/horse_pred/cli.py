@@ -7,6 +7,7 @@ import json
 from collections.abc import Sequence
 from pathlib import Path
 
+from horse_pred.cached_experiment import run_cached_experiment
 from horse_pred.data import (
     audit_csv,
     load_manifest,
@@ -58,6 +59,15 @@ def parser() -> argparse.ArgumentParser:
     uncertainty.add_argument("--output", type=Path, required=True)
     uncertainty.add_argument("--resamples", type=int, default=10_000)
     uncertainty.add_argument("--seed", type=int, default=20240830)
+
+    cached = commands.add_parser(
+        "run-cached-experiment",
+        help="fit and evaluate a registered 2024-only experiment from a PIT frame cache",
+    )
+    cached.add_argument("--cache", type=Path, required=True)
+    cached.add_argument("--config", type=Path, required=True)
+    cached.add_argument("--output", type=Path, required=True)
+    cached.add_argument("--repo-root", type=Path, default=Path.cwd())
     return root
 
 
@@ -114,6 +124,23 @@ def main(argv: Sequence[str] | None = None) -> int:
             seed=args.seed,
         )
         print(json.dumps(result["scope"], ensure_ascii=False, indent=2))
+        return 0
+    if args.command == "run-cached-experiment":
+        metrics = run_cached_experiment(
+            repo_root=args.repo_root,
+            cache_path=args.cache,
+            config_path=args.config,
+            output_dir=args.output,
+        )
+        summary = {
+            "output": str(args.output.resolve()),
+            "experiment_id": metrics["experiment_id"],
+            "elapsed_seconds": metrics["elapsed_seconds"],
+            "feature_count": metrics["features"]["count"],
+            "evaluated_split": "development",
+            "retrospective_used": metrics["scope"]["retrospective_used"],
+        }
+        print(json.dumps(summary, ensure_ascii=False, indent=2))
         return 0
     raise AssertionError(f"unhandled command: {args.command}")
 
