@@ -3,6 +3,7 @@ from __future__ import annotations
 import pandas as pd
 import pytest
 
+from horse_pred.margin_rating_calibration_study import _rolling_decision
 from horse_pred.margin_rating_study import _decision, derive_adjacent_margin_scale
 from horse_pred.rating import RatingEvent
 
@@ -85,3 +86,32 @@ def test_decision_requires_positive_log_loss_interval_and_guardrails() -> None:
     assert _decision(improvement, bootstrap(-0.02, -0.001), config) == "reject"
     failed_guardrail = {**improvement, "race_brier": -0.002}
     assert _decision(failed_guardrail, bootstrap(0.001, 0.02), config) == "reject"
+
+
+def test_rolling_decision_requires_repeatability_macro_and_latest_interval() -> None:
+    annual = {
+        "2019": {"race_log_loss": 0.01, "race_brier": 0.001, "ndcg_at_3": 0.0, "top_1": 0.0},
+        "2020": {"race_log_loss": 0.01, "race_brier": 0.001, "ndcg_at_3": 0.0, "top_1": 0.0},
+        "2021": {"race_log_loss": -0.001, "race_brier": 0.0, "ndcg_at_3": 0.0, "top_1": 0.0},
+        "2022": {"race_log_loss": 0.01, "race_brier": 0.001, "ndcg_at_3": 0.0, "top_1": 0.0},
+    }
+    bootstrap = {
+        "paired": {
+            "candidate_vs_control": {
+                "race_log_loss": {"lower": 0.001, "upper": 0.02}
+            }
+        }
+    }
+    selection = {
+        "minimum_positive_evaluation_years": 3,
+        "annual_macro_log_loss_improvement_exclusive": 0.0,
+        "annual_macro_brier_improvement_min": -0.001,
+        "latest_year_log_loss_improvement_ci_lower_exclusive": 0.0,
+    }
+
+    decision, diagnostics = _rolling_decision(annual, bootstrap, selection)
+
+    assert decision == "go"
+    assert diagnostics["positive_log_loss_year_count"] == 3
+    bootstrap["paired"]["candidate_vs_control"]["race_log_loss"]["lower"] = -0.001
+    assert _rolling_decision(annual, bootstrap, selection)[0] == "inconclusive"

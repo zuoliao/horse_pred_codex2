@@ -26,6 +26,9 @@ from horse_pred.data_health import (
 )
 from horse_pred.diagnostics import run_baseline_diagnostics
 from horse_pred.features import FeatureConfig
+from horse_pred.margin_rating_calibration_study import (
+    run_margin_rating_calibration_study,
+)
 from horse_pred.margin_rating_study import run_margin_rating_study
 from horse_pred.pipeline import run_mvp
 from horse_pred.race_content import (
@@ -153,6 +156,21 @@ def parser() -> argparse.ArgumentParser:
     )
     margin_rating.add_argument("--output", type=Path, required=True)
     margin_rating.add_argument("--repo-root", type=Path, default=Path.cwd())
+    margin_calibration = commands.add_parser(
+        "run-margin-rating-calibration-study",
+        help="run the preregistered PV-03 temporal rating calibration study",
+    )
+    margin_calibration.add_argument("--raw-path", type=Path, required=True)
+    margin_calibration.add_argument("--cache", type=Path, required=True)
+    margin_calibration.add_argument(
+        "--config",
+        type=Path,
+        default=Path(
+            "configs/performance/pv_003_margin_rating_temporal_calibration.json"
+        ),
+    )
+    margin_calibration.add_argument("--output", type=Path, required=True)
+    margin_calibration.add_argument("--repo-root", type=Path, default=Path.cwd())
     return root
 
 
@@ -317,6 +335,30 @@ def main(argv: Sequence[str] | None = None) -> int:
                     "development_2024_opened": result["scope"][
                         "development_2024_opened"
                     ],
+                    "elapsed_seconds": result["elapsed_seconds"],
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
+        return 0
+    if args.command == "run-margin-rating-calibration-study":
+        result = run_margin_rating_calibration_study(
+            repo_root=args.repo_root,
+            raw_path=args.raw_path,
+            model_cache_path=args.cache,
+            config_path=args.config,
+            output_dir=args.output,
+        )
+        print(
+            json.dumps(
+                {
+                    "experiment_id": result["experiment_id"],
+                    "rolling_gate": result["rolling_gate"],
+                    "development_2024_opened": result["scope"][
+                        "development_2024_opened"
+                    ],
+                    "development_2024": result.get("development_2024"),
                     "elapsed_seconds": result["elapsed_seconds"],
                 },
                 ensure_ascii=False,
