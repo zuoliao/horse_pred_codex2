@@ -23,6 +23,7 @@ from horse_pred.data import (
     verify_audit_against_manifest,
     verify_raw_file,
 )
+from horse_pred.dataset_cache import write_model_frame_cache
 from horse_pred.evaluation import (
     evaluate_prediction_frame,
     final_odds_oracle_diagnostic,
@@ -206,6 +207,7 @@ def run_mvp(
     binary_config_path: str | Path = "configs/exp_001_binary.json",
     ranker_config_path: str | Path = "configs/exp_002_lambdarank.json",
     include_retrospective_test: bool = False,
+    model_frame_cache_path: str | Path | None = None,
 ) -> dict[str, Any]:
     """Run audit, PIT features, both LightGBM models, calibration, and EVAL-01."""
 
@@ -241,6 +243,13 @@ def run_mvp(
     features = build_features(normalized, split_config=split_config)
     del normalized
     model_frame = prepare_model_frame(features)
+    if model_frame_cache_path is not None:
+        write_model_frame_cache(
+            _resolve(root, model_frame_cache_path),
+            model_frame,
+            features,
+            data_fingerprint=expected_hash,
+        )
     feature_columns, feature_groups = resolve_experiment_features(
         features, binary_config, ranker_config
     )

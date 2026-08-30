@@ -45,6 +45,11 @@ def parser() -> argparse.ArgumentParser:
         action="store_true",
         help="explicitly inspect the non-sealed 2025 retrospective split",
     )
+    run.add_argument(
+        "--model-frame-cache",
+        type=Path,
+        help="optional ignored local pickle cache for later ablation/diagnostic runs",
+    )
     return root
 
 
@@ -76,6 +81,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             binary_config_path=args.binary_config,
             ranker_config_path=args.ranker_config,
             include_retrospective_test=args.include_retrospective_test,
+            model_frame_cache_path=args.model_frame_cache,
         )
         summary = {
             "output": str(args.output.resolve()),
