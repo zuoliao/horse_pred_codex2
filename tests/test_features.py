@@ -270,6 +270,96 @@ def test_dirt_coded_obstacle_race_never_updates_flat_entity_or_elo_state() -> No
     assert following["rating__horse_elo_pre"] == obstacle["rating__horse_elo_pre"]
 
 
+def test_surface_conditioned_elo_is_opt_in_and_keeps_baseline_contract(
+    raw_fixture: pd.DataFrame,
+) -> None:
+    baseline = build_features(raw_fixture)
+    experimental = build_features(
+        raw_fixture, config=FeatureConfig(surface_conditioned_elo=True)
+    )
+
+    assert len(baseline.feature_columns) == 268
+    assert not any(
+        column.startswith("surface_rating__")
+        for column in baseline.feature_columns
+    )
+    added = set(experimental.feature_columns).difference(baseline.feature_columns)
+    assert added == {
+        "surface_rating__horse_elo_pre",
+        "surface_rating__horse_minus_field_mean_elo",
+        "surface_rating__horse_elo_percentile",
+    }
+    assert experimental.feature_groups["surface_conditioned_rating"] == tuple(
+        column
+        for column in experimental.feature_columns
+        if column.startswith("surface_rating__")
+    )
+    assert set(
+        semantic_feature_groups_v2(experimental.feature_columns)[
+            "surface_conditioned_rating"
+        ]
+    ) == added
+
+
+def test_surface_conditioned_elo_separates_surface_and_defers_same_date_updates() -> None:
+    raw = pd.DataFrame(
+        [
+            _row("202305010101", "2023-01-01", "h1", "j1", "t1", 1),
+            _row("202305010101", "2023-01-01", "h2", "j2", "t2", 2),
+            # h1 appears once on each surface on the next date.  Both races
+            # must use the state available before any result from that date.
+            _row("202305010201", "2023-01-02", "h1", "j1", "t1", 2),
+            _row("202305010201", "2023-01-02", "ht", "jt", "tt", 1),
+            _row("202305010202", "2023-01-02", "h1", "j1", "t1", 1),
+            _row("202305010202", "2023-01-02", "hd", "jd", "td", 2),
+            _row("202305010203", "2023-01-02", "h1", "j1", "t1", 1),
+            _row("202305010203", "2023-01-02", "hs", "js", "ts", 2),
+            _row("202305010301", "2023-01-03", "h1", "j1", "t1", 1),
+            _row("202305010301", "2023-01-03", "hx", "jx", "tx", 2),
+        ]
+    )
+    raw.loc[raw["raceid"].isin(["202305010202", "202305010301"]), "course_type"] = "ダート"
+    features = build_pit_features(
+        raw, FeatureConfig(surface_conditioned_elo=True)
+    )
+
+    jan2_turf = _by_horse(features, "202305010201", "h1")
+    jan2_dirt = _by_horse(features, "202305010202", "h1")
+    jan2_later_turf = _by_horse(features, "202305010203", "h1")
+    jan3_dirt = _by_horse(features, "202305010301", "h1")
+    assert jan2_turf["surface_rating__horse_elo_pre"] > 1500
+    assert jan2_later_turf["surface_rating__horse_elo_pre"] == jan2_turf[
+        "surface_rating__horse_elo_pre"
+    ]
+    assert jan2_dirt["surface_rating__horse_elo_pre"] == 1500
+    assert jan3_dirt["surface_rating__horse_elo_pre"] > 1500
+
+
+def test_surface_conditioned_elo_ignores_surface_coded_obstacle_result() -> None:
+    raw = pd.DataFrame(
+        [
+            _row("202305010101", "2023-01-01", "h1", "j1", "t1", 2),
+            _row("202305010101", "2023-01-01", "h2", "j2", "t2", 1),
+            _row("202305010201", "2023-01-02", "h1", "j1", "t1", 1),
+            _row("202305010201", "2023-01-02", "h3", "j3", "t3", 2),
+            _row("202305010301", "2023-01-03", "h1", "j1", "t1", 1),
+            _row("202305010301", "2023-01-03", "h4", "j4", "t4", 2),
+        ]
+    )
+    raw["course_type"] = "ダート"
+    raw.loc[raw["date"].eq("2023-01-02"), "race_class"] = "障害4歳以上未勝利"
+    features = build_pit_features(
+        raw, FeatureConfig(surface_conditioned_elo=True)
+    )
+
+    obstacle = _by_horse(features, "202305010201", "h1")
+    following = _by_horse(features, "202305010301", "h1")
+    assert not bool(obstacle["meta__is_flat_race"])
+    assert following["surface_rating__horse_elo_pre"] == obstacle[
+        "surface_rating__horse_elo_pre"
+    ]
+
+
 def test_integrated_api_keeps_metadata_but_exposes_numeric_closed_allowlist(raw_fixture: pd.DataFrame) -> None:
     split_config = json.loads((Path(__file__).parents[1] / "configs" / "splits.json").read_text())
     dataset = build_features(raw_fixture, split_config=split_config)

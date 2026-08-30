@@ -43,6 +43,7 @@ _GENERATED_PREFIXES: tuple[str, ...] = (
     "trainer_history__",
     "field_relative__",
     "rating__",
+    "surface_rating__",
 )
 
 FEATURE_PREFIXES: Mapping[str, tuple[str, ...]] = {
@@ -52,6 +53,7 @@ FEATURE_PREFIXES: Mapping[str, tuple[str, ...]] = {
     "connections_pit": ("jockey_history__", "trainer_history__"),
     "field_relative": ("field_relative__",),
     "rating_strength": ("rating__",),
+    "surface_conditioned_rating": ("surface_rating__",),
 }
 
 # This is documentation and a defensive check.  Safety does not depend on
@@ -129,6 +131,10 @@ class FeatureConfig:
     initial_elo: float = 1500.0
     elo_k: float = 24.0
     elo_scale: float = 400.0
+    # Experimental opt-in.  Keeping this false preserves the accepted
+    # 268-column baseline contract byte-for-byte while allowing a separately
+    # ablatable turf/dirt-specific Elo state to be materialized.
+    surface_conditioned_elo: bool = False
 
     def __post_init__(self) -> None:
         for name, values in (
@@ -487,10 +493,32 @@ def _starter_flags(race: pd.DataFrame, finish_raw: pd.Series, config: FeatureCon
     return normalized.astype("boolean")
 
 
-def _is_flat_surface(value: object) -> bool:
+def _flat_surface_key(value: object) -> Optional[str]:
     if _is_missing_key(value):
-        return False
-    return str(value).strip().lower() in {"芝", "turf", "ダート", "dirt"}
+        return None
+    normalized = str(value).strip().lower()
+    if normalized in {"芝", "turf"}:
+        return "turf"
+    if normalized in {"ダート", "dirt"}:
+        return "dirt"
+    return None
+
+
+def _is_flat_surface(value: object) -> bool:
+    return _flat_surface_key(value) is not None
+
+
+def _race_surface_key(race: pd.DataFrame, config: FeatureConfig) -> Optional[str]:
+    """Return a single normalized flat surface, or None for inconsistent data."""
+
+    if config.surface_col not in race:
+        return None
+    keys = {
+        key
+        for key in race[config.surface_col].map(_flat_surface_key)
+        if key is not None
+    }
+    return next(iter(keys)) if len(keys) == 1 else None
 
 
 def _is_obstacle_class(value: object) -> bool:
@@ -701,6 +729,7 @@ def build_pit_features(raw: pd.DataFrame, config: Optional[FeatureConfig] = None
     jockey_states: dict[object, _EntityState] = {}
     trainer_states: dict[object, _EntityState] = {}
     elo_ratings: dict[object, float] = {}
+    surface_elo_ratings: dict[tuple[object, str], float] = {}
     emitted: list[pd.DataFrame] = []
 
     for event_date, date_rows in work.groupby("_event_date", sort=True):
@@ -708,7 +737,16 @@ def build_pit_features(raw: pd.DataFrame, config: Optional[FeatureConfig] = None
         connection_snapshot_cache: dict[tuple[str, object], dict[str, float]] = {}
         empty_connection_snapshots: dict[str, dict[str, float]] = {}
         pending_updates: list[
-            tuple[pd.DataFrame, pd.DataFrame, dict[object, float], object, object, bool]
+            tuple[
+                pd.DataFrame,
+                pd.DataFrame,
+                dict[object, float],
+                dict[object, float],
+                object,
+                object,
+                bool,
+                Optional[str],
+            ]
         ] = []
 
         # Emit every race on this date before applying any result from the date.
@@ -744,6 +782,27 @@ def build_pit_features(raw: pd.DataFrame, config: Optional[FeatureConfig] = None
             field_mean_elo = float(np.mean(active_pre)) if active_pre else config.initial_elo
             field_max_elo = float(np.max(active_pre)) if active_pre else config.initial_elo
             field_std_elo = float(np.std(active_pre)) if active_pre else 0.0
+
+            surface_key = _race_surface_key(race, config)
+            surface_pre_ratings = {
+                horse_id: surface_elo_ratings.get(
+                    (horse_id, surface_key), config.initial_elo
+                )
+                for horse_id in race[config.horse_id_col]
+                if config.surface_conditioned_elo
+                and surface_key is not None
+                and not _is_missing_key(horse_id)
+            }
+            surface_active_pre = [
+                surface_pre_ratings.get(horse_id, config.initial_elo)
+                for horse_id, started in zip(race[config.horse_id_col], starter_flags)
+                if started is not pd.NA and bool(started)
+            ]
+            surface_field_mean_elo = (
+                float(np.mean(surface_active_pre))
+                if surface_active_pre
+                else config.initial_elo
+            )
 
             rows: list[dict[str, object]] = []
             for position, (_, row) in enumerate(race.iterrows()):
@@ -816,16 +875,55 @@ def build_pit_features(raw: pd.DataFrame, config: Optional[FeatureConfig] = None
                         "rating__horse_minus_field_mean_elo": horse_elo - field_mean_elo,
                     }
                 )
+                if config.surface_conditioned_elo:
+                    surface_horse_elo = surface_pre_ratings.get(
+                        horse_id, config.initial_elo
+                    )
+                    features.update(
+                        {
+                            "surface_rating__horse_elo_pre": surface_horse_elo,
+                            "surface_rating__horse_minus_field_mean_elo": (
+                                surface_horse_elo - surface_field_mean_elo
+                            ),
+                        }
+                    )
                 rows.append(features)
 
             race_features = _add_field_relative(pd.DataFrame(rows))
             rating_values = race_features["rating__horse_elo_pre"]
             race_features["rating__horse_elo_percentile"] = rating_values.rank(pct=True, method="average")
+            if config.surface_conditioned_elo:
+                surface_rating_values = race_features[
+                    "surface_rating__horse_elo_pre"
+                ]
+                race_features["surface_rating__horse_elo_percentile"] = (
+                    surface_rating_values.rank(pct=True, method="average")
+                )
             date_emitted.append(race_features)
-            pending_updates.append((race, race_features, pre_ratings, finish_numeric, starter_flags, race_is_flat))
+            pending_updates.append(
+                (
+                    race,
+                    race_features,
+                    pre_ratings,
+                    surface_pre_ratings,
+                    finish_numeric,
+                    starter_flags,
+                    race_is_flat,
+                    surface_key,
+                )
+            )
 
         # Results become state only after features for the complete date exist.
-        for race, race_features, pre_ratings, finish_numeric, starter_flags, race_is_flat in pending_updates:
+        for (
+            race,
+            race_features,
+            pre_ratings,
+            surface_pre_ratings,
+            finish_numeric,
+            starter_flags,
+            race_is_flat,
+            surface_key,
+        ) in pending_updates:
             if not race_is_flat:
                 continue
             active_positions = [
@@ -879,6 +977,14 @@ def build_pit_features(raw: pd.DataFrame, config: Optional[FeatureConfig] = None
             deltas = _race_elo_deltas(outcomes, pre_ratings, config)
             for horse_id, delta in deltas.items():
                 elo_ratings[horse_id] = pre_ratings[horse_id] + delta
+            if config.surface_conditioned_elo and surface_key is not None:
+                surface_deltas = _race_elo_deltas(
+                    outcomes, surface_pre_ratings, config
+                )
+                for horse_id, delta in surface_deltas.items():
+                    surface_elo_ratings[(horse_id, surface_key)] = (
+                        surface_pre_ratings[horse_id] + delta
+                    )
 
         date_frame = pd.concat(date_emitted, ignore_index=True)
         date_numeric = [
@@ -914,6 +1020,9 @@ def feature_groups(frame: pd.DataFrame) -> dict[str, tuple[str, ...]]:
         ),
         "field_relative": tuple(column for column in frame if column.startswith("field_relative__")),
         "rating_strength": tuple(column for column in frame if column.startswith("rating__")),
+        "surface_conditioned_rating": tuple(
+            column for column in frame if column.startswith("surface_rating__")
+        ),
     }
     return groups
 
@@ -958,6 +1067,8 @@ def semantic_feature_groups_v2(
         "field_relative": [],
         "rating_value": [],
     }
+    if any(column.startswith("surface_rating__") for column in feature_columns):
+        groups["surface_conditioned_rating"] = []
     for column in feature_columns:
         if column.startswith("context__"):
             group = "current_context"
@@ -970,6 +1081,8 @@ def semantic_feature_groups_v2(
             "horse_history__career__mean_performance_value",
         }:
             group = "rating_value"
+        elif column.startswith("surface_rating__"):
+            group = "surface_conditioned_rating"
         elif column.startswith("horse_history__same_"):
             group = "suitability"
         elif column.startswith("horse_history__") and any(
