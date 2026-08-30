@@ -26,7 +26,10 @@ from horse_pred.data_health import (
 )
 from horse_pred.diagnostics import run_baseline_diagnostics
 from horse_pred.features import FeatureConfig
-from horse_pred.margin_rating_cache import build_margin_rating_cache_from_raw
+from horse_pred.margin_rating_cache import (
+    build_margin_rating_cache_from_raw,
+    build_margin_rating_delta_cache,
+)
 from horse_pred.margin_rating_calibration_study import (
     run_margin_rating_calibration_study,
 )
@@ -190,6 +193,19 @@ def parser() -> argparse.ArgumentParser:
         help="optional PV-03 2024 candidate predictions for exact score reproduction",
     )
     margin_cache.add_argument("--repo-root", type=Path, default=Path.cwd())
+    margin_delta_cache = commands.add_parser(
+        "build-margin-rating-delta-cache",
+        help="build the preregistered PV-05 same-spec margin-minus-ordinal cache",
+    )
+    margin_delta_cache.add_argument("--baseline-cache", type=Path, required=True)
+    margin_delta_cache.add_argument("--margin-cache", type=Path, required=True)
+    margin_delta_cache.add_argument("--ordinal-predictions", type=Path, required=True)
+    margin_delta_cache.add_argument("--output", type=Path, required=True)
+    margin_delta_cache.add_argument(
+        "--config",
+        type=Path,
+        default=Path("configs/performance/pv_005_margin_rating_delta.json"),
+    )
     return root
 
 
@@ -393,6 +409,16 @@ def main(argv: Sequence[str] | None = None) -> int:
             output_path=args.output,
             config_path=args.config,
             pv03_predictions_path=args.pv03_predictions,
+        )
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0
+    if args.command == "build-margin-rating-delta-cache":
+        result = build_margin_rating_delta_cache(
+            baseline_cache_path=args.baseline_cache,
+            margin_cache_path=args.margin_cache,
+            ordinal_predictions_path=args.ordinal_predictions,
+            output_path=args.output,
+            config_path=args.config,
         )
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0

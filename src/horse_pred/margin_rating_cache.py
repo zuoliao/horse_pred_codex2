@@ -27,6 +27,7 @@ from horse_pred.rating import (
 )
 
 MARGIN_RATING_COLUMN = "margin_rating__score_pre"
+MARGIN_RATING_DELTA_COLUMN = "margin_rating__delta_vs_ordinal_score_pre"
 _PRESENCE_COLUMN = "_margin_rating_present"
 
 
@@ -187,3 +188,135 @@ def build_margin_rating_cache_from_raw(
     result["data_fingerprint"] = manifest["raw_file"]["sha256"]
     result["config_sha256"] = sha256_file(config_file)
     return result
+
+
+def build_margin_rating_delta_cache(
+    *,
+    baseline_cache_path: str | Path,
+    margin_cache_path: str | Path,
+    ordinal_predictions_path: str | Path,
+    output_path: str | Path,
+    config_path: str | Path,
+) -> dict[str, Any]:
+    """Build PV-05 from frozen margin and same-spec ordinal score histories."""
+
+    baseline_path = Path(baseline_cache_path).resolve()
+    margin_path = Path(margin_cache_path).resolve()
+    ordinal_path = Path(ordinal_predictions_path).resolve()
+    target = Path(output_path).resolve()
+    sidecar_path = target.with_suffix(f"{target.suffix}.meta.json")
+    if target.exists() or sidecar_path.exists():
+        raise FileExistsError(f"refusing to overwrite margin-delta cache: {target}")
+    config_file = Path(config_path).resolve()
+    config = json.loads(config_file.read_text(encoding="utf-8"))
+    if config.get("candidate_column") != MARGIN_RATING_DELTA_COLUMN:
+        raise ValueError("PV-05 candidate column differs from the code contract")
+    baseline, metadata = read_model_frame_cache(baseline_path)
+    margin, margin_metadata = read_model_frame_cache(margin_path)
+    if MARGIN_RATING_COLUMN not in margin.columns:
+        raise ValueError("PV-04 cache is missing the absolute margin score")
+    if len(baseline) != len(margin):
+        raise ValueError("baseline and margin caches have different row counts")
+    keys = ["race_id", "horse_id"]
+    baseline_keys = baseline.loc[:, keys].astype("string").reset_index(drop=True)
+    margin_keys = margin.loc[:, keys].astype("string").reset_index(drop=True)
+    if not baseline_keys.equals(margin_keys):
+        raise ValueError("baseline and margin caches have different runner order")
+    old_features = list(metadata["feature_columns"])
+    if not baseline.loc[:, old_features].equals(margin.loc[:, old_features]):
+        raise ValueError("PV-04 cache changed a PV-01 feature")
+
+    ordinal = pd.read_pickle(ordinal_path).loc[
+        :, ["race_id", "horse_id", "modular_rating__score_pre"]
+    ].rename(columns={"modular_rating__score_pre": "ordinal_score"})
+    ordinal["race_id"] = ordinal["race_id"].astype("string")
+    ordinal["horse_id"] = ordinal["horse_id"].astype("string")
+    if ordinal.duplicated(keys).any():
+        raise ValueError("ordinal rating artifact contains duplicate runner keys")
+    source = margin.loc[
+        ~margin["split"].eq("retrospective_test"), keys + [MARGIN_RATING_COLUMN]
+    ].copy()
+    source["race_id"] = source["race_id"].astype("string")
+    source["horse_id"] = source["horse_id"].astype("string")
+    source = source.merge(ordinal, on=keys, how="left", validate="one_to_one")
+    if source["ordinal_score"].isna().any():
+        raise ValueError("ordinal rating artifact does not cover every pre-2025 row")
+    source[MARGIN_RATING_DELTA_COLUMN] = (
+        source[MARGIN_RATING_COLUMN].astype(float) - source["ordinal_score"].astype(float)
+    )
+    if not np.isfinite(source[MARGIN_RATING_DELTA_COLUMN]).all():
+        raise ValueError("margin-rating delta contains non-finite values")
+    source[_PRESENCE_COLUMN] = True
+
+    augmented = baseline.copy()
+    augmented["_cache_order"] = np.arange(len(augmented), dtype=np.int64)
+    augmented["race_id"] = augmented["race_id"].astype("string")
+    augmented["horse_id"] = augmented["horse_id"].astype("string")
+    augmented = augmented.merge(
+        source.loc[:, keys + [MARGIN_RATING_DELTA_COLUMN, _PRESENCE_COLUMN]],
+        on=keys,
+        how="left",
+        validate="one_to_one",
+        sort=False,
+    ).sort_values("_cache_order", kind="stable")
+    augmented = augmented.drop(columns="_cache_order").reset_index(drop=True)
+    pre2025 = ~augmented["split"].eq("retrospective_test")
+    if not augmented.loc[pre2025, _PRESENCE_COLUMN].eq(True).all():  # noqa: E712
+        raise ValueError("delta does not cover every pre-2025 model row")
+    if augmented.loc[~pre2025, _PRESENCE_COLUMN].notna().any():
+        raise ValueError("2025 margin-rating delta must remain unavailable")
+    augmented = augmented.drop(columns=_PRESENCE_COLUMN)
+    augmented[MARGIN_RATING_DELTA_COLUMN] = augmented[
+        MARGIN_RATING_DELTA_COLUMN
+    ].astype("float32")
+    if not baseline.loc[:, old_features].reset_index(drop=True).equals(
+        augmented.loc[:, old_features]
+    ):
+        raise ValueError("an existing feature changed during delta augmentation")
+
+    feature_columns = [*old_features, MARGIN_RATING_DELTA_COLUMN]
+    groups = dict(metadata.get("feature_groups_v1", {}))
+    groups["margin_rating"] = [MARGIN_RATING_DELTA_COLUMN]
+    target.parent.mkdir(parents=True, exist_ok=True)
+    temporary = target.with_name(f".{target.name}.tmp")
+    augmented.to_pickle(temporary)
+    temporary.replace(target)
+    write_json(
+        sidecar_path,
+        {
+            **metadata,
+            "feature_columns": feature_columns,
+            "feature_groups_v1": groups,
+            "margin_rating_delta": {
+                "baseline_cache_sha256": sha256_file(baseline_path),
+                "margin_cache_sha256": sha256_file(margin_path),
+                "margin_cache_spec": margin_metadata.get("margin_rating"),
+                "ordinal_predictions_sha256": sha256_file(ordinal_path),
+                "experiment_config_hash": canonical_json_hash(config),
+                "output_column": MARGIN_RATING_DELTA_COLUMN,
+                "stored_dtype": "float32",
+                "retrospective_2025_used": False,
+            },
+        },
+    )
+    return {
+        "schema_version": 1,
+        "output": str(target),
+        "row_count": len(augmented),
+        "race_count": int(augmented["race_id"].nunique()),
+        "baseline_feature_count": len(old_features),
+        "candidate_feature_count": len(feature_columns),
+        "old_feature_exact": True,
+        "pre2025_nonmissing": int(
+            augmented.loc[pre2025, MARGIN_RATING_DELTA_COLUMN].notna().sum()
+        ),
+        "retrospective_2025_feature_nonmissing": int(
+            augmented.loc[~pre2025, MARGIN_RATING_DELTA_COLUMN].notna().sum()
+        ),
+        "delta_zero_count": int(
+            augmented.loc[pre2025, MARGIN_RATING_DELTA_COLUMN].eq(0.0).sum()
+        ),
+        "delta_std": float(
+            augmented.loc[pre2025, MARGIN_RATING_DELTA_COLUMN].astype(float).std()
+        ),
+    }
