@@ -9,6 +9,7 @@ from horse_pred.uncertainty import (
     ModelSpec,
     development_race_metric_table,
     paired_block_bootstrap,
+    run_uncertainty_analysis,
 )
 
 
@@ -62,7 +63,14 @@ def test_development_metric_table_is_2024_only_and_ignores_retrospective() -> No
 
 
 def test_development_metric_table_rejects_mislabeled_2025() -> None:
-    frame = _predictions()
+    template = _predictions().iloc[:2]
+    frames = []
+    for day in range(1, 9):
+        race = template.copy()
+        race["race_id"] = f"20240501{day:02d}01"
+        race["race_date"] = f"2024-01-{day:02d}"
+        frames.append(race)
+    frame = pd.concat(frames, ignore_index=True)
     frame.loc[:1, "race_id"] = "202505010101"
     frame.loc[:1, "race_date"] = "2025-01-01"
     with pytest.raises(ValueError, match="outside calendar year 2024"):
@@ -120,3 +128,30 @@ def test_bootstrap_rejects_invalid_block_length(block_length: int) -> None:
     metrics = development_race_metric_table(_predictions(), model_specs=SPECS)
     with pytest.raises(ValueError, match="block_length_dates"):
         paired_block_bootstrap(metrics, n_resamples=10, block_length_dates=block_length)
+
+
+def test_uncertainty_artifact_excludes_2025(tmp_path) -> None:
+    source = tmp_path / "predictions.csv"
+    output = tmp_path / "uncertainty"
+    template = _predictions().iloc[:2]
+    frames = []
+    for day in range(1, 9):
+        race = template.copy()
+        race["race_id"] = f"20240502{day:02d}01"
+        race["race_date"] = f"2024-02-{day:02d}"
+        frames.append(race)
+    frame = pd.concat(frames, ignore_index=True)
+    frame["prob_uniform"] = frame["prob_b"]
+    frame["prob_history_rate"] = frame["prob_b"]
+    frame["pred_binary_raw"] = frame["score_a"]
+    frame["prob_binary_logit_softmax_temperature_2023"] = frame["prob_a"]
+    frame["score_lambdarank"] = frame["score_a"]
+    frame["prob_lambdarank_softmax_temperature_2023"] = frame["prob_a"]
+    frame.to_csv(source, index=False)
+
+    result = run_uncertainty_analysis(source, output, n_resamples=10, seed=9)
+
+    assert result["scope"]["retrospective_test_used"] is False
+    assert result["scope"]["date_end"].startswith("2024")
+    assert (output / "uncertainty.json").is_file()
+    assert (output / "artifact_manifest.json").is_file()

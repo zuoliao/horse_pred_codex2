@@ -15,6 +15,7 @@ from horse_pred.data import (
     verify_raw_file,
 )
 from horse_pred.pipeline import run_mvp
+from horse_pred.uncertainty import run_uncertainty_analysis
 
 
 def parser() -> argparse.ArgumentParser:
@@ -50,6 +51,13 @@ def parser() -> argparse.ArgumentParser:
         type=Path,
         help="optional ignored local pickle cache for later ablation/diagnostic runs",
     )
+    uncertainty = commands.add_parser(
+        "analyze-uncertainty", help="run the fixed 2024 paired block bootstrap"
+    )
+    uncertainty.add_argument("--predictions", type=Path, required=True)
+    uncertainty.add_argument("--output", type=Path, required=True)
+    uncertainty.add_argument("--resamples", type=int, default=10_000)
+    uncertainty.add_argument("--seed", type=int, default=20240830)
     return root
 
 
@@ -97,6 +105,15 @@ def main(argv: Sequence[str] | None = None) -> int:
             "evaluated_splits": list(metrics["splits"]),
         }
         print(json.dumps(summary, ensure_ascii=False, indent=2))
+        return 0
+    if args.command == "analyze-uncertainty":
+        result = run_uncertainty_analysis(
+            args.predictions,
+            args.output,
+            n_resamples=args.resamples,
+            seed=args.seed,
+        )
+        print(json.dumps(result["scope"], ensure_ascii=False, indent=2))
         return 0
     raise AssertionError(f"unhandled command: {args.command}")
 

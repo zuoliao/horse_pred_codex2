@@ -12,6 +12,7 @@ from typing import Any
 import numpy as np
 
 from horse_pred.config import canonical_json_hash
+from horse_pred.data import sha256_file
 
 
 def git_state(repo_root: str | Path) -> dict[str, Any]:
@@ -63,6 +64,24 @@ def write_json(path: str | Path, value: Mapping[str, Any]) -> None:
         encoding="utf-8",
     )
     temporary.replace(target)
+
+
+def write_artifact_manifest(directory: str | Path) -> None:
+    """Hash every completed file below an artifact directory."""
+
+    root = Path(directory)
+    files = []
+    for path in sorted(candidate for candidate in root.rglob("*") if candidate.is_file()):
+        if path.name == "artifact_manifest.json":
+            continue
+        files.append(
+            {
+                "path": str(path.relative_to(root)),
+                "size_bytes": path.stat().st_size,
+                "sha256": sha256_file(path),
+            }
+        )
+    write_json(root / "artifact_manifest.json", {"schema_version": 1, "files": files})
 
 
 def _json_safe(value: Any) -> Any:

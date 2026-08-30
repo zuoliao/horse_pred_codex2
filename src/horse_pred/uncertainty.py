@@ -5,11 +5,14 @@ from __future__ import annotations
 import math
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
 import numpy as np
 import pandas as pd
 
+from horse_pred.artifacts import write_artifact_manifest, write_json
+from horse_pred.data import sha256_file
 from horse_pred.evaluation import (
     ndcg_at_k,
     race_brier_score,
@@ -249,6 +252,87 @@ def development_stability_table(race_metrics: pd.DataFrame) -> pd.DataFrame:
                     row[metric] = float(model_rows[metric].mean())
                 rows.append(row)
     return pd.DataFrame(rows)
+
+
+def run_uncertainty_analysis(
+    predictions_path: str | Path,
+    output_dir: str | Path,
+    *,
+    n_resamples: int = 10_000,
+    seed: int = 20240830,
+) -> dict[str, Any]:
+    """Write a reproducible 2024-only uncertainty artifact."""
+
+    source = Path(predictions_path).resolve()
+    output = Path(output_dir).resolve()
+    if output.exists():
+        raise FileExistsError(f"refusing to overwrite uncertainty artifact: {output}")
+    temporary = output.with_name(f".{output.name}.tmp")
+    temporary.mkdir(parents=True)
+    try:
+        predictions = pd.read_csv(source, dtype={"race_id": "string"})
+        retrospective_rows = int(predictions["split"].eq("retrospective_test").sum())
+        race_metrics = development_race_metric_table(predictions)
+        stability = development_stability_table(race_metrics)
+        primary = paired_block_bootstrap(
+            race_metrics,
+            n_resamples=n_resamples,
+            seed=seed,
+            block_length_dates=4,
+        )
+        sensitivity: dict[str, Any] = {}
+        for length in (1, 2, 8):
+            sensitivity[f"moving_date_block_{length}"] = paired_block_bootstrap(
+                race_metrics,
+                n_resamples=n_resamples,
+                seed=seed + length,
+                block_length_dates=length,
+            )
+        sensitivity["race_iid"] = paired_block_bootstrap(
+            race_metrics,
+            n_resamples=n_resamples,
+            seed=seed + 100,
+            scheme="race_iid",
+        )
+        payload = {
+            "schema_version": 1,
+            "analysis_id": "baseline_uncertainty_2024",
+            "scope": {
+                "selected_split": "development",
+                "date_start": str(race_metrics["race_date"].min().date()),
+                "date_end": str(race_metrics["race_date"].max().date()),
+                "race_count": int(race_metrics["race_id"].nunique()),
+                "date_count": int(race_metrics["race_date"].nunique()),
+                "retrospective_rows_in_source_excluded_before_metrics": retrospective_rows,
+                "retrospective_test_used": False,
+                "final_market_used": False,
+            },
+            "source_predictions": {
+                "path": str(source),
+                "sha256": sha256_file(source),
+            },
+            "metric_directions": {
+                metric: "higher_is_better" if metric in HIGHER_IS_BETTER else "lower_is_better"
+                for metric in PRIMARY_METRICS
+            },
+            "primary": primary,
+            "sensitivity": sensitivity,
+            "limitations": [
+                "Intervals describe 2024 evaluation-sample uncertainty, not year-to-year drift.",
+                "ECE is intentionally excluded from decision-grade bootstrap intervals.",
+                "Known 2024 source shortfall requires a separate selection-bias audit.",
+            ],
+        }
+        race_metrics.to_csv(temporary / "race_metrics.csv.gz", index=False, compression="gzip")
+        stability.to_csv(temporary / "stability.csv", index=False)
+        write_json(temporary / "uncertainty.json", payload)
+        write_artifact_manifest(temporary)
+        temporary.rename(output)
+        return payload
+    except BaseException:
+        # Keep the incomplete directory for diagnosis; its dot-prefix prevents
+        # callers from confusing it with a complete artifact.
+        raise
 
 
 def _race_metadata(row: pd.Series) -> dict[str, Any]:
