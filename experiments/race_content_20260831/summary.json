@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "study_id": "race_content_time_m0_m4_20260831",
+  "completed_stage": "M1_PV_01",
+  "run_commit": "92f9a268c1525b8d4fc3829eb580a39555d3faea",
+  "run_dirty": false,
+  "data_fingerprint": "270923ce73c4441e64173f242a8719de7d1e9b205508140463ca547ef7b1ca87",
+  "scope": {
+    "m0_audit_years": [2013, 2023],
+    "representation_selection_years": [2018, 2021],
+    "model_validation_year": 2022,
+    "calibration_year": 2023,
+    "development_year": 2024,
+    "development_races": 3051,
+    "development_runners": 41946,
+    "development_dates": 106,
+    "retrospective_2025_used": false,
+    "odds_used": false
+  },
+  "m0": {
+    "flat_races_2013_2023": 36569,
+    "flat_runners_2013_2023": 519414,
+    "numeric_finished_or_demoted": 515983,
+    "numeric_finish_time_parse_coverage": 1.0,
+    "fourth_place_within_0_3_seconds": 9382,
+    "fourth_place_total": 36565,
+    "fourth_place_within_0_3_fraction": 0.2566,
+    "last_3f_missing_among_numeric_finishers": 3,
+    "passing_order_invalid_nonmissing": 0,
+    "official_rank_time_inversion_races": 4,
+    "finding": "Use a time-only within-race content value first; leave margin-token refinement, last-3F, passing order, absolute speed and track variants as separate hypotheses"
+  },
+  "pv_001_feature": {
+    "column": "race_content__decay_90d__mean_signed_time_gap_per_1000m",
+    "absolute_cap_seconds_per_1000m": 5.0,
+    "half_life_days": 90,
+    "anomaly_race_exclusions": ["demoted", "disqualified"],
+    "pre2025_nonmissing_rows": 440367,
+    "pre2025_missing_rows": 49307,
+    "development_nonmissing_rows": 37534,
+    "development_rows": 41946,
+    "spearman_vs_decay_90d_mean_finish_pre2025": -0.8121778704714439,
+    "gain_importance_fraction": {
+      "binary": 0.035964,
+      "lambdarank": 0.064357
+    }
+  },
+  "representation_screen": {
+    "metric_role": "standalone ranking diagnostic only",
+    "selected": "90_day_decay_mean",
+    "selected_2018_2021_mean_ndcg_at_3": 0.3574741630,
+    "selected_2018_2021_mean_top_1": 0.1835452053,
+    "selected_2022_ndcg_at_3": 0.3660784486,
+    "selected_2022_top_1": 0.1889168766
+  },
+  "cache_gate": {
+    "passed": true,
+    "rows": 533853,
+    "baseline_features": 268,
+    "candidate_features": 269,
+    "old_feature_mismatch_count": 0,
+    "old_feature_nan_position_mismatch_count": 0,
+    "old_feature_max_abs_diff": 0.0,
+    "retrospective_2025_feature_nonmissing": 0,
+    "control_prediction_max_abs_diff_vs_abl_006": 0.0
+  },
+  "development_metrics": {
+    "control_binary": {
+      "features": 253,
+      "ndcg_at_3": 0.4912556895,
+      "top_1": 0.2912159948,
+      "log_loss": 2.0855211060,
+      "brier": 0.8298471312
+    },
+    "candidate_binary": {
+      "features": 254,
+      "ndcg_at_3": 0.4975651593,
+      "top_1": 0.2964601770,
+      "log_loss": 2.0786715245,
+      "brier": 0.8276733096
+    },
+    "control_lambdarank": {
+      "features": 253,
+      "ndcg_at_3": 0.4924333207,
+      "top_1": 0.2881022616,
+      "log_loss": 2.0846621090,
+      "brier": 0.8299487343
+    },
+    "candidate_lambdarank": {
+      "features": 254,
+      "ndcg_at_3": 0.4941322977,
+      "top_1": 0.2905604720,
+      "log_loss": 2.0778313615,
+      "brier": 0.8281048295
+    }
+  },
+  "paired_improvement": {
+    "binary": {
+      "ndcg_at_3": {"point": 0.0063094698, "lower": 0.0014471925, "upper": 0.0111749138},
+      "top_1": {"point": 0.0052441822, "lower": -0.0042862914, "upper": 0.0143107040},
+      "log_loss": {"point": 0.0068495814, "lower": 0.0005036386, "upper": 0.0131220275},
+      "brier": {"point": 0.0021738216, "lower": 0.0001740610, "upper": 0.0040966088}
+    },
+    "lambdarank": {
+      "ndcg_at_3": {"point": 0.0016989770, "lower": -0.0036979890, "upper": 0.0069942299},
+      "top_1": {"point": 0.0024582104, "lower": -0.0093077412, "upper": 0.0139522288},
+      "log_loss": {"point": 0.0068307475, "lower": -0.0003445961, "upper": 0.0145436359},
+      "brier": {"point": 0.0018439048, "lower": -0.0004713582, "upper": 0.0043082115}
+    }
+  },
+  "decision": {
+    "binary": "accept_for_current_development_baseline_and_require_2026_plus_confirmation",
+    "lambdarank": "inconclusive_all_point_metrics_improved_but_primary_intervals_cross_zero",
+    "current_best_binary_config": "pv_001_candidate_signed_time_gap_254_features",
+    "current_conservative_lambdarank_config": "abl_006_drop_field_relative_253_features",
+    "model_family": "unresolved"
+  },
+  "local_artifacts": {
+    "cache": "data/model_frame_race_content_time_20260831.pkl",
+    "control": "artifacts/pv_001_control_lean/",
+    "candidate": "artifacts/pv_001_candidate_signed_time_gap/",
+    "comparison": "artifacts/pv_001_comparison/comparison.json",
+    "cache_control": "artifacts/pv_001_cache_control/control.json"
+  }
+}

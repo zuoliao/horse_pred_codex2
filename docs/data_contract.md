@@ -194,6 +194,6 @@ HORSE_PRED_RAW_CSV=/absolute/path/to/race_results_merged.csv \
 
 - Obtain the 146 missing official result rows under an approved source gate and version them as a supplement.
 - Define the later flat-population filter and confirm whether rare flat races with unusual course metadata require exclusions.
-- Parse time, margin, and passing-order strings in PIPE-01 with separate fixtures; this contract intentionally preserves them verbatim.
+- Result time `M:SS.t` is now parsed only by the opt-in PV-01 historical-content module with separate fixtures; the normalized contract still preserves the verbatim token. Margin and passing-order remain verbatim pending separate experiments.
 - Join payout/refund data before any realized-return calculation.
 - PIT-01 must classify result-page weather, going, body weight, final odds, and popularity; this contract does not promote them to historically timestamped pre-race inputs.

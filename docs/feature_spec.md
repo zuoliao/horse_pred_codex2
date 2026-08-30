@@ -1,7 +1,8 @@
 # PIT-safe baseline feature specification
 
-**Status:** PIPE-02 / FEAT-01～04 / QA-01 の先行実装（2026-08-30）  
-**Implementation:** `src/horse_pred/features.py`  
+**Status:** PIPE-02 / FEAT-01～04 / QA-01 + PV-01（2026-08-31）
+
+**Implementation:** `src/horse_pred/features.py`, `src/horse_pred/race_content.py`
 **Scope:** JRA平地、承認済みraw相当のrunner-level `pandas.DataFrame`。モデル学習・払戻精算は対象外。
 
 ## 1. 公開API
@@ -21,7 +22,7 @@ X = dataset.frame.loc[:, dataset.feature_columns]
 
 - `frame`: 入力raw/normalized列、監査用`meta__*`、生成特徴を同じ行に保持する。race ID、entity ID、着順label、最終単勝、人気はここに残してよい。
 - `feature_columns`: **生成済み数値特徴だけ**の閉じたallowlist。モデル入力は必ずこれを使う。
-- `feature_groups`: 実験configと一致する論理group別の数値列。defaultは`race_context`、`horse_history_basic`、`form_workload`、`connections_pit`、`field_relative`、`rating_strength`。`FeatureConfig(surface_conditioned_elo=True)`の登録実験だけ`surface_conditioned_rating`を追加する。
+- `feature_groups`: 実験configと一致する論理group別の数値列。defaultは`race_context`、`horse_history_basic`、`form_workload`、`connections_pit`、`field_relative`、`rating_strength`。登録実験ではdefault 268列を変えず、opt-in cacheへ`surface_conditioned_rating`、`race_value_expected_actual`、`rating_module`、`race_content_time`等を追加する。
 
 低水準の `build_pit_features(raw, config)` は生成特徴と`meta__*`だけを返す。`model_feature_allowlist()` と `validate_model_feature_columns()` は、rawの数値列をdtypeだけで誤採用することを防ぐ。
 
@@ -111,6 +112,12 @@ delta_i = K / (field_size - 1) * sum_j(actual(i > j) - expected(i > j))
 
 独立rating moduleは`src/horse_pred/rating.py`で同じ日次batch契約を持つ。R5 frozen specはglobal pairwise Elo、initial 1500、K 48、scale 200である。`modular_rating__` groupはpre-race score、raw coherent win probability、global starts、surface-condition starts、`1/sqrt(starts+1)` uncertainty proxyの5列。2023 temperature後確率は2024 standalone診断専用で、過去LightGBM train rowには結合しない。R6ではdefault 268列を変更せずlocal augmented cacheへopt-in結合し、旧列完全一致を確認した。
 
+## 6.1 PV-01 signed time content
+
+`src/horse_pred/race_content.py`は結果時計`M:SS.t`を、当該raceではなく後日raceだけに使うforward-only moduleである。距離`d`、公式勝馬時計`t1`、最速非勝馬時計`t2`に対し、単独勝者は`+(t2-t1)*1000/d`、非勝者は`-(ti-t1)*1000/d`、同着勝者は0とし、`[-5,+5] sec/1000m`へclipする。降着または失格を含むraceは時計順と公式順が異なり得るためcontentを更新せず、DNFは観測欠損とする。
+
+各馬についてtarget dateより前の値だけをhalf-life 90日で減衰平均し、`race_content__decay_90d__mean_signed_time_gap_per_1000m`を出す。同日全raceをemitしてから更新し、2025は正規化済みcontent生成へ入れない。PV-01 cacheは旧533,853行×268列のidentity・順序・値・NaN位置を完全保持し、新列1列だけを追加した。2025新列は全欠損である。
+
 ## 7. 結果例外
 
 | raw着順 | 行保持 | start/history update | win | finish平均 | Elo |
@@ -138,6 +145,7 @@ delta_i = K / (field_size - 1) * sum_j(actual(i > j) - expected(i > j))
 - duplicate runner keyを拒否すること
 - raw ID、target、最終単勝、人気が数値でもallowlistへ入らないこと
 - `FeatureDataset.feature_columns`が全て数値で、論理groupの和と一致すること
+- PV-01の大差勝ち、僅差4着、clip、同着、降着除外、同日batch、2025 firewall、cold-start欠損を0補完しないこと
 
 ## 9. 既知の制約と性能
 

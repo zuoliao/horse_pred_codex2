@@ -1,5 +1,7 @@
 # Baseline validation and improvement conclusions
 
+> **2026-08-31 update:** This report's 253-feature current-best statement was superseded for Binary by PV-01. One signed, 90-day decayed historical time-gap feature improved Binary NDCG by `+.00631 [+.00145,+.01117]` and Log Loss by `+.00685 [+.00050,+.01312]`, with Brier and Top-1 also better. The 254-feature Binary is the current development baseline. LambdaRank improved on every point metric but remains interval-inconclusive, so its conservative baseline remains 253 features. See [`race_content_time_m0_m4_20260831.md`](race_content_time_m0_m4_20260831.md) and the [machine summary](../../experiments/race_content_20260831/summary.json).
+
 **Primary decision period:** 2024 development、3,051 races / 41,946 runners / 106 dates  
 **2025 usage:** 0 rows。cacheに物理的に含まれる44,179 rowsは読込直後に除外  
 **Raw fingerprint:** `270923ce73c4441e64173f242a8719de7d1e9b205508140463ca547ef7b1ca87`

@@ -12,9 +12,9 @@ Before making architecture or modeling decisions, read `README.md` and all relev
 
 ## Current phase
 
-The project is currently in the **validated LightGBM baseline and modular rating phase**. The corrected baseline, uncertainty, semantic ablations, diagnostics, five limited improvements, and standalone rating stages R0–R6 are complete.
+The project is currently in the **validated LightGBM baseline and past-race content phase**. The corrected baseline, uncertainty, semantic ablations, five limited improvements, standalone rating stages R0–R6, and time-content PV-00/PV-01 are complete.
 
-Use `docs/experiments/rating_module_r0_r6.md`, `docs/experiments/baseline_validation_conclusions_20260830.md`, and `docs/handoff.md` as the current decision state. The frozen rating module is a valid standalone baseline, but its five-column LightGBM integration was rejected. Do not retune rating against 2024 or jump to data expansion, DNN, complex betting strategy, or UI without an explicit phase decision.
+Use `docs/experiments/race_content_time_m0_m4_20260831.md`, `docs/experiments/rating_module_r0_r6.md`, and `docs/handoff.md` as the current decision state. PV-01's one signed time-gap feature passed the Binary acceptance criteria; its LambdaRank result is inconclusive. Do not tune PV-01 or the frozen rating against 2024. PV-02 may change only the standalone rating actual-score rule and must use train/2022 evidence before any further 2024 or LightGBM integration. Do not jump to data expansion, DNN, complex betting strategy, or UI without an explicit phase decision.
 
 ## Core design decisions already agreed
 

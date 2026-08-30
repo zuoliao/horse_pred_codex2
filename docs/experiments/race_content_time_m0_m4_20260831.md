@@ -93,6 +93,30 @@ If PV-01 is complete, PV-02 may replace only the frozen rating's hard pairwise a
 
 PV-04 is last because LightGBM LambdaRank requires integer relevance and a global `label_gain`; continuous margin cannot be passed directly. A fixed-bin experiment also changes the training objective away from the current win/top-three emphasis and applies only to LambdaRank. Its evaluation must retain the current fixed ranking metrics rather than redefining success around the new label.
 
+## M1 result
+
+The registered run used commit `92f9a268c1525b8d4fc3829eb580a39555d3faea` with a clean worktree. The augmented cache retained all 533,853 rows and all old 268 columns exactly: schema, identity, values and NaN positions had zero mismatches and maximum absolute difference zero. The one new column was nonmissing for 440,367 of 489,674 pre-2025 model rows and for zero 2025 rows. The 253-column control predictions reproduced `abl_006_drop_field_relative` exactly.
+
+| Model | Features | NDCG@3 | Top-1 | Log Loss | Brier |
+|---|---:|---:|---:|---:|---:|
+| Binary control | 253 | .49126 | .29122 | 2.08552 | .82985 |
+| Binary candidate | 254 | **.49757** | **.29646** | **2.07867** | **.82767** |
+| LambdaRank control | 253 | .49243 | .28810 | 2.08466 | .82995 |
+| LambdaRank candidate | 254 | **.49413** | **.29056** | **2.07783** | **.82810** |
+
+Paired improvement is positive when the candidate is better:
+
+| Model | NDCG@3 | Top-1 | Log Loss | Brier | Decision |
+|---|---:|---:|---:|---:|---|
+| Binary | +.00631 `[+.00145,+.01117]` | +.00524 `[−.00429,+.01431]` | +.00685 `[+.00050,+.01312]` | +.00217 `[+.00017,+.00410]` | accept on probability and ranking paths |
+| LambdaRank | +.00170 `[−.00370,+.00699]` | +.00246 `[−.00931,+.01395]` | +.00683 `[−.00034,+.01454]` | +.00184 `[−.00047,+.00431]` | inconclusive; all point estimates improve but primary intervals cross zero |
+
+The feature took 3.60% of Binary gain and 6.44% of LambdaRank gain. Its pre-2025 Spearman correlation with the existing 90-day mean finish was `−.812`, materially below IMP-005's `−.938` redundancy but still substantial. Binary gains were positive on both turf and dirt and all field-size bands for NDCG; proper-score regressions remained in sprint Log Loss (`−.00056`) and very-large-field Log Loss/Brier (`−.00842/−.00056`). These slices are descriptive and were not used to alter the feature.
+
+PV-01 is adopted as the current Binary development baseline and must be confirmed prospectively in 2026+. The conservative LambdaRank baseline remains the 253-feature control; the 254-feature point improvement is retained as an inconclusive prospective candidate. The Binary-versus-LambdaRank family comparison still has intervals crossing zero.
+
+Machine-readable aggregate: `experiments/race_content_20260831/summary.json`. Full model, prediction and bootstrap artifacts remain local under `artifacts/pv_001_*`; the cache remains ignored under `data/`.
+
 ## Sources
 
 - JRA, 競馬用語辞典（ハナ・アタマ・クビ・馬身・大差）, accessed 2026-08-31: https://www.jra.go.jp/kouza/yougo/c10010_list.html
@@ -100,4 +124,3 @@ PV-04 is last because LightGBM LambdaRank requires integer relevance and a globa
 - LightGBM parameters (`lambdarank`, integer labels and `label_gain`), accessed 2026-08-31: https://lightgbm.readthedocs.io/en/latest/Parameters.html
 - Burges, *From RankNet to LambdaRank to LambdaMART*, Microsoft Research Technical Report MSR-TR-2010-82, 2010: https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/MSR-TR-2010-82.pdf
 - Kovalchik, *Extension of the Elo rating system to margin of victory*, International Journal of Forecasting 36(4), 2020, DOI: https://doi.org/10.1016/j.ijforecast.2020.01.006
-

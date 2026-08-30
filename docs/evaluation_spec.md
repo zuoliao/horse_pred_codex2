@@ -11,6 +11,8 @@
 
 独立rating研究では`src/horse_pred/rating.py`がforward-only stateとrace確率、`src/horse_pred/rating_study.py`が2018–2021 parameter選択、2022方式検証、2023校正、2024固定評価を担う。2025は処理しない。詳細は[`rating_module_r0_r6.md`](experiments/rating_module_r0_r6.md)。
 
+PV-01は2018–2021のstandalone ranking診断で90日表現を固定し、2022で方向を確認、2023で各LightGBM armをtemperature校正してから2024を一回比較する。既存のBinary/LambdaRank target、評価relevance、calibration、4-date paired bootstrapを変更しない。詳細は[`race_content_time_m0_m4_20260831.md`](experiments/race_content_time_m0_m4_20260831.md)。
+
 ## 2. 固定時間分割
 
 | split | 絶対期間 | 用途 | 禁止事項 |
