@@ -7,6 +7,8 @@ import json
 from collections.abc import Sequence
 from pathlib import Path
 
+import pandas as pd
+
 from horse_pred.artifacts import write_json
 from horse_pred.cached_experiment import run_cached_experiment
 from horse_pred.data import (
@@ -25,6 +27,11 @@ from horse_pred.data_health import (
 from horse_pred.diagnostics import run_baseline_diagnostics
 from horse_pred.features import FeatureConfig
 from horse_pred.pipeline import run_mvp
+from horse_pred.race_content import (
+    build_race_content_augmented_cache,
+    build_race_content_history,
+    load_race_content_config,
+)
 from horse_pred.rating_study import run_rating_study
 from horse_pred.uncertainty import run_uncertainty_analysis
 
@@ -119,6 +126,19 @@ def parser() -> argparse.ArgumentParser:
     )
     rating.add_argument("--output", type=Path, required=True)
     rating.add_argument("--repo-root", type=Path, default=Path.cwd())
+    race_content = commands.add_parser(
+        "build-race-content-cache",
+        help="build the preregistered PV-01 time-content cache without 2025",
+    )
+    race_content.add_argument("--raw-path", type=Path, required=True)
+    race_content.add_argument("--baseline-cache", type=Path, required=True)
+    race_content.add_argument("--output", type=Path, required=True)
+    race_content.add_argument(
+        "--config",
+        type=Path,
+        default=Path("configs/performance/pv_001_race_content_time.json"),
+    )
+    race_content.add_argument("--repo-root", type=Path, default=Path.cwd())
     return root
 
 
@@ -243,6 +263,29 @@ def main(argv: Sequence[str] | None = None) -> int:
                 indent=2,
             )
         )
+        return 0
+    if args.command == "build-race-content-cache":
+        repo_root = args.repo_root.resolve()
+        config_path = args.config
+        if not config_path.is_absolute():
+            config_path = repo_root / config_path
+        config, spec = load_race_content_config(config_path)
+        manifest = load_manifest(repo_root / "configs/data_manifest.json")
+        verify_raw_file(args.raw_path, manifest)
+        raw = load_raw(
+            args.raw_path, expected_sha256=manifest["raw_file"]["sha256"]
+        )
+        # Remove 2025 before normalized outcome fields are parsed or inspected.
+        years = pd.to_numeric(raw["raceid"].str.slice(0, 4), errors="raise")
+        raw = raw.loc[years.le(2024)].copy()
+        history = build_race_content_history(normalize_raw(raw), spec=spec)
+        result = build_race_content_augmented_cache(
+            args.baseline_cache,
+            history,
+            args.output,
+            config=config,
+        )
+        print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0
     raise AssertionError(f"unhandled command: {args.command}")
 

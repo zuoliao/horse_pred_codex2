@@ -40,6 +40,9 @@ MODULAR_RATING_COLUMNS: tuple[str, ...] = (
     "modular_rating__condition_starts_pre",
     "modular_rating__uncertainty_proxy_pre",
 )
+RACE_CONTENT_COLUMNS: tuple[str, ...] = (
+    "race_content__decay_90d__mean_signed_time_gap_per_1000m",
+)
 
 
 def _positional_mismatch_count(left: Sequence[str], right: Sequence[str]) -> int:
@@ -332,6 +335,30 @@ def compare_modular_rating_cache_control(
         comparison_name="modular_rating_cache_control",
         count_key="candidate_modular_rating",
         contract_key="modular_rating",
+        output_path=output_path,
+        chunk_size=chunk_size,
+        expected_baseline_feature_count=expected_baseline_feature_count,
+    )
+
+
+def compare_race_content_cache_control(
+    baseline_cache_path: str | Path,
+    candidate_cache_path: str | Path,
+    *,
+    output_path: str | Path | None = None,
+    chunk_size: int = 10_000,
+    expected_baseline_feature_count: int = 268,
+) -> dict[str, Any]:
+    """Verify that a PV-01 cache differs only by its frozen time-content column."""
+
+    return _compare_opt_in_cache_control(
+        baseline_cache_path,
+        candidate_cache_path,
+        expected_experimental_columns=RACE_CONTENT_COLUMNS,
+        experimental_prefix="race_content__",
+        comparison_name="race_content_time_cache_control",
+        count_key="candidate_race_content_time",
+        contract_key="race_content_time",
         output_path=output_path,
         chunk_size=chunk_size,
         expected_baseline_feature_count=expected_baseline_feature_count,
