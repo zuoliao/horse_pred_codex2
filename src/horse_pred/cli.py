@@ -25,6 +25,7 @@ from horse_pred.data_health import (
 from horse_pred.diagnostics import run_baseline_diagnostics
 from horse_pred.features import FeatureConfig
 from horse_pred.pipeline import run_mvp
+from horse_pred.rating_study import run_rating_study
 from horse_pred.uncertainty import run_uncertainty_analysis
 
 
@@ -106,6 +107,18 @@ def parser() -> argparse.ArgumentParser:
     diagnostics.add_argument("--repo-root", type=Path, default=Path.cwd())
     diagnostics.add_argument("--permutation-repeats", type=int, default=5)
     diagnostics.add_argument("--seed", type=int, default=20240830)
+    rating = commands.add_parser(
+        "run-rating-study", help="run the preregistered standalone rating R0-R5 study"
+    )
+    rating.add_argument("--raw-path", type=Path, required=True)
+    rating.add_argument("--cache", type=Path, required=True)
+    rating.add_argument(
+        "--config",
+        type=Path,
+        default=Path("configs/rating/rating_module_r0_r6.json"),
+    )
+    rating.add_argument("--output", type=Path, required=True)
+    rating.add_argument("--repo-root", type=Path, default=Path.cwd())
     return root
 
 
@@ -208,6 +221,28 @@ def main(argv: Sequence[str] | None = None) -> int:
             seed=args.seed,
         )
         print(json.dumps(result["scope"], ensure_ascii=False, indent=2))
+        return 0
+    if args.command == "run-rating-study":
+        result = run_rating_study(
+            repo_root=args.repo_root,
+            raw_path=args.raw_path,
+            model_cache_path=args.cache,
+            config_path=args.config,
+            output_dir=args.output,
+        )
+        print(
+            json.dumps(
+                {
+                    "study_id": result["study_id"],
+                    "scope": result["scope"],
+                    "r0_passed": result["r0"]["passed"],
+                    "final_spec": result["r5"]["final_spec"],
+                    "elapsed_seconds": result["elapsed_seconds"],
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
         return 0
     raise AssertionError(f"unhandled command: {args.command}")
 
