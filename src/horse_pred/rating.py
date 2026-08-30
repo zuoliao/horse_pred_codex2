@@ -10,7 +10,7 @@ from collections import defaultdict
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from itertools import groupby
-from math import log, sqrt
+from math import exp, isfinite, log, sqrt
 from typing import Any
 
 import numpy as np
@@ -25,6 +25,7 @@ from horse_pred.features import (
     _starter_flags,
     is_flat_race,
 )
+from horse_pred.race_content import parse_result_time_seconds
 
 
 @dataclass(frozen=True)
@@ -37,6 +38,8 @@ class RatingSpec:
     scale: float = 400.0
     learning_rate: float = 0.1
     surface_blend_weight: float = 0.0
+    pairwise_actual: str = "ordinal"
+    time_margin_tau_seconds_per_1000m: float | None = None
 
     def __post_init__(self) -> None:
         if self.family not in {"pairwise_elo", "online_top1_pl"}:
@@ -45,13 +48,23 @@ class RatingSpec:
             raise ValueError("rating update parameters must be positive")
         if not 0.0 <= self.surface_blend_weight <= 1.0:
             raise ValueError("surface_blend_weight must be in [0, 1]")
+        if self.pairwise_actual not in {"ordinal", "time_margin_logistic"}:
+            raise ValueError(f"unsupported pairwise actual: {self.pairwise_actual}")
+        if self.family != "pairwise_elo" and self.pairwise_actual != "ordinal":
+            raise ValueError("non-ordinal pairwise actual requires pairwise_elo")
+        if self.pairwise_actual == "time_margin_logistic":
+            tau = self.time_margin_tau_seconds_per_1000m
+            if tau is None or not isfinite(tau) or tau <= 0:
+                raise ValueError("time-margin pairwise actual requires a finite positive tau")
+        elif self.time_margin_tau_seconds_per_1000m is not None:
+            raise ValueError("time-margin tau is only valid for time_margin_logistic")
 
     @property
     def feature_initial_score(self) -> float:
         return self.initial_rating if self.family == "pairwise_elo" else 0.0
 
     def as_dict(self) -> dict[str, Any]:
-        return {
+        payload = {
             "family": self.family,
             "initial_rating": self.initial_rating,
             "k": self.k,
@@ -59,6 +72,12 @@ class RatingSpec:
             "learning_rate": self.learning_rate,
             "surface_blend_weight": self.surface_blend_weight,
         }
+        if self.pairwise_actual != "ordinal":
+            payload["pairwise_actual"] = self.pairwise_actual
+            payload["time_margin_tau_seconds_per_1000m"] = (
+                self.time_margin_tau_seconds_per_1000m
+            )
+        return payload
 
 
 @dataclass(frozen=True)
@@ -71,6 +90,17 @@ class RatingEvent:
     horse_ids: tuple[object, ...]
     finishes: tuple[float, ...]
     source_positions: tuple[int, ...]
+    result_times_seconds: tuple[float, ...] = ()
+    finish_statuses: tuple[str, ...] = ()
+    distance_m: float = np.nan
+
+    def __post_init__(self) -> None:
+        size = len(self.horse_ids)
+        if len(self.finishes) != size or len(self.source_positions) != size:
+            raise ValueError("rating event runner fields must have equal length")
+        for values in (self.result_times_seconds, self.finish_statuses):
+            if values and len(values) != size:
+                raise ValueError("rating event content fields must match runner count")
 
 
 def _softmax(values: Sequence[float]) -> np.ndarray:
@@ -110,13 +140,94 @@ def _top1_pl_deltas(
     }
 
 
+def _ordinal_pair_actual(finish_i: float, finish_j: float) -> float:
+    if np.isfinite(finish_i) and np.isfinite(finish_j):
+        return 0.5 if finish_i == finish_j else float(finish_i < finish_j)
+    if np.isfinite(finish_i):
+        return 1.0
+    if np.isfinite(finish_j):
+        return 0.0
+    return 0.5
+
+
+def _logistic(value: float) -> float:
+    if value >= 0:
+        return 1.0 / (1.0 + exp(-value))
+    weight = exp(value)
+    return weight / (1.0 + weight)
+
+
+def _time_margin_elo_deltas(
+    event: RatingEvent,
+    pre_states: Mapping[object, float],
+    spec: RatingSpec,
+) -> dict[object, float]:
+    """Return zero-sum Elo deltas using a continuous clock-margin actual."""
+
+    horse_ids = event.horse_ids
+    if len(horse_ids) < 2:
+        return {}
+    if not event.result_times_seconds or not event.finish_statuses:
+        raise ValueError("time-margin rating requires event times and statuses")
+    tau = spec.time_margin_tau_seconds_per_1000m
+    if tau is None:
+        raise AssertionError("validated time-margin spec has no tau")
+    force_ordinal = any(
+        status in {"demoted", "disqualified", "unknown"}
+        for status in event.finish_statuses
+    )
+    valid_distance = np.isfinite(event.distance_m) and event.distance_m > 0
+    divisor = float(len(horse_ids) - 1)
+    deltas: dict[object, float] = defaultdict(float)
+    for index, horse_i in enumerate(horse_ids):
+        if pd.isna(horse_i):
+            continue
+        finish_i = event.finishes[index]
+        time_i = event.result_times_seconds[index]
+        for other_index in range(index + 1, len(horse_ids)):
+            horse_j = horse_ids[other_index]
+            if pd.isna(horse_j) or horse_i == horse_j:
+                continue
+            finish_j = event.finishes[other_index]
+            time_j = event.result_times_seconds[other_index]
+            actual_i = _ordinal_pair_actual(finish_i, finish_j)
+            continuous_eligible = bool(
+                not force_ordinal
+                and valid_distance
+                and np.isfinite(finish_i)
+                and np.isfinite(finish_j)
+                and finish_i != finish_j
+                and np.isfinite(time_i)
+                and np.isfinite(time_j)
+            )
+            if continuous_eligible:
+                margin = (time_j - time_i) * 1000.0 / event.distance_m
+                official_direction = 1.0 if finish_i < finish_j else -1.0
+                if margin == 0.0 or margin * official_direction > 0.0:
+                    actual_i = _logistic(margin / tau)
+            expected_i = 1.0 / (
+                1.0
+                + 10.0
+                ** ((pre_states[horse_j] - pre_states[horse_i]) / spec.scale)
+            )
+            delta = spec.k * (actual_i - expected_i) / divisor
+            deltas[horse_i] += delta
+            deltas[horse_j] -= delta
+    return dict(deltas)
+
+
 def _race_updates(
     horse_ids: Sequence[object],
     finishes: Sequence[float],
     pre_states: Mapping[object, float],
     spec: RatingSpec,
+    event: RatingEvent | None = None,
 ) -> dict[object, float]:
     if spec.family == "pairwise_elo":
+        if spec.pairwise_actual == "time_margin_logistic":
+            if event is None:
+                raise ValueError("time-margin pairwise actual requires a rating event")
+            return _time_margin_elo_deltas(event, pre_states, spec)
         config = FeatureConfig(
             initial_elo=spec.initial_rating,
             elo_k=spec.k,
@@ -306,6 +417,9 @@ def prepare_rating_events(
         "course_type",
         "race_class",
     ]
+    for optional in ("time_raw", "status", "distance_m", "distance"):
+        if optional in normalized.columns and optional not in columns:
+            columns.append(optional)
     work = normalized.loc[:, columns].copy(deep=False)
     work = work.assign(_input_order=np.arange(len(work)))
     work["_event_date"] = pd.to_datetime(work["date"], errors="raise").dt.normalize()
@@ -327,6 +441,28 @@ def prepare_rating_events(
         ]
         if not active:
             continue
+        if "time_raw" in race.columns:
+            times = race["time_raw"].map(parse_result_time_seconds)
+        else:
+            times = pd.Series(np.nan, index=race.index, dtype="float64")
+        if "status" in race.columns:
+            statuses = race["status"].astype("string")
+        else:
+            finish_text = race["着順"].astype("string").str.strip()
+            statuses = pd.Series("unknown", index=race.index, dtype="string")
+            statuses.loc[finish_text.str.fullmatch(r"[0-9]+", na=False)] = "finished"
+            statuses.loc[finish_text.isin(["中", "中止", "競走中止"])] = (
+                "did_not_finish"
+            )
+            statuses.loc[finish_text.str.contains("降", na=False)] = "demoted"
+            statuses.loc[finish_text.isin(["失", "失格"])] = "disqualified"
+        distance_column = "distance_m" if "distance_m" in race.columns else "distance"
+        distance_values = (
+            pd.to_numeric(race[distance_column], errors="coerce").dropna().unique()
+            if distance_column in race.columns
+            else np.array([])
+        )
+        distance_m = float(distance_values[0]) if len(distance_values) == 1 else np.nan
         events.append(
             RatingEvent(
                 race_id=str(race_id),
@@ -337,6 +473,11 @@ def prepare_rating_events(
                 source_positions=tuple(
                     int(race.iloc[index]["_input_order"]) for index in active
                 ),
+                result_times_seconds=tuple(
+                    float(times.iloc[index]) for index in active
+                ),
+                finish_statuses=tuple(str(statuses.iloc[index]) for index in active),
+                distance_m=distance_m,
             )
         )
     return tuple(events)
@@ -420,7 +561,7 @@ def build_rating_history_from_events(
 
         for event, global_pre, surface_pre in pending:
             global_deltas = _race_updates(
-                event.horse_ids, event.finishes, global_pre, spec
+                event.horse_ids, event.finishes, global_pre, spec, event
             )
             for horse_id in event.horse_ids:
                 if horse_id in global_deltas:
@@ -430,7 +571,7 @@ def build_rating_history_from_events(
                 global_starts[horse_id] += 1
             if event.surface_key is not None:
                 surface_deltas = _race_updates(
-                    event.horse_ids, event.finishes, surface_pre, spec
+                    event.horse_ids, event.finishes, surface_pre, spec, event
                 )
                 for horse_id in event.horse_ids:
                     if horse_id in surface_deltas:

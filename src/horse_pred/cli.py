@@ -26,6 +26,7 @@ from horse_pred.data_health import (
 )
 from horse_pred.diagnostics import run_baseline_diagnostics
 from horse_pred.features import FeatureConfig
+from horse_pred.margin_rating_study import run_margin_rating_study
 from horse_pred.pipeline import run_mvp
 from horse_pred.race_content import (
     build_race_content_augmented_cache,
@@ -139,6 +140,19 @@ def parser() -> argparse.ArgumentParser:
         default=Path("configs/performance/pv_001_race_content_time.json"),
     )
     race_content.add_argument("--repo-root", type=Path, default=Path.cwd())
+    margin_rating = commands.add_parser(
+        "run-margin-rating-study",
+        help="run the preregistered PV-02 time-margin standalone rating study",
+    )
+    margin_rating.add_argument("--raw-path", type=Path, required=True)
+    margin_rating.add_argument("--cache", type=Path, required=True)
+    margin_rating.add_argument(
+        "--config",
+        type=Path,
+        default=Path("configs/performance/pv_002_margin_aware_rating.json"),
+    )
+    margin_rating.add_argument("--output", type=Path, required=True)
+    margin_rating.add_argument("--repo-root", type=Path, default=Path.cwd())
     return root
 
 
@@ -286,6 +300,29 @@ def main(argv: Sequence[str] | None = None) -> int:
             config=config,
         )
         print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0
+    if args.command == "run-margin-rating-study":
+        result = run_margin_rating_study(
+            repo_root=args.repo_root,
+            raw_path=args.raw_path,
+            model_cache_path=args.cache,
+            config_path=args.config,
+            output_dir=args.output,
+        )
+        print(
+            json.dumps(
+                {
+                    "experiment_id": result["experiment_id"],
+                    "validation_2022": result["validation_2022"],
+                    "development_2024_opened": result["scope"][
+                        "development_2024_opened"
+                    ],
+                    "elapsed_seconds": result["elapsed_seconds"],
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
         return 0
     raise AssertionError(f"unhandled command: {args.command}")
 
