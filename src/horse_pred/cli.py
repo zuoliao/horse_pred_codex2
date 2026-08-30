@@ -22,6 +22,7 @@ from horse_pred.data_health import (
     build_race_population_table,
     population_selection_audit,
 )
+from horse_pred.diagnostics import run_baseline_diagnostics
 from horse_pred.pipeline import run_mvp
 from horse_pred.uncertainty import run_uncertainty_analysis
 
@@ -84,6 +85,16 @@ def parser() -> argparse.ArgumentParser:
     cached.add_argument("--config", type=Path, required=True)
     cached.add_argument("--output", type=Path, required=True)
     cached.add_argument("--repo-root", type=Path, default=Path.cwd())
+    diagnostics = commands.add_parser(
+        "diagnose-baseline",
+        help="run 2024-only importance, permutation, and conditional diagnostics",
+    )
+    diagnostics.add_argument("--cache", type=Path, required=True)
+    diagnostics.add_argument("--baseline", type=Path, required=True)
+    diagnostics.add_argument("--output", type=Path, required=True)
+    diagnostics.add_argument("--repo-root", type=Path, default=Path.cwd())
+    diagnostics.add_argument("--permutation-repeats", type=int, default=5)
+    diagnostics.add_argument("--seed", type=int, default=20240830)
     return root
 
 
@@ -171,6 +182,17 @@ def main(argv: Sequence[str] | None = None) -> int:
             "retrospective_used": metrics["scope"]["retrospective_used"],
         }
         print(json.dumps(summary, ensure_ascii=False, indent=2))
+        return 0
+    if args.command == "diagnose-baseline":
+        result = run_baseline_diagnostics(
+            repo_root=args.repo_root,
+            cache_path=args.cache,
+            baseline_dir=args.baseline,
+            output_dir=args.output,
+            permutation_repeats=args.permutation_repeats,
+            seed=args.seed,
+        )
+        print(json.dumps(result["scope"], ensure_ascii=False, indent=2))
         return 0
     raise AssertionError(f"unhandled command: {args.command}")
 
