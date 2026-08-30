@@ -39,6 +39,22 @@
 
 **Decision rule:** ranking metricの完全一致を必須とする。per-race NLL/Brierの4-date block paired bootstrapで、Log Loss改善interval下限`>0`かつpoint改善`>=.002`、Brier非悪化を満たす場合に採用する。200 race以上のbandでLog Lossが`.01`超悪化した場合は保留/棄却。ECEは非加法なので補助reliability診断に留め、単独採用根拠にしない。
 
+### IMP-004: lean config × surface-conditioned Elo
+
+**Evidence:** `abl_006`のfield-relative削除とIMP-002のsurface Eloは別々には支持されたが、相補的とは限らない。
+
+**Change:** 253-feature lean controlへsurface rating 3列だけを追加する。cacheはIMP-002の271列版を再利用し、explicit includeで253対256列に固定する。
+
+**Decision rule:** probability/rankingの二経路とNDCG、Top-1、Log Loss、Brier guardrailを事前登録。詳細は[IMP-004 report](imp_004_lean_surface_conditioned_rating.md)。
+
+### IMP-005: expected-vs-actual race-value
+
+**Evidence:** 現行career performance valueは着順percentileとfield Elo水準を加算するだけで、horse自身のElo期待に対する上振れ・下振れを表さない。
+
+**Change:** 253-feature lean controlへ、各過去raceのpairwise実績平均−global Elo期待平均（global Elo delta / K）をhalf-life 90日で減衰した1列だけを追加する。class、surface、着差、時計、上がりは混ぜない。
+
+**Decision rule:** IMP-004と同じ二経路・guardrail。新269列cacheで旧268列が全行完全一致し、同cacheの253列controlが`abl_006`を完全再現することを実行前提とした。詳細は[IMP-005 report](imp_005_expected_actual_race_value.md)。
+
 ## Results
 
 | Experiment | Result | Decision |
@@ -46,12 +62,14 @@
 | IMP-001 | drop-control比でBinary NDCG `-.00739` / LL改善`-.01434`、Ranker `-.00440` / `-.00751`。主要95% intervalも悪化側 | reject |
 | IMP-002 | cache旧268列は全533,853 rowsで完全一致。Binaryは未解決。Ranker NDCG `+.00364 [+.00005,+.00714]`、proper score非悪化 | Ranker ranking pathをaccept。ただし全体bestではない |
 | IMP-003 | ranking完全一致。Binary LL `+.00040`悪化、Ranker `+.00070`悪化。ECEは改善したがBrierも悪化 | reject |
+| IMP-004 | lean controlへのsurface 3列追加。Binary NDCG `+.00299`だがBrier改善`−.00121`、Ranker NDCG `−.00188` / LL改善`−.00265` | 両family reject。個別に支持された変更は合成で改善せず |
+| IMP-005 | Elo期待差1列。Binary NDCG `−.00158` / LL改善`−.00172`、Ranker `−.00392` / `−.00299`。recent mean finishとSpearman `−.938` | Binary inconclusive、Ranker reject。採用せず |
 
 full resultとbest config判断は[統合結論](baseline_validation_conclusions_20260830.md)および[機械可読summary](../../experiments/baseline_validation_20260830/improvement_summary.json)をsource of truthとする。
 
 ## Interpretation guardrails
 
-- 同じ2024 development上で3仮説を見るため、多重比較とselection optimismが残る。採用は次のprospective期間で再検証する候補選択であり、finalな汎化証明ではない。
+- 同じ2024 development上で5仮説を見るため、多重比較とselection optimismが残る。採用は次のprospective期間で再検証する候補選択であり、finalな汎化証明ではない。
 - final oddsはmarket oracle診断だけに用い、改善実験のfeature、calibration、選択基準、ROIには用いない。
-- IMP-001、IMP-002、IMP-003を互いに合成したモデルは、この限定実験群とは別仮説になるため今回は自動的には作らない。
-- nominal intervalは3仮説×2 model familyを探索したselection optimismを除かない。すべて同じ2024の3,051 race、4-date moving block、10,000 resamplesで比較し、採用候補も2026+ prospectiveで再検証する。
+- IMP-004でfield-relative削除とsurface Eloの合成を明示的に検証したが支持されなかった。別変更の合成は今後も新仮説として扱う。
+- nominal intervalは5仮説×2 model familyを探索したselection optimismを除かない。すべて同じ2024の3,051 race、4-date moving block、10,000 resamplesで比較し、採用候補も2026+ prospectiveで再検証する。

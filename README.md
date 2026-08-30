@@ -2,7 +2,7 @@
 
 JRA中央競馬を主対象とする、競馬予測・馬券購入判断支援システムの研究開発リポジトリです。
 
-> **現在の段階:** 障害混入を修正したLightGBM baselineについて、2024限定のデータ健全性、block bootstrap、feature ablation、SHAP/permutation、条件別error、限定改善3実験まで完了。現bestはfield-relative 15列を除く253特徴configで、Binary/LambdaRankのfamily差は未解決。
+> **現在の段階:** 障害混入を修正したLightGBM baselineについて、2024限定のデータ健全性、block bootstrap、feature ablation、SHAP/permutation、条件別error、限定改善5実験まで完了。現bestはfield-relative 15列を除く253特徴configで、Binary/LambdaRankのfamily差は未解決。
 > **最終更新:** 2026-08-30 (JST)
 
 ## 1. プロジェクトの目的
@@ -450,8 +450,11 @@ README.md
 | `abl_006_drop_field_relative` | LGBM Binary + T | 253 | 2.0855 | **.82985** | .4913 | **.2912** | current best feature config |
 | `abl_006_drop_field_relative` | LGBM LambdaRank + T | 253 | **2.0847** | .82995 | **.4924** | .2881 | point-estimate best model、family差は未解決 |
 | `imp_002_surface_conditioned_elo` | LGBM LambdaRank + T | 271 | 2.0870 | .82963 | .4900 | .2832 | corrected baseline比NDCG `+.00364 [+.00005,+.00714]` |
+| `imp_004_lean_surface_conditioned_rating` | LGBM Binary + T | 256 | 2.0874 | .83106 | .4942 | .2902 | NDCG pointは上昇したがBrier guardrail違反、reject |
+| `imp_005_expected_actual_race_value` | LGBM Binary + T | 254 | 2.0872 | .83082 | .4897 | .2879 | 全point悪化、区間跨ぎでinconclusive。採用せず |
+| `imp_005_expected_actual_race_value` | LGBM LambdaRank + T | 254 | 2.0876 | .83044 | .4885 | .2852 | NDCG/Log Loss guardrail違反、reject |
 
-[機械可読summary](experiments/baseline_validation_20260830/improvement_summary.json)と[統合結論](docs/experiments/baseline_validation_conclusions_20260830.md)を参照してください。旧Task 16 reportは障害混入修正前のためsupersededである。final oddsは事後oracle専用で、実行可能ROIは評価していません。
+[baseline機械可読summary](experiments/baseline_validation_20260830/improvement_summary.json)、[rating/race-value追加実験](experiments/rating_race_value_20260830/)、[統合結論](docs/experiments/baseline_validation_conclusions_20260830.md)を参照してください。旧Task 16 reportは障害混入修正前のためsupersededである。final oddsは事後oracle専用で、実行可能ROIは評価していません。
 
 詳細な実験レポートを毎回作ることは必須としません。混合した結果を単純に「改善」と要約せず、改善・悪化した指標を事実として記録します。
 
@@ -574,7 +577,7 @@ Phase 1: データソース・既存手法の調査           完了
 Phase 2: 既存rawのcoverage/PIT gateと仕様確定    完了
 Phase 3: point-in-time特徴量基盤                 実装・検証済み
 Phase 4: LightGBM Binary / LambdaRank baseline   完了
-Phase 5: 特徴量・rating・calibration改善         進行中（診断・限定3実験完了）
+Phase 5: 特徴量・rating・calibration改善         進行中（診断・限定5実験完了）
 Phase 6: 確率的ランキングおよび高度なモデル
 Phase 7: 購入戦略・リスク管理の改善
 Phase 8: 自動予測処理・Web UI
@@ -602,11 +605,11 @@ Phase 8: 自動予測処理・Web UI
 | データソース | 決定 | 承認済み既存raw 2013～2025を主系統とし、JRA公式結果でcoverage・不足項目を照合・補完。新規取得は別gate |
 | 具体的な予測時点 | MVP決定 | 過去結果rawによる保守的PIT-C前日相当。同日の全raceは一括emit後に更新。当日締切前版は別track |
 | split期間 | MVP決定 | 2014～21 train、2022 validation、2023 calibration、2024 development、2025 opt-in retrospective、2026+ prospective final |
-| rating方式 | MVP決定 | PIT-safe global Eloをbaselineとし、芝/ダート別EloはLambdaRank rankingで追加signalを確認。lean configとの組合せは次の独立仮説 |
+| rating方式 | MVP決定 | PIT-safe global Eloをbaselineとする。芝/ダート別Eloは268列Rankerで追加signalを示したが、lean 253列との組合せは両family reject |
 | probabilistic ranking | 調査推奨・延期 | Plackett–Luceを最初の高度baseline候補とするが、順位別biasを検証してから採否判断 |
 | artifact管理 | MVP決定 | config、git/data fingerprint、aggregate metricsを追跡し、raw・model・runner予測はGit対象外 |
 | Web技術 | 未決 | 後続フェーズで決定 |
 
 ## 15. 次の作業
 
-corrected baselineの健全性、不確実性、feature-group ablation、model/error診断、限定改善3実験は完了しました。次の最優先仮説は、current bestの`abl_006_drop_field_relative`をcontrolに、支持されたsurface-conditioned rating familyだけを追加する実験です。2025は使用せず、同じ2024 paired block評価で検証し、2026+ prospective final方針を維持します。締切前oddsを使う実行可能な市場評価は別trackです。
+corrected baselineの健全性、不確実性、feature-group ablation、model/error診断、限定改善5実験は完了しました。surface rating 3列とlean configの合成、90日Elo期待差race-value 1列はいずれも採用されず、bestは`abl_006_drop_field_relative`の253列です。次はrace-valueをoutcome残差とopponent field strengthへ分離し、現self-inclusive field meanをopponent-only定義へ正したうえで、recent opponent strength 1列を独立仮説として検討します。2025は使用せず、2026+ prospective final方針を維持します。締切前oddsを使う実行可能な市場評価は別trackです。

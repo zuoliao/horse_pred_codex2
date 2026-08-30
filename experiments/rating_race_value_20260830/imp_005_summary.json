@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "experiment_id": "imp_005_expected_actual_race_value",
+  "run_commit": "874eda938bddfc760282bc26bdc438a877e72e57",
+  "decision": "binary_inconclusive_lambdarank_reject",
+  "scope": {
+    "development_races": 3051,
+    "development_runners": 41946,
+    "bootstrap_scheme": "paired_circular_moving_date_blocks",
+    "block_length_dates": 4,
+    "bootstrap_resamples": 10000,
+    "bootstrap_seed": 20240830,
+    "retrospective_2025_used": false,
+    "odds_used": false
+  },
+  "cache_control": {
+    "passed": true,
+    "rows": 533853,
+    "baseline_feature_count": 268,
+    "candidate_feature_count": 269,
+    "control_value_mismatch_count": 0,
+    "control_nan_position_mismatch_count": 0,
+    "control_max_abs_diff": 0.0,
+    "comparison_sha256": "25e0068e45f4e8a436cb40b3e7dba386f8ef8c17fa11227b292b0c6933d9b65c"
+  },
+  "arms": {
+    "control": {
+      "feature_count": 253,
+      "feature_columns_sha256": "fd8735cf6f8472a5c7322e3622c83fde1ff7720b022b75637745c96a1bc1062f",
+      "reproduced_abl_006_exactly": true,
+      "prediction_max_abs_diff": 0.0,
+      "metric_max_abs_diff": 0.0,
+      "predictions_sha256": "8dbab6d0f681178b83084086b9ad0426c3e8ddee6794f80f747fc613f3a3f9d3"
+    },
+    "candidate": {
+      "feature_count": 254,
+      "added_features": [
+        "race_value__decay_90d__mean_global_elo_surprise"
+      ],
+      "predictions_sha256": "93467ceff8424119bccb958bf440cc7634c3b51da7c4e596056d5c77127051b5"
+    }
+  },
+  "models": {
+    "binary": {
+      "candidate": {
+        "ndcg_at_3": 0.48967433364270047,
+        "top_1": 0.28793838085873485,
+        "log_loss": 2.0872371879945804,
+        "brier": 0.8308246339236227,
+        "ece": 0.004279047028121082
+      },
+      "candidate_improvement": {
+        "ndcg_at_3": {"point": -0.0015813558576838749, "lower": -0.00609853174719129, "upper": 0.00289845655035873},
+        "top_1": {"point": -0.0032776138970829205, "lower": -0.012341449550528825, "upper": 0.005247685477331291},
+        "log_loss": {"point": -0.0017160820388588682, "lower": -0.005717983340407395, "upper": 0.0022280932943326763},
+        "brier": {"point": -0.0009775027065773711, "lower": -0.002365787878860367, "upper": 0.00041634530736256036}
+      },
+      "decision": "inconclusive_all_points_worse_but_within_guardrails"
+    },
+    "lambdarank": {
+      "candidate": {
+        "ndcg_at_3": 0.48851422853685916,
+        "top_1": 0.28515240904621436,
+        "log_loss": 2.087648200576686,
+        "brier": 0.830444284609319,
+        "ece": 0.004788450383732461
+      },
+      "candidate_improvement": {
+        "ndcg_at_3": {"point": -0.003919092175701966, "lower": -0.008786755313041053, "upper": 0.0010212174096189783},
+        "top_1": {"point": -0.0029498525073746173, "lower": -0.011129296235679209, "upper": 0.0052545155993431476},
+        "log_loss": {"point": -0.0029860915656145792, "lower": -0.00817497122240267, "upper": 0.002114814524211346},
+        "brier": {"point": -0.0004955503209804757, "lower": -0.0020190228965955375, "upper": 0.0010065372162391586}
+      },
+      "decision": "reject_probability_and_ranking_guardrails"
+    }
+  },
+  "diagnostic": {
+    "development_missing_fraction": 0.10499213274209698,
+    "pearson_vs_decay_90d_mean_finish": -0.9306116397530342,
+    "spearman_vs_decay_90d_mean_finish": -0.938388615168141,
+    "binary_gain_rank": 1,
+    "binary_gain_fraction": 0.287354769376253,
+    "lambdarank_gain_rank": 1,
+    "lambdarank_gain_fraction": 0.4257159877928343,
+    "interpretation": "The one-column residual was strongly redundant with recent mean finish and dominated tree gain without improving OOS metrics"
+  },
+  "comparison_sha256": "5133f9f3cd9a8a37ed8b99fa1b87402df8fa39cd0c3d9b8c4d2b7f48fad0f1e4",
+  "current_best": "abl_006_drop_field_relative_253_features"
+}

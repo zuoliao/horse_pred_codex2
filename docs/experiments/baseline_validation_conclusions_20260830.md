@@ -10,7 +10,7 @@
 
 現時点のbest feature configは、既存field-relative 15列を除いた`abl_006_drop_field_relative`（253特徴）である。point estimateではLambdaRankがNDCG@3とLog Loss、BinaryがTop-1とBrierで僅かに良いが、両者のpaired intervalは全て0を跨ぐ。したがってモデルfamilyは未決着のまま両方を残す。
 
-限定改善3件のうち、surface-conditioned EloはLambdaRankのranking経路だけで事前基準を満たした。ただし253特徴drop configにはpoint estimateで及ばない。次は両者の合成を当然視せず、**「field-relativeを除いたlean controlにsurface別ratingを追加する」1仮説**として事前登録するのが最も合理的である。
+限定改善5件のうち、surface-conditioned Eloは268列baselineに対するLambdaRankのranking経路だけで事前基準を満たした。ただし253特徴lean configへ同じ3列を追加したIMP-004は両familyで棄却した。Elo期待差を90日減衰したrace-value 1列もBinary inconclusive、LambdaRank rejectで、現bestは変わらない。
 
 ## 1. Baselineをどこまで信用できるか
 
@@ -73,15 +73,17 @@ runner診断では181日以上休養のtop選択hitが.197、surface変更はBin
 
 ## 5. Limited improvement experiments
 
-各実験は2024の同一3,051 races、4-date block、10,000 resamplesで評価した。3仮説×2 familyのnominal intervalであり、多重比較と2024 selection optimismを除かない。
+各実験は2024の同一3,051 races、4-date block、10,000 resamplesで評価した。5仮説×2 familyのnominal intervalであり、多重比較と2024 selection optimismを除かない。
 
 | Experiment | Change | Binary | LambdaRank | Decision |
 |---|---|---|---|---|
 | IMP-001 | 253-feature drop controlへ90日form percentile 1列追加 | NDCG −.00739、LL改善 −.01434 | NDCG −.00440、LL改善 −.00751 | reject。両familyで主要区間が悪化側 |
 | IMP-002 | global Elo baselineへ芝/ダート別Elo 3列追加 | LL +.00197だがCI跨ぎ、NDCGほぼ0 | NDCG +.00364 `[+.00005,+.00714]`、proper score非悪化 | Ranker ranking pathのみaccept |
 | IMP-003 | 2023 field-size-band別temperature | LL −.00040、Brier悪化、ECE改善 | LL −.00070、Brier悪化、ECE改善 | reject。ranking不変、ECE単独では採用しない |
+| IMP-004 | 253-feature lean controlへsurface Elo 3列追加 | NDCG +.00299だがBrier改善 −.00121 | NDCG −.00188、LL改善 −.00265 | 両family reject。変更は相補的でなかった |
+| IMP-005 | 253-feature lean controlへ90日Elo期待差1列追加 | NDCG −.00158、LL改善 −.00172 | NDCG −.00392、LL改善 −.00299 | Binary inconclusive、Ranker reject。採用せず |
 
-IMP-002のcache controlは533,853行×旧268列でidentity、順序、値、NaN位置が完全一致し、不一致0・最大差0。surface変更4,657 runnersのtop選択hitはBinary `.201→.216`、LambdaRank `.241→.262`と改善方向だが、runner sliceはmechanism診断に留める。
+IMP-002とIMP-005のcache controlはいずれも533,853行×旧268列でidentity、順序、値、NaN位置が完全一致し、不一致0・最大差0。IMP-005の新featureはrecent 90日mean finishとSpearman `−.938`なのにgain importanceがBinary 28.7%、Ranker 42.6%を占め、強く利用されたがOOS改善はなかった。
 
 ## 6. Current best model/config
 
@@ -101,16 +103,16 @@ final-odds oracleはNDCG@3 `.5539`、Top-1 `.3468`、Log Loss `1.8828`、Brier `
 
 ## 8. Next priority hypothesis
 
-最優先は、`abl_006_drop_field_relative`をcontrolに、IMP-002で支持されたsurface-conditioned rating familyだけを追加する独立実験である。
+最優先は、race-valueを「最近の着順残差」と「最近対戦したfieldの事前強度」に分離し、後者だけを1列で検証可能にすることである。
 
 理由:
 
-1. 現relative 15列の削除は最も一貫した改善だった。
-2. surface Eloは別途LambdaRank rankingで事前基準を満たした。
-3. surface変更sliceも機序と整合する。
-4. 既存データだけでPIT-safeに検証でき、変更が1 feature familyで解釈可能。
+1. IMP-005のElo期待差はrecent mean finishとほぼ同じ情報になり、window追加の優先度が低い。
+2. state内部には過去raceのpre-race field Eloが既に保存されるが、現在はcareer平均しかemitされず、recent opponent strengthは未検証である。
+3. outcomeとfield qualityを分ければ、どちらが効くかを解釈できる。
+4. ただし現`mean_opponent_elo`はself-inclusive field meanなので、まずopponent-only定義・命名とPIT fixtureを固定する必要がある。
 
-ただし「二つの良い変更は合成しても良い」とは限らない。これはinteractionを含む新仮説として、2024上の最後の反復回数を意識して事前登録し、2026+ prospectiveで確認する。次点はsurface stateをglobalからのdeviation等へ縮約するrating表現改善である。データ取得拡張、DNN、購入戦略、Web UIにはまだ進まない。
+次の候補はhalf-life 90日のopponent-only field-strength平均1列であり、career値とrecent値の差を一度に追加しない。先に定義監査とdefault cache不変を確認し、同じ2024を既に5回使ったselection optimismを明記して事前登録する。surface/global shrinkageは係数選択が恣意的でIMP-004のnegative resultを見た事後調整になりやすいため次点とする。データ取得拡張、DNN、購入戦略、Web UIにはまだ進まない。
 
 ## Sources of truth
 
@@ -119,5 +121,7 @@ final-odds oracleはNDCG@3 `.5539`、Top-1 `.3468`、Log Loss `1.8828`、Brier `
 - [Semantic ablation](semantic_feature_ablation_20260830.md)
 - [Diagnostics](baseline_diagnostics_20260830.md)
 - [Improvement preregistration](improvement_experiments_20260830.md)
+- [IMP-004 lean surface interaction](imp_004_lean_surface_conditioned_rating.md)
+- [IMP-005 expected-actual race value](imp_005_expected_actual_race_value.md)
 - [Tracked machine summary](../../experiments/baseline_validation_20260830/improvement_summary.json)
 - Full local artifacts: `artifacts/imp_001_*`、`artifacts/imp_002_*`、`artifacts/imp_003_*`、`artifacts/best_candidate_*`

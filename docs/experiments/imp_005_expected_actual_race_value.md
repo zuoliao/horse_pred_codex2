@@ -66,4 +66,41 @@ BinaryとLambdaRankを別々に、candidate minus controlとして評価する�
 
 ## Results
 
-未実行。
+事前登録commit `874eda938bddfc760282bc26bdc438a877e72e57`（両armとも`dirty=false`）から実行した。2025 rows used=`0`、odds used=`false`。
+
+### Controls
+
+- 269-column cacheは533,853 rows。新規1列を除く旧268列のidentity、順序、値、NaN位置はcorrected cacheと完全一致した（mismatch `0`、最大絶対差`0`）。
+- 同cacheから再学習した253-feature controlは`abl_006_drop_field_relative`を完全再現した。ordered feature SHAは`fd8735cf6f8472a5c7322e3622c83fde1ff7720b022b75637745c96a1bc1062f`、runner identity mismatch `0`、全保存予測・主要metricの最大絶対差`0`。
+- Candidateは254 featuresで、追加列は登録したrace-value 1列だけだった。
+
+### Primary result
+
+| Model | Candidate NDCG@3 | NDCG delta [95% CI] | Candidate Log Loss | LL improvement [95% CI] | Brier improvement | Top-1 delta | Decision |
+|---|---:|---:|---:|---:|---:|---:|---|
+| Binary | .48967 | −.00158 `[-.00610,+.00290]` | 2.08724 | −.00172 `[-.00572,+.00223]` | −.00098 | −.00328 | inconclusive |
+| LambdaRank | .48851 | −.00392 `[-.00879,+.00102]` | 2.08765 | −.00299 `[-.00817,+.00211]` | −.00050 | −.00295 | reject |
+
+Binaryは全point metricが悪化方向だったが、NDCG `>=−.002`、Log Loss `>=−.002`、Brier `>=−.001`、Top-1 `>=−.005`の事前guardrail内で、主要intervalも0を跨いだため`inconclusive`とする。LambdaRankはNDCGがprobability-path guardrailを、Log Lossがranking-path guardrailを外れたため`reject`とする。どちらもaccept pathを満たさず、candidateは採用しない。
+
+### Mechanism diagnostic
+
+2024 feature availabilityは37,542 / 41,946 runners（欠損10.50%）。新featureは既存`decay_90d__mean_finish`とPearson `−.931`、Spearman `−.938`で、実質的にrecent finish formと強く重複した。一方でLightGBM gain importanceはBinary 254列中1位・28.7%、LambdaRank 1位・42.6%で、木がこの1列へ過度に集中したにもかかわらずOOSは改善しなかった。これは「モデルが利用した」ことと「追加情報を提供した」ことが別である負例である。
+
+条件別point差には改善sliceもあるが、事前登録外かつ区間推定なしなので採否を上書きしない。特に小さいrace class subgroupを見て式やwindowを事後調整しない。
+
+### Interpretation and next step
+
+`actual - Elo expected`はrating levelを差し引く設計だったが、actual側が着順pairwise平均である以上、90日mean finishの高相関変換になった。したがってhalf-lifeを30/180日へ機械的に振る、複数windowを同時投入する、Kを調整する、といった同じ2024上の追試は優先しない。
+
+Current bestは253-feature `abl_006_drop_field_relative`のまま。race-valueを次に検討するなら、outcome residualの別windowではなく、既にstate内部で保持している**recent opponent-only field strength**をoutcomeと分離して1列で検証するのが最小の独立仮説である。その前に、現`mean_opponent_elo`がself-inclusive field meanである命名・定義を修正し、opponent-only値のPIT fixtureと旧default contract不変を固定する。rating側はsurface 3列表現の追加がlean構成で棄却されたため、縮約係数を2024で選ぶsurface/global shrinkageよりこのrace-value分離を優先する。
+
+Full local artifacts:
+
+- `artifacts/imp_005_cache_build/`
+- `artifacts/imp_005_cache_control/`
+- `artifacts/imp_005_control_lean_global_elo/`
+- `artifacts/imp_005_expected_actual_race_value/`
+- `artifacts/imp_005_primary_comparison/`
+
+Tracked summary: [`experiments/rating_race_value_20260830/imp_005_summary.json`](../../experiments/rating_race_value_20260830/imp_005_summary.json)
