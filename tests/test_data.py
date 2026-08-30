@@ -22,6 +22,7 @@ from horse_pred.data import (
     resolve_raw_path,
     verify_audit_against_manifest,
 )
+from horse_pred.data_health import build_race_population_table, population_selection_audit
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 
@@ -362,3 +363,24 @@ def test_manifest_json_is_valid_json() -> None:
     manifest_path = REPOSITORY_ROOT / "configs" / "data_manifest.json"
     parsed = json.loads(manifest_path.read_text(encoding="utf-8"))
     assert parsed["manifest_version"] == 1
+
+
+def test_population_audit_uses_class_and_declared_nonstarter_scope() -> None:
+    rows = [
+        _raw_row("202405010101", "1", 1),
+        _raw_row("202405010101", "2", 2),
+        _raw_row("202405010102", "1", 1, course_type="ダート"),
+        _raw_row("202405010102", "2", 2, course_type="ダート"),
+        _raw_row("202405010103", "1", 1),
+        _raw_row("202405010103", "取消", 2),
+    ]
+    raw = pd.DataFrame(rows)
+    raw.loc[raw["raceid"].eq("202405010102"), "race_class"] = "障害4歳以上未勝利"
+    races = build_race_population_table(normalize_raw(raw))
+    audit = population_selection_audit(races)
+
+    assert len(races) == 3
+    assert not bool(races.set_index("race_id").loc["202405010102", "is_flat"])
+    assert audit["development_2024"]["flat_races"] == 2
+    assert audit["development_2024"]["scoring_eligible_races"] == 1
+    assert audit["development_2024"]["nonstarter_races"] == 1
