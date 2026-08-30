@@ -56,3 +56,26 @@ current best `abl_006_drop_field_relative`（253列）をcontrolとし、R5で�
 - 2024条件別sliceでparameterやsurface weightを事後調整しない。
 - final oddsは使用しない。
 - R6後も2026+ prospective確認なしに収益性やfinal汎化を主張しない。
+
+## R5 frozen result and R6 registration
+
+Clean implementation commit `ce6d5cc`からR0–R5を実行した。R0は489,674 scored runnersで既存global Eloの保存済みfloat32値と完全一致し、mismatch `0`、最大差`0`だった。
+
+- R2 selected: pairwise Elo、K=`48`、scale=`200`
+- R3 top-choice PL: 2022 Log Loss改善`−.10930`、NDCG差`−.14032`でreject
+- R4 surface blend `w=.25`: 2022 NDCG差`+.00351`だがLog Loss改善`−.00381`でreject
+- R5 frozen spec: global pairwise Elo、K=`48`、scale=`200`、surface blend=`0`
+- 2023 temperature: `0.5187022312`
+- 2024 standalone raw: NDCG@3 `.35333`、Top-1 `.16929`、Log Loss `2.44403`、Brier `.89910`
+- 2024 standalone calibrated: ranking不変、Log Loss `2.40153`、Brier `.89459`、ECE `.00774`
+
+R6では、R5 artifact SHA-256=`0967d04a30b75812015e9d00ed68a71ec344424c4f4099a3c91f21ba6cdfb738`、frozen spec SHA-256=`40ae7a9c179abf12ef4c4376ce887b72cbc5304cdf2c7de2878c97621114ea6d`を固定する。LightGBMへは未来の2023 calibratorを適用せず、raw PIT 5列だけを渡す。
+
+| Arm | Features | Expected count |
+|---|---|---:|
+| Control | `abl_006`と同じsemantic 6 groups | 253 |
+| Candidate | control + frozen `rating_module` 5 columns | 258 |
+
+Candidate追加列はscore、raw coherent win probability、global starts、surface-condition starts、`1/sqrt(global starts+1)` uncertainty proxyである。新273列cacheから旧268列の値・順序・NaN位置が全行一致し、同cacheの253列controlが`abl_006`を予測・metric差`<=1e-12`で再現することを実行gateとする。
+
+R6採否はIMP-004/005と同じ二経路を使う。Probability pathはLog Loss改善point `>=.002`かつpaired 95% interval下限`>0`、Brier非悪化、NDCG `>=−.002`、Top-1 `>=−.005`。Ranking pathはNDCG改善interval下限`>0`、Log Loss `>=−.002`、Brier `>=−.001`、Top-1 `>=−.005`。2025 rows used=`0`、odds used=`false`を必須とする。

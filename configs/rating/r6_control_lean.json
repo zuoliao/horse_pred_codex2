@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "experiment_id": "r6_control_lean_253",
+  "parent_experiment_id": "abl_006_drop_field_relative",
+  "hypothesis": "The augmented rating cache exactly reproduces the accepted 253-feature lean control when the frozen module group is excluded",
+  "seed": 42,
+  "model_configs": {
+    "binary": "configs/exp_001_binary.json",
+    "lambdarank": "configs/exp_002_lambdarank.json"
+  },
+  "feature_selection": {
+    "include": [
+      "current_context",
+      "horse_performance",
+      "form_workload",
+      "suitability",
+      "connections",
+      "rating_value"
+    ]
+  }
+}
