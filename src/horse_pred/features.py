@@ -939,6 +939,83 @@ def validate_model_feature_columns(frame: pd.DataFrame, columns: Sequence[str]) 
         raise ValueError(f"columns outside model feature allowlist: {invalid}")
 
 
+def semantic_feature_groups_v2(
+    feature_columns: Sequence[str],
+) -> Mapping[str, tuple[str, ...]]:
+    """Partition the MVP allowlist into interpretable ablation families.
+
+    Unlike the original construction-oriented groups, this taxonomy separates
+    horse suitability and Elo-derived race value from general horse history.
+    Every supplied column must match exactly one family.
+    """
+
+    groups: dict[str, list[str]] = {
+        "current_context": [],
+        "horse_performance": [],
+        "form_workload": [],
+        "suitability": [],
+        "connections": [],
+        "field_relative": [],
+        "rating_value": [],
+    }
+    for column in feature_columns:
+        if column.startswith("context__"):
+            group = "current_context"
+        elif column.startswith(("jockey_history__", "trainer_history__")):
+            group = "connections"
+        elif column.startswith("field_relative__"):
+            group = "field_relative"
+        elif column.startswith("rating__") or column in {
+            "horse_history__career__mean_opponent_elo",
+            "horse_history__career__mean_performance_value",
+        }:
+            group = "rating_value"
+        elif column.startswith("horse_history__same_"):
+            group = "suitability"
+        elif column.startswith("horse_history__") and any(
+            token in column for token in ("__days_", "__decay_")
+        ):
+            group = "form_workload"
+        elif column in {
+            "horse_history__career__distance_sum",
+            "horse_history__days_since_last_start",
+            "horse_history__last_1__distance_sum",
+            "horse_history__last_3__distance_sum",
+            "horse_history__last_5__distance_sum",
+            "horse_history__last_10__distance_sum",
+        }:
+            group = "form_workload"
+        elif column.startswith("horse_history__"):
+            group = "horse_performance"
+        else:
+            raise ValueError(f"feature column does not match taxonomy v2: {column}")
+        groups[group].append(column)
+
+    flattened = [column for columns in groups.values() for column in columns]
+    if len(flattened) != len(feature_columns) or set(flattened) != set(feature_columns):
+        raise AssertionError("taxonomy v2 must partition feature columns exactly once")
+    return {name: tuple(columns) for name, columns in groups.items()}
+
+
+def source_family_knockout_columns(
+    feature_groups: Mapping[str, Sequence[str]], family: str
+) -> tuple[str, ...]:
+    """Include deterministic field-relative descendants in source knockouts."""
+
+    if family not in feature_groups:
+        raise ValueError(f"unknown semantic feature family: {family}")
+    descendants = {
+        "horse_performance": ("field_relative__horse_win_rate__", "field_relative__horse_recent_win_rate__"),
+        "form_workload": ("field_relative__horse_rest_days__",),
+        "connections": ("field_relative__jockey_win_rate__", "field_relative__trainer_win_rate__"),
+    }.get(family, ())
+    selected = list(feature_groups[family])
+    for column in feature_groups.get("field_relative", ()):
+        if column.startswith(descendants):
+            selected.append(column)
+    return tuple(selected)
+
+
 def _assign_split_labels(dates: pd.Series, split_config: Mapping[str, object]) -> pd.Series:
     """Assign non-overlapping absolute-date splits, including model_validation.
 

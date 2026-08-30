@@ -15,6 +15,8 @@ from horse_pred.features import (
     build_pit_features,
     feature_groups,
     model_feature_allowlist,
+    semantic_feature_groups_v2,
+    source_family_knockout_columns,
     validate_model_feature_columns,
 )
 
@@ -318,3 +320,26 @@ def test_duplicate_runner_key_is_rejected(raw_fixture: pd.DataFrame) -> None:
     duplicate = pd.concat([raw_fixture, raw_fixture.iloc[[0]]], ignore_index=True)
     with pytest.raises(ValueError, match="duplicate"):
         build_pit_features(duplicate)
+
+
+def test_semantic_taxonomy_v2_is_exact_and_dependency_aware(
+    raw_fixture: pd.DataFrame,
+) -> None:
+    dataset = build_features(raw_fixture)
+    groups = semantic_feature_groups_v2(dataset.feature_columns)
+
+    assert {name: len(columns) for name, columns in groups.items()} == {
+        "current_context": 21,
+        "horse_performance": 25,
+        "form_workload": 54,
+        "suitability": 15,
+        "connections": 130,
+        "field_relative": 15,
+        "rating_value": 8,
+    }
+    flattened = [column for columns in groups.values() for column in columns]
+    assert len(flattened) == len(set(flattened)) == 268
+    assert set(flattened) == set(dataset.feature_columns)
+    assert len(source_family_knockout_columns(groups, "horse_performance")) == 31
+    assert len(source_family_knockout_columns(groups, "form_workload")) == 57
+    assert len(source_family_knockout_columns(groups, "connections")) == 136
