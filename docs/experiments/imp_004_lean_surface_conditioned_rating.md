@@ -61,4 +61,37 @@ BinaryとLambdaRankを別々に、candidate minus controlとして評価する�
 
 ## Results
 
-未実行。事前登録commit後にcontrol、candidate、paired comparisonの順で生成する。
+事前登録commit `846b3879f38be22a230769cbe2ef77d3abd76260`（両armとも`dirty=false`）から実行した。2025 rows used=`0`、odds used=`false`。
+
+### Control validation
+
+同じ271-column cacheから再学習した253-feature controlは、既存`abl_006_drop_field_relative`を完全再現した。
+
+- ordered feature SHA: `fd8735cf6f8472a5c7322e3622c83fde1ff7720b022b75637745c96a1bc1062f`
+- 2024 runner identity: 41,946 / mismatch 0
+- raw score・全coherent probability最大絶対差: `0`
+- 主要・条件別metric最大絶対差: `0`
+- best iteration・temperature: 一致
+
+### Candidate result
+
+| Model | Candidate NDCG@3 | NDCG delta [95% CI] | Candidate Log Loss | LL improvement [95% CI] | Brier improvement | Top-1 delta | Decision |
+|---|---:|---:|---:|---:|---:|---:|---|
+| Binary | .49424 | +.00299 `[-.00036,+.00648]` | 2.08740 | −.00188 `[-.00640,+.00273]` | −.00121 | −.00098 | reject |
+| LambdaRank | .49056 | −.00188 `[-.00558,+.00172]` | 2.08731 | −.00265 `[-.00827,+.00305]` | −.00059 | −.00393 | reject |
+
+Binaryはranking pointが改善方向だがNDCG interval下限が0以下で、Brier point改善`−.00121`がranking-path guardrail `>=−.001`を外れた。LambdaRankはNDCGが悪化方向で、Log Loss point改善`−.00265`もguardrailを外れた。両familyとも事前登録pathを満たさず、明示guardrail違反があるため`reject`とする。
+
+### Interpretation
+
+surface ratingは268-feature baseline上のLambdaRankで追加signalを示したが、field-relative 15列を除いたlean configとは相補的でなかった。3列は強く相関するabsolute/race-relative表現をまとめたfamilyなので、この結果からsurface能力概念そのものを否定せず、「現3列表現をlean configへそのまま足す」仮説を棄却する。
+
+Current bestは253-feature `abl_006_drop_field_relative`のまま。次段ではこのnegative resultを見てsurface ratingの式を事後調整せず、事前監査で特定したrace-value定義の問題を独立仮説として扱う。
+
+Full local artifacts:
+
+- `artifacts/imp_004_control_lean_global_elo/`
+- `artifacts/imp_004_lean_surface_conditioned_rating/`
+- `artifacts/imp_004_primary_comparison/`
+
+Tracked summary: [`experiments/rating_race_value_20260830/imp_004_summary.json`](../../experiments/rating_race_value_20260830/imp_004_summary.json)

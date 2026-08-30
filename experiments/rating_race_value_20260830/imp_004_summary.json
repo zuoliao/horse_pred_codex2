@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "experiment_id": "imp_004_lean_surface_conditioned_rating",
+  "run_commit": "846b3879f38be22a230769cbe2ef77d3abd76260",
+  "decision": "reject_both_model_families",
+  "scope": {
+    "development_races": 3051,
+    "development_runners": 41946,
+    "bootstrap_scheme": "paired_circular_moving_date_blocks",
+    "block_length_dates": 4,
+    "bootstrap_resamples": 10000,
+    "bootstrap_seed": 20240830,
+    "retrospective_2025_used": false,
+    "odds_used": false
+  },
+  "arms": {
+    "control": {
+      "feature_count": 253,
+      "feature_columns_sha256": "fd8735cf6f8472a5c7322e3622c83fde1ff7720b022b75637745c96a1bc1062f",
+      "reproduced_abl_006_exactly": true,
+      "prediction_max_abs_diff": 0.0,
+      "metric_max_abs_diff": 0.0,
+      "predictions_sha256": "53b43d5f89dbcdde24479280ce12dd8637223462fc0ab22944e4d20361e949e3"
+    },
+    "candidate": {
+      "feature_count": 256,
+      "added_features": [
+        "surface_rating__horse_elo_pre",
+        "surface_rating__horse_minus_field_mean_elo",
+        "surface_rating__horse_elo_percentile"
+      ],
+      "predictions_sha256": "d6b8e1be1e8df6b0a1e48c834f9cc72de9ea8d0094954d8d3760e6455e0adf00"
+    }
+  },
+  "models": {
+    "binary": {
+      "candidate": {
+        "ndcg_at_3": 0.4942415644253885,
+        "top_1": 0.29023271058669287,
+        "log_loss": 2.0874027248046993,
+        "brier": 0.8310558528549109,
+        "ece": 0.0044828388056394235
+      },
+      "candidate_improvement": {
+        "ndcg_at_3": {"point": 0.0029858749250036287, "lower": -0.00035851148285748864, "upper": 0.006481046950648765},
+        "top_1": {"point": -0.0009832841691249095, "lower": -0.010098049214777631, "upper": 0.008154546653377058},
+        "log_loss": {"point": -0.0018816188489814145, "lower": -0.006401935407727998, "upper": 0.0027283904065617754},
+        "brier": {"point": -0.0012087216378643406, "lower": -0.002802958576521541, "upper": 0.0004625080767426002}
+      },
+      "decision": "reject_brier_guardrail"
+    },
+    "lambdarank": {
+      "candidate": {
+        "ndcg_at_3": 0.49055603843319084,
+        "top_1": 0.28416912487708945,
+        "log_loss": 2.087309448526958,
+        "brier": 0.830536882457897,
+        "ece": 0.00396077096737176
+      },
+      "candidate_improvement": {
+        "ndcg_at_3": {"point": -0.0018772822793696187, "lower": -0.005582569964958253, "upper": 0.0017175249328953788},
+        "top_1": {"point": -0.003933136676499527, "lower": -0.011081324623594393, "upper": 0.003342245989304826},
+        "log_loss": {"point": -0.0026473395158830293, "lower": -0.00827462775400456, "upper": 0.003048794657977015},
+        "brier": {"point": -0.0005881481695604318, "lower": -0.0021492665778509302, "upper": 0.0010047930832946443}
+      },
+      "decision": "reject_ranking_and_log_loss_guardrail"
+    }
+  },
+  "comparison_sha256": "0685fef956563ebdcbef10a0147bd05b63faad8513ff46a7b47de59e367c40a4",
+  "current_best": "abl_006_drop_field_relative_253_features"
+}
