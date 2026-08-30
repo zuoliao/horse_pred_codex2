@@ -13,11 +13,13 @@
 
 **Evidence:** 15列の既存field-relative groupはpermutationで強く使われる一方、再学習dropで両modelの全point metricが改善した。30/90日decay mean finishとsame-surface mean finishは両modelの上位SHAP featureだった。
 
-**Change:** 既存field-relative 15列を除き、上記3 absolute PIT featureのrace内percentile 3列だけを追加する。source valueはtarget raceの同一rowに既に存在し、label・odds・日付・IDを使わない。
+**Change:** 既存field-relative 15列を除いた`abl_006`構成へ、`decay_90d__mean_finish`のrace内percentile 1列だけを追加する。source valueはtarget raceの同一rowに既に存在し、label・odds・日付・IDを使わない。
 
-**Primary comparison:** corrected 268-feature baselineとの2024同一race/date-block paired bootstrap。BinaryとLambdaRankのNDCG@3、Log Lossをprimary、top-1とBrierをsecondaryとする。
+**Primary comparison:** `abl_006_drop_field_relative`との2024同一race/date-block paired bootstrap。corrected 268-feature baselineはsecondary controlとする。BinaryとLambdaRankのNDCG@3、Log Lossをprimary、top-1とBrierをsecondaryとする。
 
 **Decision rule:** 少なくとも一方のmodelでNDCG@3またはLog Loss改善のpaired 95% intervalが0より上で、もう一方のprimary metricに明確な悪化がない場合のみ積極採用する。point estimateだけの微差は未解決とする。
+
+**Pre-run amendment:** 当初は相関の高い30日・90日・same-surfaceの3 percentileを同時追加する案だった。独立design reviewで、268 baselineだけでは15列dropと3列addが交絡し、候補source間の2024 Spearman相関も30–90日`.951`、90日–same-surface`.851`と高いと判明した。cleanな登録実行前に1列・drop-control比較へ縮約した。変更中worktreeで作られた3列版artifactは正式評価に使わない。
 
 ### IMP-002: surface-conditioned Elo
 
