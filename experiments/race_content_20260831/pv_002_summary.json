@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "experiment_id": "pv_002_margin_aware_rating",
+  "run_commit": "27774c1440597e925eb7a1aa728a7f53f806f250",
+  "run_dirty": false,
+  "data_fingerprint": "270923ce73c4441e64173f242a8719de7d1e9b205508140463ca547ef7b1ca87",
+  "scope": {
+    "margin_scale_years": [2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021],
+    "validation_year": 2022,
+    "validation_races": 3176,
+    "validation_runners": 43537,
+    "development_2024_opened": false,
+    "retrospective_2025_used": false,
+    "odds_used": false
+  },
+  "candidate": {
+    "family": "pairwise_elo",
+    "initial_rating": 1500.0,
+    "k": 48.0,
+    "scale": 200.0,
+    "pairwise_actual": "time_margin_logistic",
+    "tau_seconds_per_1000m": 0.125
+  },
+  "tau_derivation": {
+    "clean_races": 26563,
+    "excluded_status_races": 22,
+    "eligible_adjacent_pairs": 350331,
+    "strictly_positive_pairs": 268522,
+    "zero_pairs": 81809,
+    "negative_pairs": 0
+  },
+  "metrics_2022": {
+    "control": {
+      "race_log_loss": 2.4369457183,
+      "race_brier": 0.8979871010,
+      "ndcg_at_3": 0.3603642180,
+      "top_1": 0.1717569270
+    },
+    "candidate": {
+      "race_log_loss": 2.4394759595,
+      "race_brier": 0.8982946399,
+      "ndcg_at_3": 0.3656247167,
+      "top_1": 0.1786838791
+    }
+  },
+  "paired_improvement_2022": {
+    "race_log_loss": {"point": -0.0025302412, "lower": -0.0042233197, "upper": -0.0006779151},
+    "race_brier": {"point": -0.0003075389, "lower": -0.0006471299, "upper": 0.0000520290},
+    "ndcg_at_3": {"point": 0.0052604987, "lower": 0.0012709231, "upper": 0.0093242921},
+    "top_1": {"point": 0.0069269521, "lower": 0.0009442722, "upper": 0.0128914433}
+  },
+  "decision": "reject_fixed_raw_probability_mapping_ranking_improved_probability_worsened",
+  "posthoc_resubstitution_not_acceptance_evidence": {
+    "control_temperature": 0.5119573415,
+    "candidate_temperature": 0.4683340971,
+    "control_log_loss": 2.3915434640,
+    "candidate_log_loss": 2.3831975548,
+    "next_hypothesis": "test_out_of-period_temperature_calibration_as_a_separate_experiment"
+  },
+  "local_artifact": "artifacts/pv_002_margin_rating_20260831/"
+}

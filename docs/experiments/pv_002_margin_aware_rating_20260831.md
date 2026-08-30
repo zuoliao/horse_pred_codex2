@@ -66,3 +66,50 @@ integration.
 
 The machine-readable protocol is
 `configs/performance/pv_002_margin_aware_rating.json`.
+
+## Result
+
+PV-02 stopped at the preregistered 2022 gate. The candidate improved ranking but
+worsened the primary raw probability metric, so the overall decision is **reject**
+for this exact fixed-probability-mapping specification. Neither 2023 nor 2024 was
+opened by the runner.
+
+| 2022 strict scoring population | Control | Candidate | Candidate improvement |
+|---|---:|---:|---:|
+| Races / runners | 3,176 / 43,537 | 3,176 / 43,537 | — |
+| Race Log Loss ↓ | 2.436946 | 2.439476 | -0.002530 |
+| Race Brier ↓ | .897987 | .898295 | -0.000308 |
+| NDCG@3 ↑ | .360364 | .365625 | +0.005260 |
+| Top-1 ↑ | .171757 | .178684 | +0.006927 |
+
+Paired four-date-block 95% intervals, expressed as positive-is-candidate-better:
+
+- Log Loss: `-0.002530 [-0.004223, -0.000678]`
+- Brier: `-0.000308 [-0.000647, +0.000052]`
+- NDCG@3: `+0.005260 [+0.001271, +0.009324]`
+- Top-1: `+0.006927 [+0.000944, +0.012891]`
+
+The result is therefore not a generic rejection of time margins. It says that
+softening close results and strengthening large results improved ordering, while
+the unchanged R5 score-to-probability mapping became significantly worse for Log
+Loss. Candidate score dispersion was lower (`0.5577` versus `0.6009`), which is
+consistent with an altered scale.
+
+As a post-hoc mechanism check only, fitting each arm's one-parameter temperature on
+the same 2022 rows gave temperatures 0.5120 (control) and 0.4683 (candidate), and
+resubstitution Log Loss 2.39154 versus 2.38320. This is optimistic and is not an
+acceptance result. It motivates a separate, preregistered out-of-period calibration
+experiment before abandoning the margin-aware rating direction.
+
+Train-only scale audit:
+
+- 26,563 clean 2014–2021 flat races; 22 demotion/DQ races excluded.
+- 350,331 adjacent-rank clock pairs: 268,522 positive, 81,809 equal-clock, zero
+  clock-order inversions.
+- Frozen `tau=0.125` was reproduced from the positive-gap median.
+- Across 2022 raw flat events, 290,151 pairs used a positive continuous margin,
+  11,112 used a zero margin, 1,741 used pair fallback, and 78 used whole-race
+  fallback.
+
+The complete ignored artifact is `artifacts/pv_002_margin_rating_20260831/`. The
+tracked aggregate is `experiments/race_content_20260831/pv_002_summary.json`.
