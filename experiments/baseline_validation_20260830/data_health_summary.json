@@ -3,7 +3,7 @@
   "audit_id": "baseline_data_health_20260830",
   "raw_data_sha256": "270923ce73c4441e64173f242a8719de7d1e9b205508140463ca547ef7b1ca87",
   "blocking_issue": {
-    "status": "fixed_pending_corrected_baseline_result",
+    "status": "fixed_and_corrected_baseline_completed",
     "issue": "surface-only filtering admitted obstacle races whose course_type was turf or dirt",
     "true_obstacle_races_all_years": 1633,
     "explicit_jump_surface_races": 924,
@@ -12,7 +12,9 @@
     "old_2024_scored_obstacle_races": 36,
     "old_2024_scored_runners": 388,
     "corrected_2024_scored_flat_races": 3051,
-    "fix_commit": "810a003"
+    "fix_commit": "810a003",
+    "corrected_baseline_artifact": "artifacts/mvp_baseline_20260830_corrected",
+    "corrected_baseline_run_commit": "d3256de7e0c32f167c08252efc381d580617a9b3"
   },
   "known_missing": {
     "race_count": 146,
