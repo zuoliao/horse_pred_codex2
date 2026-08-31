@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "experiment_id": "sec_3f_001_rolling",
+  "run_commit": "fa06f83930a8e50b86453fa6168714c2f88cf7cd",
+  "run_dirty": false,
+  "data_fingerprint": "270923ce73c4441e64173f242a8719de7d1e9b205508140463ca547ef7b1ca87",
+  "cache_sha256": "d58bc44d67f599edb49e2952c5e0dfefc7b50ede707835d5b091fff580817d2c",
+  "scope": {"evaluation_years": [2020, 2021, 2022, 2023], "rows_used_2024": 0, "rows_used_2025": 0, "odds_used": false},
+  "cache_control": {
+    "row_count": 533853,
+    "baseline_feature_count": 269,
+    "candidate_feature_count": 270,
+    "old_feature_exact": true,
+    "pre2025_nonmissing": 440420,
+    "pre2025_missing": 49254,
+    "retrospective_2025_feature_nonmissing": 0,
+    "transformation_hash": "744a157bb4a5053775b990a56ebf9e1208cd9f7b83a00f72327766f612d0b1b6"
+  },
+  "decisions": {
+    "binary": {
+      "decision": "inconclusive",
+      "ndcg_at_3_improvement": {"point": -0.0013188616, "lower": -0.0034368777, "upper": 0.0007960151, "improved_years": 0},
+      "top_1_winner_mass_improvement": {"point": 0.0003587841, "lower": -0.0039635713, "upper": 0.0047233329, "improved_years": 3},
+      "race_log_loss_improvement": {"point": 0.0013625458, "lower": -0.0011959867, "upper": 0.0039086029, "improved_years": 3},
+      "race_brier_improvement": {"point": 0.0003562914, "lower": -0.0004608280, "upper": 0.0011799372, "improved_years": 2}
+    },
+    "lambdarank": {
+      "decision": "accept",
+      "ndcg_at_3_improvement": {"point": 0.0025602037, "lower": 0.0004516216, "upper": 0.0046530989, "improved_years": 3},
+      "top_1_winner_mass_improvement": {"point": 0.0036651318, "lower": -0.0002923437, "upper": 0.0076641953, "improved_years": 3},
+      "race_log_loss_improvement": {"point": 0.0008012201, "lower": -0.0012852740, "upper": 0.0028927489, "improved_years": 3},
+      "race_brier_improvement": {"point": 0.0008117133, "lower": 0.0001424242, "upper": 0.0014837003, "improved_years": 4}
+    }
+  },
+  "adopted": {"binary": false, "lambdarank_rolling_candidate": true},
+  "development_2024_opened": false,
+  "local_artifacts": "artifacts/sec_3f_001_rolling_20260831"
+}
