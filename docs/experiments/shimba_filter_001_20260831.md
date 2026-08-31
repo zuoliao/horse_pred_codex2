@@ -2,8 +2,8 @@
 
 ## Status
 
-Preregistered and implemented; the real-data experiment has not been run. No
-2024 or 2025 outcome has been opened for this hypothesis.
+Complete; the fit-only exclusion was rejected. No 2024 or 2025 outcome was
+opened for this hypothesis.
 
 ## Question
 
@@ -124,3 +124,37 @@ uv run pytest -q tests/test_shimba_filter_study.py tests/test_rolling_evaluation
 uv run ruff check src/horse_pred/shimba_filter_study.py src/horse_pred/cli.py \
   tests/test_shimba_filter_study.py
 ```
+
+## Result
+
+The run used clean commit
+`a63317a07d71abd24540dc1f26f057bec28f0c36`, the frozen 254-feature PV-01
+cache, no odds, and zero 2024/2025 rows. Candidate fit counts matched the
+audit exactly: 1,082 to 1,935 whole new-horse races were removed as the
+expanding fit window grew, while early stopping, calibration, and evaluation
+counts remained unchanged.
+
+All-race candidate improvements were:
+
+| Metric | Improvement | 95% paired interval | Improved years |
+|---|---:|---:|---:|
+| NDCG@3 | -.00225 | `[-.00468,+.00019]` | 0/4 |
+| Top-1 | +.00052 | `[-.00442,+.00551]` | 3/4 |
+| Log Loss | -.00097 | `[-.00392,+.00199]` | 1/4 |
+| Brier | +.00014 | `[-.00078,+.00107]` | 3/4 |
+
+The primary Log Loss test failed, and NDCG worsened in every year and crossed
+the `-.002` guardrail. The decision is `reject`.
+
+The descriptive mechanism slices do not rescue the hypothesis. In new-horse
+races, Log Loss worsened by `.00720` and NDCG by `.01455`, both in all four
+years. In non-new-horse races, Log Loss worsened by `.00037` and NDCG by
+`.00105`; both improved in only one of four years. Removing the difficult
+population therefore did not improve learning for ordinary races either.
+
+Retain new-horse races in Binary gradient fitting. Their predictions remain
+harder and should continue to be reported as a cold-start subgroup, but this
+experiment does not support removing them from evaluation, prediction, or a
+future betting scope. Those are separate estimand/decision-layer questions.
+Tracked evidence is `experiments/shimba_filter_20260831/summary.json`; complete
+local artifacts are under `artifacts/shimba_filter_001_rolling_20260831/`.

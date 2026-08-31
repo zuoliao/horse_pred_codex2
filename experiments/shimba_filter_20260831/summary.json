@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "experiment_id": "shimba_filter_001_rolling",
+  "run_commit": "a63317a07d71abd24540dc1f26f057bec28f0c36",
+  "run_dirty": false,
+  "data_fingerprint": "270923ce73c4441e64173f242a8719de7d1e9b205508140463ca547ef7b1ca87",
+  "cache_sha256": "85e92160f0a79f7286409bd4c006a0f0a1310ff67ff845e6fdc75d1894834eb9",
+  "scope": {
+    "evaluation_years": [2020, 2021, 2022, 2023],
+    "model_kind": "binary",
+    "feature_count": 254,
+    "feature_columns_sha256": "e5228bb4ffd605888b7266030d5e1e9f0931e8468b6fbbf124f3cea60905e51d",
+    "rows_used_2024": 0,
+    "rows_used_2025": 0,
+    "odds_used": false,
+    "pit_cache_and_state_changed": false
+  },
+  "fit_exclusion": {
+    "roll_2020": {"races": 1082, "rows": 14828},
+    "roll_2021": {"races": 1360, "rows": 18669},
+    "roll_2022": {"races": 1646, "rows": 22668},
+    "roll_2023": {"races": 1935, "rows": 26706}
+  },
+  "all_race_improvement": {
+    "ndcg_at_3": {"point": -0.0022532547, "lower": -0.0046783444, "upper": 0.0001856244, "improved_years": 0},
+    "top_1_winner_mass": {"point": 0.0005159137, "lower": -0.0044219818, "upper": 0.0055139338, "improved_years": 3},
+    "race_log_loss": {"point": -0.0009712070, "lower": -0.0039157266, "upper": 0.0019915027, "improved_years": 1},
+    "race_brier": {"point": 0.0001378423, "lower": -0.0007845594, "upper": 0.0010679510, "improved_years": 3}
+  },
+  "descriptive_slices": {
+    "new_horse": {"race_count": 1129, "race_log_loss_improvement": -0.0072040807, "ndcg_at_3_improvement": -0.0145463468},
+    "non_new_horse": {"race_count": 11567, "race_log_loss_improvement": -0.0003672388, "ndcg_at_3_improvement": -0.0010537780}
+  },
+  "decision": "reject",
+  "retain_new_horse_races_in_training": true,
+  "evaluation_or_betting_scope_changed": false,
+  "local_artifacts": "artifacts/shimba_filter_001_rolling_20260831"
+}
