@@ -49,6 +49,7 @@ _GENERATED_PREFIXES: tuple[str, ...] = (
     "margin_rating__",
     "race_content__",
     "opponent_recent__",
+    "sectional__",
 )
 
 FEATURE_PREFIXES: Mapping[str, tuple[str, ...]] = {
@@ -64,6 +65,7 @@ FEATURE_PREFIXES: Mapping[str, tuple[str, ...]] = {
     "margin_rating": ("margin_rating__",),
     "race_content_time": ("race_content__",),
     "opponent_recent": ("opponent_recent__",),
+    "sectional": ("sectional__",),
 }
 
 # This is documentation and a defensive check.  Safety does not depend on
@@ -1078,6 +1080,9 @@ def feature_groups(frame: pd.DataFrame) -> dict[str, tuple[str, ...]]:
         "opponent_recent": tuple(
             column for column in frame if column.startswith("opponent_recent__")
         ),
+        "sectional": tuple(
+            column for column in frame if column.startswith("sectional__")
+        ),
     }
     return groups
 
@@ -1134,6 +1139,8 @@ def semantic_feature_groups_v2(
         groups["race_content_time"] = []
     if any(column.startswith("opponent_recent__") for column in feature_columns):
         groups["opponent_recent"] = []
+    if any(column.startswith("sectional__") for column in feature_columns):
+        groups["sectional"] = []
     for column in feature_columns:
         if column.startswith("context__"):
             group = "current_context"
@@ -1158,6 +1165,8 @@ def semantic_feature_groups_v2(
             group = "race_content_time"
         elif column.startswith("opponent_recent__"):
             group = "opponent_recent"
+        elif column.startswith("sectional__"):
+            group = "sectional"
         elif column.startswith("horse_history__same_"):
             group = "suitability"
         elif column.startswith("horse_history__") and any(

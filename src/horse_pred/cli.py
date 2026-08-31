@@ -52,6 +52,7 @@ from horse_pred.race_content import (
 )
 from horse_pred.rating_study import run_rating_study
 from horse_pred.rolling_evaluation import run_rolling_evaluation
+from horse_pred.sectional_recent import build_sectional_recent_cache_from_raw
 from horse_pred.uncertainty import run_uncertainty_analysis
 
 
@@ -196,6 +197,19 @@ def parser() -> argparse.ArgumentParser:
         default=Path("configs/features/opp_recent_001.json"),
     )
     opponent_recent.add_argument("--repo-root", type=Path, default=Path.cwd())
+    sectional_recent = commands.add_parser(
+        "build-sectional-recent-cache",
+        help="build the preregistered one-column SEC-3F cache without 2025",
+    )
+    sectional_recent.add_argument("--raw-path", type=Path, required=True)
+    sectional_recent.add_argument("--baseline-cache", type=Path, required=True)
+    sectional_recent.add_argument("--output", type=Path, required=True)
+    sectional_recent.add_argument(
+        "--config",
+        type=Path,
+        default=Path("configs/features/sec_3f_001.json"),
+    )
+    sectional_recent.add_argument("--repo-root", type=Path, default=Path.cwd())
     margin_rating = commands.add_parser(
         "run-margin-rating-study",
         help="run the preregistered PV-02 time-margin standalone rating study",
@@ -473,6 +487,16 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 0
     if args.command == "build-opponent-recent-cache":
         result = build_opponent_recent_cache_from_raw(
+            repo_root=args.repo_root,
+            raw_path=args.raw_path,
+            baseline_cache_path=args.baseline_cache,
+            output_path=args.output,
+            config_path=args.config,
+        )
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0
+    if args.command == "build-sectional-recent-cache":
+        result = build_sectional_recent_cache_from_raw(
             repo_root=args.repo_root,
             raw_path=args.raw_path,
             baseline_cache_path=args.baseline_cache,

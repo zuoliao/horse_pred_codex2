@@ -46,6 +46,9 @@ RACE_CONTENT_COLUMNS: tuple[str, ...] = (
 OPPONENT_RECENT_COLUMNS: tuple[str, ...] = (
     "opponent_recent__decay_90d__mean_opponent_only_pre_elo",
 )
+SECTIONAL_RECENT_COLUMNS: tuple[str, ...] = (
+    "sectional__decay_90d__mean_last_3f_speed_percentile",
+)
 
 
 def _positional_mismatch_count(left: Sequence[str], right: Sequence[str]) -> int:
@@ -386,6 +389,30 @@ def compare_opponent_recent_cache_control(
         comparison_name="opponent_recent_cache_control",
         count_key="candidate_opponent_recent",
         contract_key="opponent_recent",
+        output_path=output_path,
+        chunk_size=chunk_size,
+        expected_baseline_feature_count=expected_baseline_feature_count,
+    )
+
+
+def compare_sectional_recent_cache_control(
+    baseline_cache_path: str | Path,
+    candidate_cache_path: str | Path,
+    *,
+    output_path: str | Path | None = None,
+    chunk_size: int = 10_000,
+    expected_baseline_feature_count: int = 268,
+) -> dict[str, Any]:
+    """Verify that a SEC-3F cache adds only its frozen column."""
+
+    return _compare_opt_in_cache_control(
+        baseline_cache_path,
+        candidate_cache_path,
+        expected_experimental_columns=SECTIONAL_RECENT_COLUMNS,
+        experimental_prefix="sectional__",
+        comparison_name="sectional_recent_cache_control",
+        count_key="candidate_sectional",
+        contract_key="sectional",
         output_path=output_path,
         chunk_size=chunk_size,
         expected_baseline_feature_count=expected_baseline_feature_count,
