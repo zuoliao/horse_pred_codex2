@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "experiment_id": "speed_01_condition_adjusted",
+  "hypothesis": "A PIT-safe history of performance versus a prequential condition-adjusted winner clock adds information beyond the accepted no-odds incumbents.",
+  "candidate_column": "speed__decay_90d__mean_condition_adjusted_time_residual",
+  "transformation_hash": "55f5e4a5eb9c7bb12368bed9faa0a617b35ade5cbae918ffa8046be33b2d5c43",
+  "transformation": {
+    "feature_id": "SPEED-01",
+    "source": "time_raw and completed-race conditions",
+    "eligible_race": "JRA flat with consistent known conditions, positive distance, a finite official winner clock, no demotion or disqualification, and no timed nonwinner faster than the winner",
+    "expected_winner_clock": {
+      "response": "winner elapsed seconds per 1000m",
+      "model": "prequential ridge main effects",
+      "ridge_alpha": 1.0,
+      "intercept_penalized": false,
+      "scaling": "none; all explanatory columns are reference-coded dummies",
+      "effects": {
+        "course_surface": {"levels": "10 JRA venue codes crossed with turf/dirt", "reference": "05_芝"},
+        "distance_m": {"levels": [1000, 1150, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600, 3000, 3200, 3400, 3600], "reference": 1600},
+        "going": {"levels": ["良", "稍重", "重", "不良"], "reference": "良"},
+        "class_tier": {"levels": ["new", "maiden", "1win", "2win", "3win", "open"], "reference": "maiden"},
+        "race_age_restriction": {"levels": ["2yo", "3yo", "3yo+", "4yo+"], "reference": "3yo"}
+      },
+      "design_dimension_including_intercept": 51,
+      "cold_start_min_prior_clean_races": 510,
+      "same_date_batch": true,
+      "unknown_condition": "no observation or expectation update",
+      "forbidden": ["full-period fit", "fold future fit", "same-date later-race result", "day/course track variant"]
+    },
+    "runner_observation": {
+      "value": "expected winner seconds per 1000m - runner elapsed seconds per 1000m",
+      "meaning": "positive is faster than the condition expectation",
+      "eligible_runner": "started with finite parseable M:SS.t clock",
+      "clip_seconds_per_1000m": [-5.0, 5.0]
+    },
+    "history": {"half_life_days": 90, "same_date_batch": true, "missing_history": "NaN"},
+    "output_column": "speed__decay_90d__mean_condition_adjusted_time_residual"
+  },
+  "source_scope": {
+    "raw_fingerprint": "270923ce73c4441e64173f242a8719de7d1e9b205508140463ca547ef7b1ca87",
+    "mapping_audit_years": [2014, 2021],
+    "state_warmup_starts": 2013,
+    "raw_cutoff_before_normalization": 2024,
+    "retrospective_2025_used": false
+  },
+  "multiple_testing": {"hypotheses_in_this_experiment": 1, "candidate_representations_screened": 1}
+}
