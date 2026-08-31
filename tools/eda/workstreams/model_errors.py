@@ -86,7 +86,7 @@ def field_band(value: int) -> str:
 
 def history_band(starts: float) -> str:
     if starts <= 0:
-        return "0_new"
+        return "0_observed_history"
     if starts <= 1:
         return "1"
     if starts <= 3:

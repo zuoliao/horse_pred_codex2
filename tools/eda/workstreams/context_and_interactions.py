@@ -40,8 +40,9 @@ def period(year: pd.Series) -> pd.Series:
 
 
 def centered_summary(frame: pd.DataFrame, interaction: str, cell: str) -> pd.DataFrame:
-    work = frame[["period", "race_id", "race_date", "winner", "base", cell]].dropna()
-    work["centered_win"] = work["winner"] - work["base"]
+    outcome = "winner_weight" if "winner_weight" in frame else "winner"
+    work = frame[["period", "race_id", "race_date", outcome, "base", cell]].dropna()
+    work["centered_win"] = work[outcome] - work["base"]
     rows = []
     for (phase, value), group in work.groupby(["period", cell], observed=True):
         race_values = group.groupby(["race_id", "race_date"], observed=True)["centered_win"].mean().reset_index()
@@ -87,8 +88,13 @@ def build_raw_transitions() -> tuple[pd.DataFrame, pd.DataFrame, dict[str, int |
     finish = pd.to_numeric(started["finish_position"], errors="coerce")
     started["performance"] = 1 - (finish - 1) / (started["field_size"] - 1).replace(0, np.nan)
     started.loc[finish.isna(), "performance"] = 0.0
-    started["winner"] = finish.eq(1).astype(float)
+    hard_winner = finish.eq(1).astype(float)
+    winner_count = hard_winner.groupby(started["race_id"], observed=True).transform("sum")
+    started["winner"] = hard_winner / winner_count
     started["class_tier"] = class_tier(started["race_class"])
+    class_text = started["race_class"].astype("string")
+    started["is_new_race"] = class_text.str.contains("新馬", na=False)
+    started["is_maiden_race"] = class_text.str.contains("未勝利", na=False)
     started["direction"] = started["around"].astype("string").replace("", pd.NA)
     started = started.sort_values(["horse_id", "race_date", "race_id"], kind="stable")
     for current, previous in [
@@ -98,6 +104,7 @@ def build_raw_transitions() -> tuple[pd.DataFrame, pd.DataFrame, dict[str, int |
         ("venue", "prev_venue"),
         ("direction", "prev_direction"),
         ("class_tier", "prev_class_tier"),
+        ("is_new_race", "prev_is_new_race"),
         ("horse_age", "prev_age"),
         ("field_size", "prev_field_size"),
         ("performance", "prev_performance"),
@@ -139,8 +146,14 @@ def build_raw_transitions() -> tuple[pd.DataFrame, pd.DataFrame, dict[str, int |
     )
     class_delta = target["class_tier"] - target["prev_class_tier"]
     target["class_transition"] = np.select(
-        [class_delta.lt(0).fillna(False), class_delta.eq(0).fillna(False), class_delta.gt(0).fillna(False)],
-        ["down", "same", "up"],
+        [
+            target["prev_is_new_race"].fillna(False) & target["is_maiden_race"],
+            (target["prev_is_new_race"].fillna(False) | target["is_new_race"]) & target["prev_date"].notna(),
+            class_delta.lt(0).fillna(False),
+            class_delta.eq(0).fillna(False),
+            class_delta.gt(0).fillna(False),
+        ],
+        ["new_to_maiden", "new_related_other", "down", "same", "up"],
         default="missing",
     )
     rest = (target["race_date"] - target["prev_date"]).dt.days
@@ -252,8 +265,8 @@ def load_frame() -> tuple[pd.DataFrame, dict[str, int | str]]:
     assert not frame["race_date"].dt.year.ge(2023).any()
     frame["period"] = period(frame["race_date"].dt.year)
     frame = frame.loc[frame["period"].notna()].copy()
-    frame["winner"] = frame["winner_label"].astype(float)
     frame["winner_weight"] = frame["coherent_win_target"].astype(float)
+    frame["winner"] = frame["winner_weight"]
     frame["field_size"] = frame["context__field_size_rows"].astype(float)
     frame["base"] = 1.0 / frame["field_size"]
     manifest = {
@@ -500,8 +513,16 @@ def oot_errors(frame: pd.DataFrame, transitions: pd.DataFrame) -> tuple[pd.DataF
             daily["top1"] = daily["weighted_top1"] / daily["weight"]
             loss = float(np.average(group["winner_log_loss"], weights=weight))
             top1 = float(np.average(group["top1_correct"], weights=weight))
-            loss_half_width = float(1.96 * daily["loss"].std(ddof=1) / np.sqrt(len(daily)))
-            top1_half_width = float(1.96 * daily["top1"].std(ddof=1) / np.sqrt(len(daily)))
+            rng = np.random.default_rng(20260901)
+            sample_index = rng.integers(0, len(daily), size=(1000, len(daily)))
+            daily_weight = daily["weight"].to_numpy(float)
+            loss_sum = daily["weighted_loss"].to_numpy(float)
+            top1_sum = daily["weighted_top1"].to_numpy(float)
+            sampled_weight = daily_weight[sample_index].sum(axis=1)
+            loss_draws = loss_sum[sample_index].sum(axis=1) / sampled_weight
+            top1_draws = top1_sum[sample_index].sum(axis=1) / sampled_weight
+            loss_ci = np.quantile(loss_draws, [0.025, 0.975])
+            top1_ci = np.quantile(top1_draws, [0.025, 0.975])
             rows.append(
                 {
                     "slice": slice_name,
@@ -513,12 +534,12 @@ def oot_errors(frame: pd.DataFrame, transitions: pd.DataFrame) -> tuple[pd.DataF
                     "dates": group["race_date"].nunique(),
                     "missing": 0,
                     "top1": top1,
-                    "top1_ci_low": top1 - top1_half_width,
-                    "top1_ci_high": top1 + top1_half_width,
+                    "top1_ci_low": float(top1_ci[0]),
+                    "top1_ci_high": float(top1_ci[1]),
                     "winner_probability": float(np.average(group["probability_calibrated"], weights=weight)),
                     "winner_log_loss": loss,
-                    "winner_log_loss_ci_low": loss - loss_half_width,
-                    "winner_log_loss_ci_high": loss + loss_half_width,
+                    "winner_log_loss_ci_low": float(loss_ci[0]),
+                    "winner_log_loss_ci_high": float(loss_ci[1]),
                     "aggregation": "race-macro via coherent dead-heat winner weights",
                 }
             )

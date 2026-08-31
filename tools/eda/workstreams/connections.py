@@ -460,7 +460,7 @@ def name_audit(runners: pd.DataFrame) -> dict[str, object]:
     }
 
 
-def redundancy_summary(frame: pd.DataFrame) -> dict[str, object]:
+def redundancy_summary(frame: pd.DataFrame) -> tuple[dict[str, object], pd.DataFrame]:
     columns = [
         c
         for c in frame
@@ -486,7 +486,14 @@ def redundancy_summary(frame: pd.DataFrame) -> dict[str, object]:
     )
     corr = sample.corr(method="spearman", min_periods=100)
     upper = corr.where(np.triu(np.ones(corr.shape), 1).astype(bool)).abs()
-    return {
+    pairs = (
+        upper.stack()
+        .rename("absolute_spearman")
+        .reset_index()
+        .rename(columns={"level_0": "feature_a", "level_1": "feature_b"})
+        .sort_values("absolute_spearman", ascending=False)
+    )
+    summary = {
         "production_connection_columns": 130,
         "production_columns_per_entity": 65,
         "production_blocks_per_entity": 13,
@@ -506,6 +513,7 @@ def redundancy_summary(frame: pd.DataFrame) -> dict[str, object]:
             "diagnostic states, not the production frame"
         ),
     }
+    return summary, pairs
 
 
 def main() -> None:
@@ -523,7 +531,8 @@ def main() -> None:
     stability.to_csv(OUT / "annual_stability.csv", index=False)
     regression.to_csv(OUT / "regression_to_mean.csv", index=False)
     names = name_audit(runners)
-    redundancy = redundancy_summary(states)
+    redundancy, redundancy_pairs = redundancy_summary(states)
+    redundancy_pairs.to_csv(OUT / "connection_redundancy_pairs.csv", index=False)
     (OUT / "name_key_audit.json").write_text(json.dumps(names, ensure_ascii=False, indent=2) + "\n")
     (OUT / "redundancy_summary.json").write_text(json.dumps(redundancy, ensure_ascii=False, indent=2) + "\n")
     analysis = runners.loc[runners.year.between(2014, 2022)]
