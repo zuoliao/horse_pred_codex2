@@ -56,12 +56,12 @@
 | 36 | PACE-03 | final recorded position history | PACE-01 | 最終通過位置percentileの90日履歴1列をrolling評価 |
 | 37 | PACE-04 | normalized position-gain history | PACE-01 | 序盤から最終位置への変化を遷移数補正した90日履歴1列でrolling評価 |
 | 38 | SPEED-01 | condition-adjusted speed figure | PACE-01～04 | 期待時計を過去情報だけで推定し、条件補正済み残差の履歴1列をrolling評価 |
-| 39 | COND-01 | condition-transition suitability | SPEED-01 | **Phase 5A完了までpause（rejectではない）**。EDA後に人間が再選択した場合のみ実行 |
-| 40 | EDA-5A | systematic EDA and problem reformulation | 既存実験の安全なcheckpoint | 2014～2022の時間再現、共通view、全workstream、三者review、仮説registry、最大3候補のroadmapを1 commandで再現。production変更はしない |
+| 39 | COND-01 | condition-transition suitability | SPEED-01 | **pause（rejectではない）**。Phase 5A完了後も自動再開せず、人間が再選択した場合のみ実行 |
+| 40 | EDA-5A | systematic EDA and problem reformulation | 既存実験の安全なcheckpoint | **完了**。2014～2022の時間再現、共通view、全workstream、三者PASS、仮説registry、最大3候補のroadmapを1 commandで再現。production変更なし |
 
 ## 2026-08-31実行状態
 
-> 2026-09-01 phase decision: 下表の完了済み結果は証拠として保持するが、局所的特徴量探索はすべてEDA完了までpauseする。Phase 5Aの比較基準はBinary PV-01 254特徴、LambdaRank lean 253特徴に固定し、2024/2025を新しいEDA判断に使わない。
+> 2026-09-01 phase decision: Phase 5Aは完了した。下表の過去結果は証拠として保持するが、局所的特徴量探索は人間の次仮説選択までpauseする。比較基準はBinary PV-01 254特徴、LambdaRank lean 253特徴に固定し、2024/2025を新しいEDA判断に使っていない。
 
 | 範囲 | 状態 | 証拠 |
 |---|---|---|
@@ -86,8 +86,8 @@
 | PACE-03 | 完了・未採用 | 最終位置履歴1列。Binary inconclusive、LambdaRank reject |
 | PACE-04 | 完了・未採用 | 遷移数補正position gain履歴1列。両family inconclusive |
 | SPEED-01 | 完了・両family rolling採択 | prequential条件補正speed履歴1列。2024 Binary supported、Rank directionally consistent |
-| COND-01 | pause | EDA完了後の人間レビューまで実行しない。棄却ではない |
-| EDA-5A | 実行中 | `docs/eda/02_eda_protocol.md`を正とし、完了後は最大3仮説を提示して停止 |
+| COND-01 | pause | EDA完了後も自動再開しない。人間が明示的に再選択するまで実行しない。棄却ではない |
+| EDA-5A | 完了・人間選択待ち | 全workstream、共通contract、再現CLI、三者review、registry、synthesis、roadmapを完了。次候補を3件に限定して停止 |
 
 現在のwork queueは[model research priorities](model_research_priorities.md)、実験結果のsource of truthは`experiments/`、統合判断は`docs/experiments/`と`docs/handoff.md`である。完全なmodel・prediction・bootstrap artifactはGit対象外の`artifacts/`に置く。
 
@@ -102,6 +102,7 @@
 | M4.1: baseline validation | DEC-01、IMP-001～003 | data/evaluation health、uncertainty、ablation、model/error診断と限定改善を2024だけで完了する |
 | M4.2: rolling selection | EVAL-ROLL、OPP-RECENT、SEC-3F、HPO-01、ENS-01 | 2024/2025をparameter選択に使わず、複数年rolling evidenceでS1を判断する |
 | M4.3: structured A-rank signals | PACE-01、支持時のみPACE-02、SPEED-01 | 一仮説ずつrollingでscreenし、重要候補だけ2024 milestoneへ送る |
+| M4.4: systematic EDA | EDA-5A | 2022末cutoff、全workstream、PIT/statistics/domain review、machine-readable registry、最大3候補を再現しproduction変更なしで停止 |
 | M5: 実行可能市場評価 | LIVE-01～LIVE-02 | 締切前snapshotを用いたprospective shadow期間が蓄積される |
 
 GOV-01～QA-01のdecision gateはmetric確認前に固定済みである。baseline結果を見てこれらを変更する場合は、新しいexperiment IDと将来評価期間を必要とする。

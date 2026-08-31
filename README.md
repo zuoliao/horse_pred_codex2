@@ -2,10 +2,10 @@
 
 JRA中央競馬を主対象とする、競馬予測・馬券購入判断支援システムの研究開発リポジトリです。
 
-> **現在の段階:** `Phase 5A: systematic exploratory data analysis and problem reformulation`。局所的なproduction特徴量実験は棄却せず、EDA完了まで停止する。Phase 5Aの凍結比較基準はBinaryがPV-01を含む254特徴、LambdaRankがfield-relativeを除いた253特徴である。
+> **現在の段階:** `Phase 5A: systematic exploratory data analysis and problem reformulation`は完了。production modelを変更せず、最優先3仮説を提示して人間の選択を待っている。局所的な特徴量実験は棄却ではなくpauseを維持する。凍結比較基準はBinaryがPV-01を含む254特徴、LambdaRankがfield-relativeを除いた253特徴である。
 > **最終更新:** 2026-09-01 (JST)
 
-Phase 5Aでは2014～2019をdiscovery、2020～2021をreplication、2022をconfirmationに限定し、2023は既存calibration用途のまま、2024を新たに参照せず、2025を使用しません。PV-00～PV-05は完了済みです。margin-aware ratingはstandaloneで改善しましたがLightGBM追加特徴には採用していません。PV-06、PACE、SPEED等の既存結果は再現証拠として保存しますが、EDA中に追加調整・production採用・次実験へ進めません。
+Phase 5Aは2014～2019をdiscovery、2020～2021をreplication、2022をconfirmationに限定し、2023を既存calibration用途のまま、2024を新たに参照せず、2025を使用せず完了しました。PV-00～PV-05は完了済みです。margin-aware ratingはstandaloneで改善しましたがLightGBM追加特徴には採用していません。PV-06、PACE、SPEED等の既存結果は再現証拠として保存し、追加調整・production採用・旧queueへの自動復帰はしません。
 
 ## 1. プロジェクトの目的
 
@@ -466,6 +466,10 @@ README.md
 
 [baseline機械可読summary](experiments/baseline_validation_20260830/improvement_summary.json)、[rating/race-value追加実験](experiments/rating_race_value_20260830/)、[PV-01～PV-06 summaries](experiments/race_content_20260831/)、[GR-001 summary](experiments/graded_rank_20260831/summary.json)、[統合結論](docs/experiments/baseline_validation_conclusions_20260830.md)を参照してください。GR-001は2014～2019 fit、2020 early stopping、2021 calibration、2022 gateのため、上表の2024実験とは直接比較しません。旧Task 16 reportは障害混入修正前のためsupersededである。final oddsは事後oracle専用で、実行可能ROIは評価していません。
 
+### 9.5 Phase 5A EDA index
+
+Phase 5Aのcanonicalな結論は[EDA synthesis](docs/eda/14_eda_synthesis.md)、次候補は[next research roadmap](docs/eda/15_next_research_roadmap.md)、独立reviewは[cross-review](docs/eda/12_cross_review.md)です。質問別の分析は[既存分析棚卸し](docs/eda/00_existing_analysis_inventory.md)から[仮説catalog](docs/eda/13_hypothesis_catalog.md)まで、機械可読なsource of truthは[`experiments/eda_20260901/`](experiments/eda_20260901/)にあります。
+
 詳細な実験レポートを毎回作ることは必須としません。混合した結果を単純に「改善」と要約せず、改善・悪化した指標を事実として記録します。
 
 ## 10. Codexとの作業分担
@@ -587,7 +591,8 @@ Phase 1: データソース・既存手法の調査           完了
 Phase 2: 既存rawのcoverage/PIT gateと仕様確定    完了
 Phase 3: point-in-time特徴量基盤                 実装・検証済み
 Phase 4: LightGBM Binary / LambdaRank baseline   完了
-Phase 5: 特徴量・rating・calibration改善         進行中（S0/S1完了、Aランクへ移行）
+Phase 5: 特徴量・rating・calibration改善         pause（Phase 5A review待ち）
+Phase 5A: systematic EDA / problem reformulation 完了（人間選択待ち）
 Phase 6: 確率的ランキングおよび高度なモデル
 Phase 7: 購入戦略・リスク管理の改善
 Phase 8: 自動予測処理・Web UI
@@ -627,6 +632,7 @@ Phase 8: 自動予測処理・Web UI
 | PACE-03 | 完了・未採用 | 最終通過位置履歴を1列追加。Binary inconclusive、Rank NDCG `-.00276 [-.00473,-.00084]`でreject |
 | PACE-04 | 完了・未採用 | 遷移数補正した前進・後退履歴を1列追加。Binary/Rankともinconclusive。PACE派生探索を終了 |
 | SPEED-01 | rolling両family採択・2024 Binary支持 | 過去日だけの条件別期待勝ち時計と各馬時計の差を90日履歴1列化。rolling LLはBinary `+.00769 [+.00457,+.01078]`、Rank `+.00823 [+.00523,+.01128]`。2024はBinary支持、Rank方向一致 |
+| Phase 5A EDA | 完了・review待ち | pre-2023の全workstreamとPIT/statistics/domain reviewを完了。production変更なし。最優先はrace-value二軸、race-wise choice、condition-adjusted performance targetの3件 |
 | LIVE-DATA | 基盤完了・ユーザー保留 | 公式JV-Link限定のschema/append-only archiveを実装。公式transportがWindowsのみで現環境がMacのため、実収集は後日に延期 |
 | LambdaRank教師 | 開発維持 | 従来の`1着=3, 2着=2, 3着=1, その他=0`を維持。2・3着を統合して上位半数へ教師を広げたGR-001は2022でLog Loss/Brierを有意に悪化させreject |
 | probabilistic ranking | 調査推奨・延期 | Plackett–Luceを最初の高度baseline候補とするが、順位別biasを検証してから採否判断 |
@@ -635,14 +641,10 @@ Phase 8: 自動予測処理・Web UI
 
 ## 15. 次の作業
 
-現在の唯一の作業はPhase 5Aの体系的EDAです。共通データ契約、2022-12-31の物理的cutoff、race/date単位の不確実性、時間再現、PIT・統計・競馬意味論の独立レビューを完了し、次候補を最大3件に絞って人間レビューを待ちます。以下の従来候補は履歴として残しますが、EDA完了までは実行しません。
+Phase 5Aは完了し、次のproduction実験をまだ開始せず人間の選択を待っています。最優先候補は次の3件だけです。
 
-S0/S1は完了しました。統合判断は[S-rank no-odds model research conclusions](docs/experiments/s_rank_model_research_conclusions_20260831.md)、living queueは[no-odds予測モデル研究の優先順位](docs/model_research_priorities.md)です。
+1. `EDA-S01-RACE-VALUE-2AXIS`: 過去走をcondition-adjusted performanceとrace-constant opponent field qualityの二軸で表す。
+2. `EDA-S02-RACEWISE-CHOICE`: 同一PIT feature/splitで透明なconditional logit / top-choice Plackett–Luce baselineを比較する。
+3. `EDA-S03-PERFORMANCE-TARGET`: fold内で作るcondition residualをHuber回帰し、race内順位・勝率へ変換する。
 
-- 2024で支持されたBinary development incumbentはPV-01+PACE-01+SPEED-01の256特徴です。NDCG `.49763`、Top-1 `.29695`、Log Loss `2.06821`、Brier `.82534`です。
-- LambdaRankはlean+SEC-3F+PACE-01+SPEED-01の256特徴をrolling採択しました。2024は改善方向ですが区間上inconclusiveのため、保守的referenceと区別します。
-- OPP-RECENTは未採用、HPO parameterは変更なし、固定50:50 ensembleはrejectです。
-- 新馬戦はcold-startで難しいものの、fitからの除外は通常レースにも効かずrejectしました。
-- LIVE-DATAは公式JV-Link source gateと保存基盤まで完了しましたが、現環境がMacで公式transportはWindowsのみのため、ユーザー判断で後日に延期しました。
-
-PACE-01～PACE-04とSPEED-01を完了しました。PACEからは序盤位置履歴1列だけを採用し、SPEED-01は両familyでrolling採択、Binaryは2024 one-shotでも支持されました。次の独立modeling taskは`COND-01`です。surface変更、距離変更、休養日数と過去performanceの関係を、履歴数の少ない馬で極端値を作らない縮約付き表現として一仮説だけrolling評価します。2024は重要候補のmilestoneに限定し、2025は反復選択に使用しません。
+EDAはこの3件の優劣やmetric改善を実証していません。`COND-01`、PV-06 refinement、rating変形、旧field-relative復活、Top3 multitask、追加データ収集を含む従来queueはpauseのままです。次の一件が人間に選択された後だけ、`one experiment = one hypothesis`でpreregisterしてrolling-origin評価へ進みます。2024/2025、final market、ROIは選択に使いません。

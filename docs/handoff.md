@@ -2,79 +2,85 @@
 
 ## Operating Rule
 
-The active phase is `Phase 5A: systematic exploratory data analysis and problem reformulation`. Use `docs/eda/02_eda_protocol.md` as the authoritative queue. Pause all local production-feature experiments until EDA is complete; pause does not mean reject. Do not access new 2024 targets, use 2025, tune betting, scrape, or promote an EDA finding into production. Finish with no more than three proposed experiments and wait for human selection.
+`Phase 5A: systematic exploratory data analysis and problem reformulation` is complete. Do not automatically resume PV-06, margin-token refinement, rating transformations, COND-01, other local feature work, data collection, betting optimization, or UI work. These tracks are paused, not rejected. Wait for the human user to choose one of the three experiments in `docs/eda/15_next_research_roadmap.md`.
+
+No follow-up may use new 2024 evidence for hypothesis/parameter selection or use 2025. Keep 2023 in its prior calibration role. Final odds remain a physically isolated market-oracle diagnostic. Never commit raw data, cache, models, runner predictions, or recoverable runner-level views.
 
 ## Current Goal
 
-Complete reproducible pre-2023 EDA, all nine workstreams, three independent reviews, a machine-readable hypothesis registry, synthesis, and roadmap. The central loader must enforce `target_date <= 2022-12-31`.
+Wait for human selection among the three Phase 5A priorities. When one is selected, preregister exactly one interpretable experiment and use the frozen common PIT contract and rolling-origin evaluation. Do not infer a selection from the roadmap order alone.
 
 ## Current State
 
-- Safety checkpoint on 2026-09-01 found clean `main`, no untracked files, HEAD `b3d2b79`; no checkpoint branch was required.
-- PV-00 through PV-05 are complete. PV-06 was completed as an inconclusive 2022 token gate, but every continuation/refinement is paused.
-- Frozen Phase 5A references: Binary `pv_001_candidate_signed_time_gap` with 254 features; LambdaRank `abl_006_drop_field_relative` with 253 features.
-- Previously known 2024 Binary evidence is NDCG@3 .4976, Top-1 .2965, Log Loss 2.0787, Brier .82767. It must not be reopened for EDA selection.
-- Margin-aware rating improved calibrated standalone predictions, but PV-04/PV-05 and R6 did not establish incremental LightGBM value.
-- Later PACE/SPEED experiments remain archived reproducible evidence. They do not change the conservative EDA reference or authorize further local search.
-- Binary versus LambdaRank remains unresolved. GR-001 rejected broad upper-half relevance; original `3/2/1/0` labels remain historical pending EDA reformulation.
-- Removing new-horse races from Binary fitting was rejected; EDA instead analyzes history-availability learning curves.
-- 2025 is not used for model selection. 2023 remains reserved for prior calibration and excluded from Phase 5A target EDA.
-- LIVE-DATA collection is user-deferred on Mac. No collection or scraping occurs in Phase 5A.
+- Phase 5A EDA, all workstreams A–I, and PIT/statistics/domain cross-review are complete. All three final review verdicts are PASS.
+- Frozen controls remain Binary `pv_001_candidate_signed_time_gap` with 254 features and conservative LambdaRank `abl_006_drop_field_relative` with 253 features.
+- PV-00 through PV-05 are complete. PV-06's 2022 token gate was inconclusive; continuation and mapping refinement remain paused.
+- Margin-aware rating improved standalone calibrated predictions, but PV-04/PV-05/R6 did not establish incremental LightGBM value.
+- Later PACE/SPEED results remain archived reproducible evidence and do not authorize local feature search.
+- Phase 5A used 2013 only for warm-up/quality, 2014–2019 for discovery, 2020–2021 for replication, and 2022 for confirmation. It newly accessed neither 2023/2024 targets nor 2025.
+- New-horse race exclusion is not supported. Race-class debut and `0_observed_history` are distinct.
+- The EDA does not establish production metric, ROI, or profit improvement.
+- The only prioritized next hypotheses are:
+  1. `EDA-S01-RACE-VALUE-2AXIS`
+  2. `EDA-S02-RACEWISE-CHOICE`
+  3. `EDA-S03-PERFORMANCE-TARGET`
 
 ## Implemented Artifacts
 
-- Phase state/inventory: `README.md`, `AGENTS.md`, `docs/development_plan.md`, `docs/eda/00_existing_analysis_inventory.md`.
-- Contract/preregistration: `docs/eda/01_data_contract.md`, `docs/eda/02_eda_protocol.md`, `configs/eda/phase_5a.json`.
-- Existing evidence: `experiments/`, `docs/experiments/`; full models/predictions remain ignored.
-- Existing PIT pipeline: `src/horse_pred/data.py`, `features.py`, `pipeline.py`, and leakage/split tests.
+- EDA contract and protocol: `docs/eda/00_existing_analysis_inventory.md` through `docs/eda/02_eda_protocol.md`.
+- Workstream findings: `docs/eda/03_data_quality_and_drift.md` through `docs/eda/11_external_eda_practices.md`.
+- Independent review: `docs/eda/12_cross_review.md`; detailed local review records are under `artifacts/eda_20260901/reviews/`.
+- Decisions: `docs/eda/13_hypothesis_catalog.md`, `docs/eda/14_eda_synthesis.md`, `docs/eda/15_next_research_roadmap.md`.
+- Machine-readable source of truth: `experiments/eda_20260901/`.
+- Reproducible runner: `tools/eda/run_phase5a.py`; workstream modules are under `tools/eda/workstreams/`.
+- Common loader/CLI: `src/horse_pred/eda.py` and `horse-pred run-eda`.
+- Full ignored artifact: `artifacts/eda_20260901/report.html`, aggregate tables, plots, logs, scripts, manifest, and hashes.
+- Superseded pre-fix artifact is retained non-destructively at `artifacts/eda_20260901_pre_contract_fix/` and is not canonical.
 
 ## Data State
 
-- Approved raw SHA-256: `270923ce73c4441e64173f242a8719de7d1e9b205508140463ca547ef7b1ca87`.
-- Full private raw: 629,967 declared runners, 44,761 races, 2013–2025. Phase 5A retains no target later than 2022-12-31.
-- Raw, caches, models, predictions, and recoverable runner-level files are ignored and must not be committed.
-- Odds/popularity exist only in `market_oracle` and require an explicit oracle diagnostic join.
+- Approved private raw SHA-256: `270923ce73c4441e64173f242a8719de7d1e9b205508140463ca547ef7b1ca87`.
+- Full private raw: 629,967 declared runners, 44,761 races, 2013–2025.
+- Phase 5A raw-status population: 488,715 rows / 34,504 races through 2022-12-28.
+- Flat historical performance: 471,557 rows / 33,240 races. Strict predictive/outcome view: 450,340 rows / 31,689 races.
+- Predictive views contain zero obstacle rows and zero target dates after 2022-12-31.
+- `market_oracle` is separate from `runner_pre_race`; final odds are joined only in named oracle diagnostics.
 
 ## Verification
 
-Safety commands completed:
-
-```bash
-git status --short --branch
-git branch --show-current
-git log -8 --oneline --decorate
-git ls-files --others --exclude-standard
-```
-
-Result: clean `main`, ahead of `origin/main`, no untracked files, HEAD `b3d2b79`. Last pre-EDA verification: 234 tests passed, Ruff passed, compileall passed. Phase 5A verification is pending.
+Independent review checked common/workstream hashes and concluded PASS for PIT/leakage, statistics/validation, and domain semantics. Final repository verification on 2026-09-01: 239 tests passed, Ruff passed, and `compileall` passed. The final ignored artifact manifest/hash, report XML, and tracked-private-file audits are release checks run after the last documentation commit.
 
 ## Known Gaps
 
-- `run-eda` CLI and physical cutoff assertions are not implemented.
-- Logical views and machine-readable summaries are not generated.
-- Workstreams A–I, OOT diagnostics, HTML, and aggregate plots are pending.
-- Three-way cross-review, registry, synthesis, and roadmap are pending.
-- Historical periods have prior exposure; no result is an untouched holdout claim.
+- 2014 state is left-truncated because only 2013 is available as warm-up.
+- The raw class vocabulary drifts over time and does not provide a complete stable grade/condition taxonomy.
+- Historical `published_at` is unavailable, so this is retrospective PIT-C rather than snapshot-proven PIT-A.
+- Local JRA history omits some external/overseas history and lacks bloodline, training, exact weight/handicap conditions, and reliable T-close snapshots.
+- 2022 is confirmation evidence already exposed to research, not an untouched final holdout.
+- EDA associations do not prove incremental value after retraining the current model.
+- Final market gaps cannot identify the causal contribution of missing data versus model, target, calibration, or selection effects.
 
 ## Next Tasks
 
-1. Commit Phase 5A synchronization and Wave 0 protocol.
-2. Implement `run-eda`, views, cutoff/market isolation tests, manifest, resume, tables, plots, and HTML.
-3. Run workstreams A–I in waves using separate namespaces.
-4. Build pre-2023 OOT diagnostic predictions without production promotion.
-5. Perform independent PIT, statistics, and domain reviews; fix major findings.
-6. Produce registry, synthesis, at most three next hypotheses, run full verification, and stop.
+1. Wait for human selection of S1, S2, or S3; do not execute any of them automatically.
+2. After selection, preregister one experiment, one transform/target/objective, its fixed rolling folds, guardrails, and multiplicity count.
+3. Reuse the Phase 5A PIT contract and frozen Binary/LambdaRank controls.
+4. Record negative or inconclusive results machine-readably and return for review before another hypothesis.
 
 ## Useful Commands
 
 ```bash
-uv run horse-pred run-eda --raw-path /path/to/race_results_merged.csv --output artifacts/eda_20260901 --max-date 2022-12-31
-uv run pytest -q
-uv run ruff check .
-uv run python -m compileall -q src tests
+UV_CACHE_DIR=/tmp/horse-pred-uv-cache uv run python tools/eda/run_phase5a.py \
+  --raw-path /path/to/race_results_merged.csv \
+  --output artifacts/eda_YYYYMMDD \
+  --max-date 2022-12-31 \
+  --rolling-predictions artifacts/eval_roll_001_current_best_20260831/predictions_scoring.csv.gz
+UV_CACHE_DIR=/tmp/horse-pred-uv-cache uv run pytest -q
+UV_CACHE_DIR=/tmp/horse-pred-uv-cache uv run ruff check .
+UV_CACHE_DIR=/tmp/horse-pred-uv-cache uv run python -m compileall -q src tests tools
 git status --short --branch
 ```
 
 ## Handoff Notes
 
-Do not reinterpret archived PACE/SPEED acceptance as an active queue. Phase 5A freezes conservative PV-01/lean references while retaining later evidence. Separate observation, interpretation, and hypothesis; all final recommendations require human review.
+The main new conclusion is not that one engineered column won. Stable information exists in decayed horse history, connections, and same-condition persistence, while the larger unresolved gaps concern how a past race is represented and what the objective teaches. Preserve the separation between observation, interpretation, and hypothesis. The roadmap order is a recommendation for human review, not permission to start S1 automatically.
