@@ -142,4 +142,6 @@ def test_predictive_views_exclude_obstacle_population(tmp_path: Path) -> None:
 
     assert set(views["runner_pre_race"]["race_id"]) == {"202205010101"}
     assert set(views["historical_performance"]["race_id"]) == {"202205010101"}
+    assert not views["outcomes"].columns.duplicated().any()
+    assert views["outcomes"].columns.tolist().count("race_id") == 1
     assert views["raw_status_population"]["race_id"].nunique() == 2
