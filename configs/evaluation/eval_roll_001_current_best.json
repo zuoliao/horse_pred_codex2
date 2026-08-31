@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "experiment_id": "eval_roll_001_current_best",
+  "hypothesis": "The frozen current-best no-odds Binary and conservative LambdaRank models show stable predictive direction across four strictly chronological rolling-origin evaluation years",
+  "seed": 42,
+  "maximum_outcome_year": 2023,
+  "folds": [
+    {
+      "id": "roll_2020",
+      "train_start_year": 2014,
+      "train_end_year": 2017,
+      "early_stopping_year": 2018,
+      "calibration_year": 2019,
+      "evaluation_year": 2020
+    },
+    {
+      "id": "roll_2021",
+      "train_start_year": 2014,
+      "train_end_year": 2018,
+      "early_stopping_year": 2019,
+      "calibration_year": 2020,
+      "evaluation_year": 2021
+    },
+    {
+      "id": "roll_2022",
+      "train_start_year": 2014,
+      "train_end_year": 2019,
+      "early_stopping_year": 2020,
+      "calibration_year": 2021,
+      "evaluation_year": 2022
+    },
+    {
+      "id": "roll_2023",
+      "train_start_year": 2014,
+      "train_end_year": 2020,
+      "early_stopping_year": 2021,
+      "calibration_year": 2022,
+      "evaluation_year": 2023
+    }
+  ],
+  "methods": {
+    "binary_current": {
+      "model_kind": "binary",
+      "model_config": "configs/exp_001_binary.json",
+      "feature_config": "configs/performance/pv_001_candidate_signed_time_gap.json",
+      "expected_feature_count": 254,
+      "expected_columns_sha256": "e5228bb4ffd605888b7266030d5e1e9f0931e8468b6fbbf124f3cea60905e51d"
+    },
+    "lambdarank_current": {
+      "model_kind": "lambdarank",
+      "model_config": "configs/exp_002_lambdarank.json",
+      "feature_config": "configs/performance/pv_001_control_lean.json",
+      "expected_feature_count": 253,
+      "expected_columns_sha256": "fd8735cf6f8472a5c7322e3622c83fde1ff7720b022b75637745c96a1bc1062f"
+    }
+  },
+  "comparisons": [
+    {
+      "id": "binary_vs_lambdarank_descriptive",
+      "candidate": "binary_current",
+      "reference": "lambdarank_current",
+      "type": "descriptive_cross_family"
+    }
+  ],
+  "selection_accounting": {
+    "candidate_comparisons_this_run": 0,
+    "prior_selection_uses_by_evaluation_year": {
+      "2020": 2,
+      "2021": 2,
+      "2022": 6,
+      "2023": 2
+    },
+    "multiple_comparison_note": "Counts are a documented lower-bound inventory of prior project uses, not a claim that these years are untouched; EVAL-ROLL-001 is descriptive and selects no candidate."
+  },
+  "uncertainty": {
+    "bootstrap_resamples": 10000,
+    "bootstrap_seed": 20240830,
+    "block_length_dates": 4,
+    "confidence_level": 0.95
+  }
+}

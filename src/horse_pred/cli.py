@@ -46,6 +46,7 @@ from horse_pred.race_content import (
     load_race_content_config,
 )
 from horse_pred.rating_study import run_rating_study
+from horse_pred.rolling_evaluation import run_rolling_evaluation
 from horse_pred.uncertainty import run_uncertainty_analysis
 
 
@@ -117,6 +118,18 @@ def parser() -> argparse.ArgumentParser:
     cached.add_argument("--config", type=Path, required=True)
     cached.add_argument("--output", type=Path, required=True)
     cached.add_argument("--repo-root", type=Path, default=Path.cwd())
+    rolling = commands.add_parser(
+        "run-rolling-evaluation",
+        help="run the registered 2020-2023 rolling-origin no-odds evaluation",
+    )
+    rolling.add_argument("--cache", type=Path, required=True)
+    rolling.add_argument(
+        "--config",
+        type=Path,
+        default=Path("configs/evaluation/eval_roll_001_current_best.json"),
+    )
+    rolling.add_argument("--output", type=Path, required=True)
+    rolling.add_argument("--repo-root", type=Path, default=Path.cwd())
     diagnostics = commands.add_parser(
         "diagnose-baseline",
         help="run 2024-only importance, permutation, and conditional diagnostics",
@@ -337,6 +350,23 @@ def main(argv: Sequence[str] | None = None) -> int:
             "feature_count": metrics["features"]["count"],
             "evaluated_split": "development",
             "retrospective_used": metrics["scope"]["retrospective_used"],
+        }
+        print(json.dumps(summary, ensure_ascii=False, indent=2))
+        return 0
+    if args.command == "run-rolling-evaluation":
+        metrics = run_rolling_evaluation(
+            repo_root=args.repo_root,
+            cache_path=args.cache,
+            config_path=args.config,
+            output_dir=args.output,
+        )
+        summary = {
+            "output": str(args.output.resolve()),
+            "experiment_id": metrics["experiment_id"],
+            "evaluation_years": metrics["scope"]["evaluation_years"],
+            "rows_used_2024": metrics["scope"]["rows_used_2024"],
+            "rows_used_2025": metrics["scope"]["rows_used_2025"],
+            "elapsed_seconds": metrics["elapsed_seconds"],
         }
         print(json.dumps(summary, ensure_ascii=False, indent=2))
         return 0
