@@ -1,7 +1,7 @@
 # SPEED-01 prequential condition-adjusted speed history
 
 Date: 2026-09-01 JST  
-Status: rolling complete; accepted for both families via probability path
+Status: complete; rolling accepted both, 2024 Binary supported and Rank directionally consistent
 
 ## Hypothesis
 
@@ -126,3 +126,30 @@ Positive Log Loss with passing guardrails but an interval crossing zero is only
 directionally consistent. A wholly negative Log Loss interval or failed
 guardrail is contradicted; other outcomes are inconclusive. This classification
 does not authorize any refit or mapping change, and 2025 remains closed.
+
+## 2024 milestone result
+
+The milestone used clean commit `dbc656e16a167b3bdcb41691682d10260eed5c38`,
+3,051 races, 41,946 runners, 106 dates, no odds, and no 2025 rows. Each method
+was refit on 2014--2021, early-stopped on 2022, and calibrated on 2023 exactly
+as preregistered.
+
+| Family | NDCG improvement | Top-1 improvement | Log Loss improvement | Brier improvement | Milestone |
+|---|---:|---:|---:|---:|---|
+| Binary | +.00166 `[-.00248,+.00579]` | +.00475 `[-.00467,+.01409]` | +.00654 `[+.00143,+.01170]` | +.00158 `[-.00043,+.00362]` | supported |
+| LambdaRank | +.00178 `[-.00290,+.00642]` | -.00164 `[-.01079,+.00755]` | +.00335 `[-.00355,+.01022]` | +.00125 `[-.00114,+.00369]` | directionally consistent |
+
+Binary passes the frozen support rule: its Log Loss interval is wholly positive
+and every point guardrail passes. Its 2024 candidate metrics are NDCG `.49763`,
+Top-1 `.29695`, Log Loss `2.06821`, and Brier `.82534`. Promote the unchanged
+256-column PV-01+PACE-01+SPEED-01 Binary as the development incumbent, subject
+to future prospective confirmation.
+
+LambdaRank improves NDCG, Log Loss, and Brier at the point estimate; Top-1 is
+down `.00164`, within the guardrail. The Log Loss interval crosses zero, so the
+milestone is directionally consistent, not supported. Retain the 256-column
+lean+SEC-3F+PACE-01+SPEED-01 candidate as rolling-accepted, while keeping a
+separate conservative 2024 reference. No aspect of SPEED-01 is retuned.
+
+Tracked summary now includes the milestone. Full comparison is
+`artifacts/speed_01_2024_milestone/comparison.json`.

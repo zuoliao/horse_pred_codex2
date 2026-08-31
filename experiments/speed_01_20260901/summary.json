@@ -42,6 +42,29 @@
     "decision": "accept"
   },
   "adopted": true,
-  "development_2024_opened": false,
-  "next_task": "SPEED-01-2024-MILESTONE"
+  "development_2024_opened": true,
+  "development_2024": {
+    "scope": {"race_count": 3051, "runner_count": 41946, "date_count": 106, "odds_used": false, "rows_used_2025": 0},
+    "binary": {
+      "improvement": {
+        "ndcg_at_3": {"point": 0.0016589928, "lower": -0.0024794209, "upper": 0.0057930760},
+        "top_1_winner_mass": {"point": 0.0047525402, "lower": -0.0046687160, "upper": 0.0140851655},
+        "race_log_loss": {"point": 0.0065414293, "lower": 0.0014307958, "upper": 0.0117014249},
+        "race_brier": {"point": 0.0015765802, "lower": -0.0004314468, "upper": 0.0036243833}
+      },
+      "candidate_metrics": {"ndcg_at_3": 0.4976287411, "top_1_winner_mass": 0.2969518191, "race_log_loss": 2.0682056045, "race_brier": 0.8253394476},
+      "decision": "supported"
+    },
+    "lambdarank": {
+      "improvement": {
+        "ndcg_at_3": {"point": 0.0017780192, "lower": -0.0029026562, "upper": 0.0064159725},
+        "top_1_winner_mass": {"point": -0.0016388069, "lower": -0.0107948970, "upper": 0.0075484702},
+        "race_log_loss": {"point": 0.0033480424, "lower": -0.0035455769, "upper": 0.0102197179},
+        "race_brier": {"point": 0.0012525667, "lower": -0.0011387789, "upper": 0.0036852442}
+      },
+      "candidate_metrics": {"ndcg_at_3": 0.4991067532, "top_1_winner_mass": 0.2967879384, "race_log_loss": 2.0643081489, "race_brier": 0.8234423575},
+      "decision": "directionally_consistent"
+    }
+  },
+  "next_task": "COND-01"
 }
