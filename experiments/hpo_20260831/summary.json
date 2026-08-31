@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "experiment_id": "hpo_01_lightgbm_rolling",
+  "run_commit": "87bde38e224b1fd21e3e22db906d217194f4b4f8",
+  "run_dirty": false,
+  "data_fingerprint": "270923ce73c4441e64173f242a8719de7d1e9b205508140463ca547ef7b1ca87",
+  "cache_sha256": "85e92160f0a79f7286409bd4c006a0f0a1310ff67ff845e6fdc75d1894834eb9",
+  "scope": {
+    "selection_evaluation_years": [2020, 2021, 2022],
+    "confirmation_evaluation_year": 2023,
+    "rows_used_2024": 0,
+    "rows_used_2025": 0,
+    "odds_used": false,
+    "profiles_per_family": 12,
+    "candidate_control_comparisons_per_family": 11
+  },
+  "binary": {
+    "selection_decision": "no_change",
+    "selected_profile": null,
+    "confirmation_decision": "no_change",
+    "best_log_loss_profile": "leaves_15",
+    "best_log_loss_improvement": 0.0018098291,
+    "best_log_loss_improved_years": 2,
+    "incumbent_parameters_changed": false,
+    "local_artifact": "artifacts/hpo_01b_binary_rolling_20260831"
+  },
+  "lambdarank": {
+    "selection_decision": "selected_for_confirmation",
+    "selected_profile": "feature_fraction_075",
+    "selection_ndcg_at_3_improvement": 0.0017927626,
+    "selection_ndcg_improved_years": 2,
+    "confirmation_decision": "reject",
+    "confirmation": {
+      "ndcg_at_3_improvement": {"point": -0.0005823905, "lower": -0.0047310635, "upper": 0.0036277143},
+      "top_1_winner_mass_improvement": {"point": -0.0006321113, "lower": -0.0101459317, "upper": 0.0091285143},
+      "race_log_loss_improvement": {"point": -0.0050758317, "lower": -0.0091461074, "upper": -0.0009882635},
+      "race_brier_improvement": {"point": -0.0013996911, "lower": -0.0026236027, "upper": -0.0001669999}
+    },
+    "nonselected_profiles_scored_on_2023": 0,
+    "incumbent_parameters_changed": false,
+    "local_artifact": "artifacts/hpo_01r_lambdarank_rolling_20260831"
+  },
+  "decision": "retain_current_parameters"
+}

@@ -1,7 +1,7 @@
 # HPO-01 bounded LightGBM rolling search preregistration
 
 Date: 2026-08-31 JST  
-Status: preregistered; real-data runs pending
+Status: complete; Binary no change, LambdaRank selected candidate rejected
 
 ## Hypotheses and fixed scope
 
@@ -122,3 +122,39 @@ uv run horse-pred run-hpo-study \
   --config configs/performance/hpo_01r_lambdarank_rolling.json \
   --output artifacts/hpo_01r_lambdarank_rolling_20260831
 ```
+
+## Result
+
+Both runs used clean commit
+`87bde38e224b1fd21e3e22db906d217194f4b4f8`, the frozen PV-01 cache, no
+odds, and zero 2024/2025 rows.
+
+### Binary
+
+No profile met the 2020--2022 eligibility rule, so no candidate was exposed
+to 2023. `leaves_15` had the largest eligible-looking Log Loss point
+improvement (`+.00181`, two of three years) but missed the preregistered
+`+.002` minimum. `l2_5` improved Log Loss in all three years (`+.00152`) but
+failed the NDCG guardrail. The decision is `no_change`; retain the incumbent
+parameters and do not combine favorable OAT settings.
+
+### LambdaRank
+
+`feature_fraction_075` was selected on 2020--2022: NDCG improvement
+`+.00179` in two of three years, with its selection guardrails passing. On the
+single frozen 2023 confirmation it worsened every point metric:
+
+| Metric | Improvement | 95% paired interval |
+|---|---:|---:|
+| NDCG@3 | -.00058 | `[-.00473,+.00363]` |
+| Top-1 | -.00063 | `[-.01015,+.00913]` |
+| Log Loss | -.00508 | `[-.00915,-.00099]` |
+| Brier | -.00140 | `[-.00262,-.00017]` |
+
+The NDCG confirmation failed and both probability guardrails were wholly
+adverse. The profile is rejected and the incumbent parameters remain
+unchanged. Non-selected profiles have zero 2023 prediction rows.
+
+Tracked evidence is `experiments/hpo_20260831/summary.json`; complete local
+artifacts are under `artifacts/hpo_01b_binary_rolling_20260831/` and
+`artifacts/hpo_01r_lambdarank_rolling_20260831/`.
