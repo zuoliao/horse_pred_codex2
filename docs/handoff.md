@@ -14,7 +14,7 @@ generation, the accepted PV-01 time-history feature, margin-aware actual and
 calibration studies, two one-column integrations, raw margin-token clock
 refinement, and one independent LambdaRank-label test.
 
-- Primary selection period: 2024 development, 3,051 races / 41,946 runners / 106 dates.
+- Historical baseline selection period: 2024 development, 3,051 races / 41,946 runners / 106 dates. New hypotheses use rolling-origin folds first; 2024 is milestone-only and 2025 is not used for iterative selection.
 - 2025: 0 rows used for hypothesis, feature, calibration, model, or accept/reject decisions. Cached retrospective rows are removed immediately after load.
 - Corrected model frame: 533,853 runners / 37,889 races / 268 default features.
 - Baseline Binary and LambdaRank both stably beat Uniform/History-rate. Their family difference remains unresolved.
@@ -110,20 +110,18 @@ These are nominal intervals across five hypotheses and two model families. They 
 - Candidate versus control: LL −.015391 `[-.020677,−.010227]`, Brier −.002007 `[-.003486,−.000580]`, NDCG −.003986 `[-.008313,+.000301]`, Top-1 −.003778 `[-.010414,+.002901]`. Both acceptance paths failed; reject.
 - Descriptively, Log Loss worsened in every field-size band. Small and 17+ fields had positive NDCG points, but these small, unqualified slices do not justify retuning. Retain the original top-three training labels.
 
-## Exact next task
+## Active S0/S1 goal
 
-Do not try more arithmetic variants of the rating score on 2024, retune the
-PV-06 token mapping against outcome metrics, or rescue GR-001 with field-size
-conditions selected from its 2022 slices. Those routes are complete without a
-new accepted model.
+`docs/model_research_priorities.md` is the living source of truth. The active
+goal is to complete all S-ranked work: DOC-SYNC, EVAL-ROLL, LIVE-DATA,
+completed PV-06 evidence integration, OPP-RECENT, SEC-3F, HPO-01, and ENS-01.
 
-The exact next stage is a train-only audit and preregistration of one
-race-relative last-3F history feature group. Use 2014–2021 only to define
-eligibility, within-race normalization, direction, clipping, missingness,
-support, and deterministic PIT aggregation. Use 2022 as the first performance
-gate. Keep the feature independent of raw margin tokens, passing order,
-graded labels, and rating changes. Do not open 2024 to design it; keep 2025
-unused and retain 2026+ prospective final.
+DOC-SYNC precedes experiments. EVAL-ROLL is then frozen before new hypotheses.
+Run OPP-RECENT, SEC-3F, HPO-01, and ENS-01 as separate rolling experiments in
+that order. LIVE-DATA source/schema/collector work proceeds in parallel because
+timestamped snapshots cannot be reconstructed later. Do not select using 2024
+or 2025, retune PV-06, rescue GR-001 from descriptive slices, or mix feature,
+parameter, and ensemble hypotheses.
 
 ## Useful commands
 

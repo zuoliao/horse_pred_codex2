@@ -447,8 +447,8 @@ README.md
 | corrected baseline | History rate | — | 2.5453 | .9111 | .2546 | .1242 | PIT smoothed history baseline |
 | corrected baseline | LGBM Binary + T | 268 | 2.0898 | .8312 | .4873 | .2814 | History-rateへの改善はblock bootstrapで安定 |
 | corrected baseline | LGBM LambdaRank + T | 268 | 2.0892 | .8301 | .4864 | .2804 | Binaryとの差は未解決 |
-| `abl_006_drop_field_relative` | LGBM Binary + T | 253 | 2.0855 | **.82985** | .4913 | **.2912** | current best feature config |
-| `abl_006_drop_field_relative` | LGBM LambdaRank + T | 253 | **2.0847** | .82995 | **.4924** | .2881 | point-estimate best model、family差は未解決 |
+| `abl_006_drop_field_relative` | LGBM Binary + T | 253 | 2.0855 | **.82985** | .4913 | **.2912** | lean control; Binary incumbentはPV-01 |
+| `abl_006_drop_field_relative` | LGBM LambdaRank + T | 253 | **2.0847** | .82995 | **.4924** | .2881 | conservative Rank incumbent、family差は未解決 |
 | `imp_002_surface_conditioned_elo` | LGBM LambdaRank + T | 271 | 2.0870 | .82963 | .4900 | .2832 | corrected baseline比NDCG `+.00364 [+.00005,+.00714]` |
 | `imp_004_lean_surface_conditioned_rating` | LGBM Binary + T | 256 | 2.0874 | .83106 | .4942 | .2902 | NDCG pointは上昇したがBrier guardrail違反、reject |
 | `imp_005_expected_actual_race_value` | LGBM Binary + T | 254 | 2.0872 | .83082 | .4897 | .2879 | 全point悪化、区間跨ぎでinconclusive。採用せず |
@@ -612,7 +612,7 @@ Phase 8: 自動予測処理・Web UI
 | 実験台帳 | 決定 | 機械可読結果からREADME表を自動更新 |
 | データソース | 決定 | 承認済み既存raw 2013～2025を主系統とし、JRA公式結果でcoverage・不足項目を照合・補完。新規取得は別gate |
 | 具体的な予測時点 | MVP決定 | 過去結果rawによる保守的PIT-C前日相当。同日の全raceは一括emit後に更新。当日締切前版は別track |
-| split期間 | MVP決定 | 2014～21 train、2022 validation、2023 calibration、2024 development、2025 opt-in retrospective、2026+ prospective final |
+| split期間 | 開発更新 | 既存baselineは2014～21 train、2022 validation、2023 calibration、2024 development。新仮説はrolling-origin複数年でscreenし、2024はmilestoneのみ、2025は反復選択に使わず、2026+ prospective finalを維持 |
 | rating方式 | 開発更新 | K48/scale200のmargin-aware actual (`tau=.125`) は前年温度校正で2019～22全改善、2024校正LL 2.3957（ordinal 2.4015）。standaloneは置換候補。LightGBMへのabsolute/delta 1列追加はPV-01比inconclusiveで未採用 |
 | 過去走race-content | 開発採用候補 | 90日減衰signed時計差1列はBinaryで採用基準通過、LambdaRankはinconclusive。2026+ prospective確認が必要 |
 | LambdaRank教師 | 開発維持 | 従来の`1着=3, 2着=2, 3着=1, その他=0`を維持。2・3着を統合して上位半数へ教師を広げたGR-001は2022でLog Loss/Brierを有意に悪化させreject |
@@ -622,4 +622,6 @@ Phase 8: 自動予測処理・Web UI
 
 ## 15. 次の作業
 
-PV-06とGR-001まで完了しました。PV-06は2014～2021のraw着差tokenから0.1秒同時計だけを決定的に補間し、2022で全point指標が改善しましたが、primary Log Loss差 `+.00003 [-.00022,+.00028]` のためinconclusiveで、2024は開いていません。GR-001は2着と3着を統合し、4着から上位半数へcoarse教師を加えましたが、2022 Log Loss差 `-.01539 [-.02068,-.01023]`、Brier差 `-.00201 [-.00349,-.00058]` でrejectです。現bestはBinary PV-01 254特徴、保守的LambdaRankはlean 253特徴・従来top-three教師のままです。次の独立仮説は、PV-00でcoverage確認済みの上がり3Fをrace-relativeかつPIT-safeな履歴1群としてtrain-only監査・preregisterし、2022を最初のgateにします。着差tokenや教師変更と混ぜません。
+PV-06とGR-001まで完了しました。PV-06は2014～2021のraw着差tokenから0.1秒同時計だけを決定的に補間し、2022で全point指標が改善しましたが、primary Log Loss差 `+.00003 [-.00022,+.00028]` のためinconclusiveで、2024は開いていません。GR-001は2着と3着を統合し、4着から上位半数へcoarse教師を加えましたが、2022 Log Loss差 `-.01539 [-.02068,-.01023]`、Brier差 `-.00201 [-.00349,-.00058]` でrejectです。現bestはBinary PV-01 254特徴、保守的LambdaRankはlean 253特徴・従来top-three教師のままです。
+
+現在のliving work queueは[no-odds予測モデル研究の優先順位](docs/model_research_priorities.md)です。S0/S1を一つのGoalとし、DOC-SYNC、EVAL-ROLL、LIVE-DATA、完了済みPV-06、OPP-RECENT、SEC-3F、HPO-01、ENS-01を閉じます。新規model仮説はEVAL-ROLLを先に固定してからrolling foldsでscreenし、LIVE-DATAはsource gateの下で並行開始します。

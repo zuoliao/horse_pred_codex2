@@ -18,7 +18,7 @@ This is a staged study, not one bundled model change:
 | M3 / PV-03 | Temporal calibration repairs the changed rating-score scale | Supported standalone on rolling years and 2024 |
 | M4 / PV-04 | Absolute margin-aware score adds incremental LightGBM information | Inconclusive versus PV-01; not adopted |
 | M5 / PV-05 | Margin-minus-ordinal score isolates the margin-specific state | Probability points up, intervals cross zero; not adopted |
-| M6 / future | Raw margin tokens refine equal-clock results | Next separate train/2022 hypothesis |
+| M6 / PV-06 | Raw margin tokens refine equal-clock results | Inconclusive at the frozen 2022 gate; 2024 remained closed |
 
 Raw margin refinement, last-3F, passing position, absolute speed figures and track variants are separate hypotheses. They are not mixed into PV-01.
 

@@ -12,9 +12,9 @@ Before making architecture or modeling decisions, read `README.md` and all relev
 
 ## Current phase
 
-The project is currently in the **validated LightGBM baseline and past-race content phase**. The corrected baseline, uncertainty, semantic ablations, five limited improvements, standalone rating stages R0–R6, and time-content PV-00/PV-01 are complete.
+The project is currently in the **rolling-evaluation and structured no-odds signal phase**. The corrected baseline, uncertainty, semantic ablations, five limited improvements, standalone rating stages R0–R6, time/margin stages PV-00–PV-06, and graded-label GR-001 are complete.
 
-Use `docs/experiments/race_content_time_m0_m4_20260831.md`, `docs/experiments/rating_module_r0_r6.md`, and `docs/handoff.md` as the current decision state. PV-01's one signed time-gap feature passed the Binary acceptance criteria; its LambdaRank result is inconclusive. Do not tune PV-01 or the frozen rating against 2024. PV-02 may change only the standalone rating actual-score rule and must use train/2022 evidence before any further 2024 or LightGBM integration. Do not jump to data expansion, DNN, complex betting strategy, or UI without an explicit phase decision.
+Use `docs/model_research_priorities.md` and `docs/handoff.md` as the current work queue and decision state. PV-01's one signed time-gap feature remains the Binary development incumbent; its LambdaRank result is inconclusive. PV-06's raw margin-token refinement was inconclusive at its 2022 gate, and GR-001's upper-half relevance scheme was rejected. Retain the original top-three LambdaRank labels. New hypotheses must first use the rolling-origin evaluation policy; 2024 is a milestone only and 2025 is not used for iterative selection. Do not tune PV-01, PV-06, the frozen rating, blend weights, or hyperparameters against 2024. LIVE-DATA prospective collection may proceed in parallel under its source gate, but do not jump to DNN, complex betting strategy, or UI without an explicit phase decision.
 
 ## Core design decisions already agreed
 

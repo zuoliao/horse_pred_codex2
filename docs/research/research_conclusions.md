@@ -537,9 +537,9 @@ model、calibrator、thresholdを同じ実験で同時変更しない。
   結果が否定したのは、2着対3着の教師を捨てる代わりに上位半数の
   coarse orderを加える特定の交換である。別設計を行う場合も独立仮説
   とし、この2022結果の頭数別sliceへ適合させない。
-- 次は、raw coverage確認済みの上がり3Fをrace-relativeかつPIT-safeな
-  履歴feature groupとしてtrain-onlyで定義し、2022を最初のgateにする。
-  margin token、通過順位、graded label、rating変更とは混ぜない。
+- 次のwork queueは`docs/model_research_priorities.md`をsource of truthとする。
+  EVAL-ROLLを先に固定し、OPP-RECENT、SEC-3F、HPO-01、ENS-01をrolling
+  foldsで一仮説ずつ評価する。LIVE-DATAはsource gateの下で並行開始する。
 
 機械可読な根拠は`experiments/race_content_20260831/pv_006_summary.json`
 および`experiments/graded_rank_20260831/summary.json`、詳細protocol/resultは

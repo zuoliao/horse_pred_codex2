@@ -1,7 +1,8 @@
 # 開発タスクリスト
 
 **作成日:** 2026-08-30 (JST)  
-**前提:** 調査、既存raw採用、GOV-01～QA-01、corrected LightGBM baseline、2024限定の健全性・不確実性・ablation・診断・限定改善3実験まで完了。
+**更新日:** 2026-08-31 (JST)
+**前提:** 調査、既存raw採用、GOV-01～QA-01、corrected LightGBM baseline、2024健全性・不確実性・ablation・限定改善、R0～R6、PV-00～PV-06、GR-001まで完了。
 **対象:** JRA平地競走、no-odds予測を先行し、購入判断を別層にする。
 
 ## 進行原則
@@ -44,18 +45,27 @@
 | 25 | LIVE-02 | shadow evaluation | LIVE-01, PROB-01 | 固定cutoff・固定model・固定EV proxyで購入せずに予測を記録し、十分な将来期間で実行可能性を評価 |
 | 26 | PAID-01 | JRA-VAN導入判断 | DEC-01, LIVE-01 | 無料構成の欠損と追加価値を定量化し、調教、正規ID、速報、時系列oddsのどれを検証するか一特徴群ずつ決定 |
 | 27 | EXP-003 | lean config × surface-conditioned rating | DEC-01 | 253-feature field-relative-dropをcontrolに、芝/ダート別Elo familyだけを追加。2024 paired blockで独立評価し、2025不使用、2026+ prospective方針を維持 |
+| 28 | EVAL-ROLL | rolling-origin評価基盤 | PROB-01 | fold内でfit/early stopping/calibrationを完結し、2020～2023等を年別評価。macro、方向一致、block CI、多重比較metadataを保存 |
+| 29 | OPP-RECENT | recent opponent-only strength | EVAL-ROLL | 自身を除くpre-race相手ratingの90日半減履歴1列だけをrolling評価 |
+| 30 | SEC-3F | race-relative上がり3F履歴 | EVAL-ROLL | race内relative表現を1案固定し、90日半減履歴1列だけをrolling評価 |
+| 31 | HPO-01 | LightGBM限定時系列探索 | EVAL-ROLL | Binary/Rankerを別々にrolling foldsだけで限定探索。feature実験と混ぜない |
+| 32 | ENS-01 | Binary/Ranker単純ensemble | EVAL-ROLL | 固定50:50 coherent probability ensembleと独立temperatureをrolling評価 |
 
-## 2026-08-30実行状態
+## 2026-08-31実行状態
 
 | 範囲 | 状態 | 証拠 |
 |---|---|---|
 | GOV-01～QA-01（1～14） | 完了 | data/feature/spec実装、PIT・split・例外fixture。障害raceがflat stateを更新しない回帰testを追加 |
 | BASE-01～BET-01（15～20） | 完了・corrected | 障害混入修正後、Uniform/History/Binary/LambdaRank、2023校正、2024評価、final-odds oracleを再生成 |
 | DEC-01（21） | 完了 | data health、10,000回block bootstrap、7 group ablation、SHAP/permutation、条件別errorを統合 |
-| IMP-001～003 | 完了 | compact relative reject、surface EloはRanker rankingのみ支持、field-size calibration reject |
-| EXP-003（27） | 次候補 | lean 253-feature controlへsurface ratingだけを追加する独立仮説。未実行 |
+| IMP-001～005 | 完了 | compact relative reject、surface EloはRanker rankingのみ支持、field-size calibration reject、lean surface family reject、expected-actual race value未採用 |
+| EXP-003相当 / IMP-004 | 完了・reject | lean 253-feature controlへのsurface rating追加は両familyで棄却 |
+| Rating R0～R6 | 完了 | K48/scale200 ordinalをfreeze。margin-aware actualは校正後standalone支持、LightGBM統合は未採用 |
+| PV-00～PV-06 | 完了 | PV-01 Binary採用。PV-02 raw reject、PV-03 standalone支持、PV-04/05未採用、PV-06 2022 inconclusive |
+| GR-001 | 完了・reject | upper-half graded relevanceは2022 proper scoresを有意悪化。従来top-three教師を維持 |
+| S0/S1 goal | 進行中 | `docs/model_research_priorities.md`をsource of truthにDOC-SYNC→EVAL-ROLL→OPP-RECENT→SEC-3F→HPO-01→ENS-01。LIVE-DATAは並行 |
 
-実行のsource of truthは`experiments/baseline_validation_20260830/`、統合判断は[baseline validation conclusions](experiments/baseline_validation_conclusions_20260830.md)。完全なmodel・prediction・bootstrap artifactはGit対象外の`artifacts/`である。
+現在のwork queueは[model research priorities](model_research_priorities.md)、実験結果のsource of truthは`experiments/`、統合判断は`docs/experiments/`と`docs/handoff.md`である。完全なmodel・prediction・bootstrap artifactはGit対象外の`artifacts/`に置く。
 
 ## 直近のマイルストーン
 
@@ -66,6 +76,7 @@
 | M3: 初期モデル比較 | BASE-01～PROB-01 | BinaryとLambdaRankを同一条件で比較し、coherent probabilityを得る |
 | M4: MVP評価完了 | EVAL-01～DEC-01 | 多面的評価とoracle市場診断を再現可能なartifactとして提示する |
 | M4.1: baseline validation | DEC-01、IMP-001～003 | data/evaluation health、uncertainty、ablation、model/error診断と限定改善を2024だけで完了する |
+| M4.2: rolling selection | EVAL-ROLL、OPP-RECENT、SEC-3F、HPO-01、ENS-01 | 2024/2025をparameter選択に使わず、複数年rolling evidenceでS1を判断する |
 | M5: 実行可能市場評価 | LIVE-01～LIVE-02 | 締切前snapshotを用いたprospective shadow期間が蓄積される |
 
 GOV-01～QA-01のdecision gateはmetric確認前に固定済みである。baseline結果を見てこれらを変更する場合は、新しいexperiment IDと将来評価期間を必要とする。
