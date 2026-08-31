@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "experiment_id": "pace_04_position_gain_rolling",
+  "hypothesis": "One frozen transition-normalized position-gain history improves the accepted PACE-01 Binary and LambdaRank rolling candidates before 2024.",
+  "seed": 42,
+  "maximum_outcome_year": 2023,
+  "folds": [
+    {"id": "roll_2020", "train_start_year": 2014, "train_end_year": 2017, "early_stopping_year": 2018, "calibration_year": 2019, "evaluation_year": 2020},
+    {"id": "roll_2021", "train_start_year": 2014, "train_end_year": 2018, "early_stopping_year": 2019, "calibration_year": 2020, "evaluation_year": 2021},
+    {"id": "roll_2022", "train_start_year": 2014, "train_end_year": 2019, "early_stopping_year": 2020, "calibration_year": 2021, "evaluation_year": 2022},
+    {"id": "roll_2023", "train_start_year": 2014, "train_end_year": 2020, "early_stopping_year": 2021, "calibration_year": 2022, "evaluation_year": 2023}
+  ],
+  "methods": {
+    "binary_control": {
+      "model_kind": "binary",
+      "model_config": "configs/exp_001_binary.json",
+      "feature_config": "configs/performance/pace_01_binary_candidate.json",
+      "expected_feature_count": 255,
+      "expected_columns_sha256": "a50da361280b6f892ef7dfbe017768bbaa1657a6e95cb744ef7df6417f03275c"
+    },
+    "binary_candidate": {
+      "model_kind": "binary",
+      "model_config": "configs/exp_001_binary.json",
+      "feature_config": "configs/performance/pace_04_binary_candidate.json",
+      "expected_feature_count": 256,
+      "expected_columns_sha256": "fd2bf29640f63aae5f69a17c74b18e29c3c99b6d1067af1a278e887113bd3d03"
+    },
+    "lambdarank_control": {
+      "model_kind": "lambdarank",
+      "model_config": "configs/exp_002_lambdarank.json",
+      "feature_config": "configs/performance/pace_01_lambdarank_candidate.json",
+      "expected_feature_count": 255,
+      "expected_columns_sha256": "0bebb3ab682423318d239d338b370d1d6f162f0bbb8d4678f8bc0760b4c63d3e"
+    },
+    "lambdarank_candidate": {
+      "model_kind": "lambdarank",
+      "model_config": "configs/exp_002_lambdarank.json",
+      "feature_config": "configs/performance/pace_04_lambdarank_candidate.json",
+      "expected_feature_count": 256,
+      "expected_columns_sha256": "4dcb9958defc695bbf0b1af821257ba7c81897a2de2edbdfe35902d87f1c19b8"
+    }
+  },
+  "comparisons": [
+    {"id": "binary_pace_04_vs_control", "candidate": "binary_candidate", "reference": "binary_control", "type": "hypothesis"},
+    {"id": "lambdarank_pace_04_vs_control", "candidate": "lambdarank_candidate", "reference": "lambdarank_control", "type": "hypothesis"}
+  ],
+  "selection_accounting": {
+    "candidate_comparisons_this_run": 2,
+    "prior_selection_uses_by_evaluation_year": {"2020": 37, "2021": 37, "2022": 41, "2023": 14},
+    "multiple_comparison_note": "Two within-family comparisons test one frozen PACE-04 representation against the accepted PACE-01 controls; PACE-02/PACE-03 are excluded and no 2024/2025 target metric was inspected."
+  },
+  "uncertainty": {
+    "bootstrap_resamples": 10000,
+    "bootstrap_seed": 20240830,
+    "block_length_dates": 4,
+    "confidence_level": 0.95
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "experiment_id": "pace_04_position_gain",
+  "hypothesis": "A 90-day decayed history of transition-normalized race-relative position gain adds running-content information beyond accepted PACE-01 early position.",
+  "candidate_column": "pace_gain__decay_90d__mean_transition_normalized_position_gain",
+  "transformation_hash": "271a348b74fbf45fece5c8686583bfae4ea8753f15b235049899202cc2106934",
+  "transformation": {
+    "feature_id": "PACE-04",
+    "source": "passing_order_raw",
+    "eligible_race": "JRA flat",
+    "eligible_runner": "started and numeric hyphen-separated passing order with at least two segments",
+    "structural_exception": "one-segment races supply no observation, including Niigata turf straight 1000m",
+    "within_race_transform": {
+      "early_checkpoint": "first recorded passing position",
+      "final_checkpoint": "final recorded passing position",
+      "rank": "ascending average tie rank at each checkpoint among eligible runners",
+      "percentile": "1-(rank-1)/(n_valid-1), with 1 frontmost and 0 rearmost",
+      "segment_count": "number of numeric hyphen-separated positions for the runner",
+      "gain": "(final_percentile-early_percentile)/(segment_count-1)",
+      "meaning": "positive advanced relative to the field; negative retreated relative to the field",
+      "min_valid": 2
+    },
+    "history": {
+      "half_life_days": 90,
+      "same_date_batch": true,
+      "missing_history": "NaN"
+    },
+    "output_column": "pace_gain__decay_90d__mean_transition_normalized_position_gain"
+  },
+  "source_scope": {
+    "raw_fingerprint": "270923ce73c4441e64173f242a8719de7d1e9b205508140463ca547ef7b1ca87",
+    "mapping_audit_years": [2014, 2021],
+    "state_warmup_starts": 2013,
+    "raw_cutoff_before_normalization": 2024,
+    "retrospective_2025_used": false
+  },
+  "evaluation_policy": {
+    "runner": "rolling-origin",
+    "evaluation_years": [2020, 2021, 2022, 2023],
+    "binary_control": "pace_01_binary_candidate",
+    "lambdarank_control": "pace_01_lambdarank_candidate",
+    "candidate_change": "add exactly the one registered transition-normalized position-gain column; PACE-02 and PACE-03 remain excluded",
+    "development_2024": "closed until the rolling decision authorizes a milestone",
+    "retrospective_2025": "never used for selection"
+  },
+  "multiple_testing": {
+    "hypotheses_in_this_experiment": 1,
+    "candidate_representations_screened": 1,
+    "same_rolling_evaluation_seen_before_this_experiment": 37
+  }
+}
