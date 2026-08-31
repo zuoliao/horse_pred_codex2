@@ -13,6 +13,7 @@ from horse_pred.eda import (
     MARKET_COLUMNS,
     build_historical_performance,
     build_market_oracle,
+    build_private_views,
     build_race_table,
     load_eda_population,
     run_eda,
@@ -119,3 +120,26 @@ def test_completed_eda_artifact_can_resume_without_reloading_raw(tmp_path: Path)
     )
 
     assert result == expected
+
+
+def test_predictive_views_exclude_obstacle_population(tmp_path: Path) -> None:
+    path = tmp_path / "raw.csv"
+    flat = [
+        _row("202205010101", 1, "1", "2022-01-01"),
+        _row("202205010101", 2, "2", "2022-01-01"),
+    ]
+    obstacle = [
+        _row("202205010102", 1, "1", "2022-01-01"),
+        _row("202205010102", 2, "2", "2022-01-01"),
+    ]
+    for row in obstacle:
+        row["race_class"] = "障害4歳以上未勝利"
+    _write(path, flat + obstacle)
+    normalized = load_eda_population(path, max_date="2022-12-31")
+    split_config = json.loads((REPOSITORY_ROOT / "configs/splits.json").read_text())
+
+    views = build_private_views(normalized, split_config=split_config)
+
+    assert set(views["runner_pre_race"]["race_id"]) == {"202205010101"}
+    assert set(views["historical_performance"]["race_id"]) == {"202205010101"}
+    assert views["raw_status_population"]["race_id"].nunique() == 2
