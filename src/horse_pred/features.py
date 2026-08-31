@@ -54,6 +54,7 @@ _GENERATED_PREFIXES: tuple[str, ...] = (
     "pace_pressure__",
     "pace_final__",
     "pace_gain__",
+    "speed__",
 )
 
 FEATURE_PREFIXES: Mapping[str, tuple[str, ...]] = {
@@ -74,6 +75,7 @@ FEATURE_PREFIXES: Mapping[str, tuple[str, ...]] = {
     "pace_pressure": ("pace_pressure__",),
     "pace_final": ("pace_final__",),
     "pace_gain": ("pace_gain__",),
+    "speed": ("speed__",),
 }
 
 # This is documentation and a defensive check.  Safety does not depend on
@@ -1099,6 +1101,7 @@ def feature_groups(frame: pd.DataFrame) -> dict[str, tuple[str, ...]]:
             column for column in frame if column.startswith("pace_final__")
         ),
         "pace_gain": tuple(column for column in frame if column.startswith("pace_gain__")),
+        "speed": tuple(column for column in frame if column.startswith("speed__")),
     }
     return groups
 
@@ -1165,6 +1168,8 @@ def semantic_feature_groups_v2(
         groups["pace_final"] = []
     if any(column.startswith("pace_gain__") for column in feature_columns):
         groups["pace_gain"] = []
+    if any(column.startswith("speed__") for column in feature_columns):
+        groups["speed"] = []
     for column in feature_columns:
         if column.startswith("context__"):
             group = "current_context"
@@ -1199,6 +1204,8 @@ def semantic_feature_groups_v2(
             group = "pace_final"
         elif column.startswith("pace_gain__"):
             group = "pace_gain"
+        elif column.startswith("speed__"):
+            group = "speed"
         elif column.startswith("horse_history__same_"):
             group = "suitability"
         elif column.startswith("horse_history__") and any(

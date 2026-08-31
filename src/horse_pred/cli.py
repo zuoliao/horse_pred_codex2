@@ -60,6 +60,7 @@ from horse_pred.rating_study import run_rating_study
 from horse_pred.rolling_evaluation import run_rolling_evaluation
 from horse_pred.sectional_recent import build_sectional_recent_cache_from_raw
 from horse_pred.shimba_filter_study import run_shimba_filter_study
+from horse_pred.speed_figure import build_speed_cache_from_raw
 from horse_pred.uncertainty import run_uncertainty_analysis
 
 
@@ -295,6 +296,19 @@ def parser() -> argparse.ArgumentParser:
         default=Path("configs/features/pace_04_position_gain.json"),
     )
     pace_gain.add_argument("--repo-root", type=Path, default=Path.cwd())
+    speed = commands.add_parser(
+        "build-speed-cache",
+        help="build the preregistered one-column SPEED-01 cache without 2025",
+    )
+    speed.add_argument("--raw-path", type=Path, required=True)
+    speed.add_argument("--baseline-cache", type=Path, required=True)
+    speed.add_argument("--output", type=Path, required=True)
+    speed.add_argument(
+        "--config",
+        type=Path,
+        default=Path("configs/features/speed_01_condition_adjusted.json"),
+    )
+    speed.add_argument("--repo-root", type=Path, default=Path.cwd())
     margin_rating = commands.add_parser(
         "run-margin-rating-study",
         help="run the preregistered PV-02 time-margin standalone rating study",
@@ -675,6 +689,16 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 0
     if args.command == "build-pace-gain-cache":
         result = build_pace_gain_cache_from_raw(
+            repo_root=args.repo_root,
+            raw_path=args.raw_path,
+            baseline_cache_path=args.baseline_cache,
+            output_path=args.output,
+            config_path=args.config,
+        )
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0
+    if args.command == "build-speed-cache":
+        result = build_speed_cache_from_raw(
             repo_root=args.repo_root,
             raw_path=args.raw_path,
             baseline_cache_path=args.baseline_cache,
