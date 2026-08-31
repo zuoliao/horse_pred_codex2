@@ -282,6 +282,73 @@ def ranking_relevance_targets(finish_positions: Iterable[int]) -> list[int]:
     return relevance
 
 
+def grouped_ranking_relevance_targets(
+    finish_positions: Iterable[int],
+    group_sizes: Iterable[int],
+    *,
+    relevance_scheme: str = "top3",
+) -> list[int]:
+    """Map grouped finish positions under an explicit LambdaRank label scheme.
+
+    ``top3`` is the existing fixed 1st/2nd/3rd relevance mapping.  The
+    ``graded_field_half`` candidate retains first place as relevance 3, merges
+    second and third at relevance 2, assigns relevance 1 from fourth through
+    ``ceil(field_size / 2)``, and assigns zero to the remainder.  The upstream
+    DNF sentinel ``field_size + 1`` is consequently always relevance zero.
+    """
+
+    positions = _as_list(finish_positions, "finish_positions")
+    sizes = _as_list(group_sizes, "group_sizes")
+    if relevance_scheme not in {"top3", "graded_field_half"}:
+        raise ValueError(
+            "relevance_scheme must be 'top3' or 'graded_field_half'"
+        )
+    for group_size in sizes:
+        if (
+            not isinstance(group_size, int)
+            or isinstance(group_size, bool)
+            or group_size < 1
+        ):
+            raise ValueError("group_sizes must contain positive integers")
+    _same_length(sum(sizes), positions, "finish_positions")
+
+    cursor = 0
+    for group_size in sizes:
+        for position in positions[cursor : cursor + group_size]:
+            if (
+                not isinstance(position, int)
+                or isinstance(position, bool)
+                or not 1 <= position <= group_size + 1
+            ):
+                raise ValueError(
+                    "finish_positions must contain positive integers no greater "
+                    "than their group size plus the DNF sentinel"
+                )
+        cursor += group_size
+
+    if relevance_scheme == "top3":
+        return ranking_relevance_targets(positions)
+
+    relevance: list[int] = []
+    cursor = 0
+    for group_size in sizes:
+        upper_half_cutoff = (group_size + 1) // 2
+        for position in positions[cursor : cursor + group_size]:
+            if position > group_size:
+                value = 0
+            elif position == 1:
+                value = 3
+            elif position in (2, 3):
+                value = 2
+            elif position <= upper_half_cutoff:
+                value = 1
+            else:
+                value = 0
+            relevance.append(value)
+        cursor += group_size
+    return relevance
+
+
 def race_balanced_weights(race_ids: Iterable[Any]) -> list[float]:
     """Give each race total training weight one."""
 
@@ -882,6 +949,7 @@ def train_ranker(
     race_id_column: str = "race_id",
     finish_position_column: str = "finish_position",
     split_column: str = "split",
+    relevance_scheme: str = "top3",
     params: Mapping[str, Any] | None = None,
     early_stopping_rounds: int | None = 50,
 ) -> Any:
@@ -916,7 +984,11 @@ def train_ranker(
         **_lightgbm_validation_data(
             model,
             validation_features,
-            ranking_relevance_targets(validation_positions),
+            grouped_ranking_relevance_targets(
+                validation_positions,
+                validation_groups.group_sizes,
+                relevance_scheme=relevance_scheme,
+            ),
         ),
     }
     if early_stopping_rounds is not None:
@@ -929,7 +1001,11 @@ def train_ranker(
         ]
     model.fit(
         training_features,
-        ranking_relevance_targets(training_positions),
+        grouped_ranking_relevance_targets(
+            training_positions,
+            groups.group_sizes,
+            relevance_scheme=relevance_scheme,
+        ),
         **fit_options,
     )
     return model

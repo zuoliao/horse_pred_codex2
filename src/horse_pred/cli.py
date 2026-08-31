@@ -26,6 +26,7 @@ from horse_pred.data_health import (
 )
 from horse_pred.diagnostics import run_baseline_diagnostics
 from horse_pred.features import FeatureConfig
+from horse_pred.graded_rank_study import run_graded_rank_study
 from horse_pred.margin_rating_cache import (
     build_margin_rating_cache_from_raw,
     build_margin_rating_delta_cache,
@@ -204,6 +205,18 @@ def parser() -> argparse.ArgumentParser:
     )
     margin_token_study.add_argument("--output", type=Path, required=True)
     margin_token_study.add_argument("--repo-root", type=Path, default=Path.cwd())
+    graded_rank = commands.add_parser(
+        "run-graded-rank-study",
+        help="run the preregistered GR-001 field-aware LambdaRank label gate",
+    )
+    graded_rank.add_argument("--cache", type=Path, required=True)
+    graded_rank.add_argument(
+        "--config",
+        type=Path,
+        default=Path("configs/performance/gr_001_graded_lambdarank.json"),
+    )
+    graded_rank.add_argument("--output", type=Path, required=True)
+    graded_rank.add_argument("--repo-root", type=Path, default=Path.cwd())
     margin_cache = commands.add_parser(
         "build-margin-rating-cache",
         help="build the preregistered PV-04 cache with one frozen margin-rating score",
@@ -464,6 +477,37 @@ def main(argv: Sequence[str] | None = None) -> int:
                     "mapping_gate": result["mapping_gate"],
                     "validation_2022": result.get("validation_2022"),
                     "elapsed_seconds": result.get("elapsed_seconds"),
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
+        return 0
+    if args.command == "run-graded-rank-study":
+        result = run_graded_rank_study(
+            repo_root=args.repo_root,
+            cache_path=args.cache,
+            config_path=args.config,
+            output_dir=args.output,
+        )
+        print(
+            json.dumps(
+                {
+                    "experiment_id": result["experiment_id"],
+                    "scope": result["scope"],
+                    "models": result["models"],
+                    "validation_2022": {
+                        key: result["validation_2022"][key]
+                        for key in (
+                            "primary_metrics",
+                            "candidate_improvement",
+                            "decision",
+                            "probability_path_passed",
+                            "ranking_path_passed",
+                            "guardrail_failed",
+                        )
+                    },
+                    "elapsed_seconds": result["elapsed_seconds"],
                 },
                 ensure_ascii=False,
                 indent=2,

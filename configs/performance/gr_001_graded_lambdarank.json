@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "experiment_id": "gr_001_graded_field_half_lambdarank",
+  "hypothesis": "Collapsing the noisy second-versus-third distinction while supervising the remaining upper half adds useful latent-performance ordering signal beyond the current top-three-only LambdaRank labels",
+  "seed": 42,
+  "base_feature_config": "configs/ablations/abl_006_drop_field_relative.json",
+  "ranker_config": "configs/exp_002_lambdarank.json",
+  "data": {
+    "model_fit_years": [2014, 2015, 2016, 2017, 2018, 2019],
+    "early_stopping_year": 2020,
+    "temperature_calibration_year": 2021,
+    "validation_year": 2022,
+    "maximum_outcome_year": 2022,
+    "retrospective_2025_used": false
+  },
+  "features": {
+    "expected_count": 253,
+    "expected_columns_sha256": "fd8735cf6f8472a5c7322e3622c83fde1ff7720b022b75637745c96a1bc1062f"
+  },
+  "control_relevance_scheme": "top3",
+  "candidate_relevance_scheme": "graded_field_half",
+  "candidate_definition": {
+    "winner": 3,
+    "second_and_third": 2,
+    "fourth_through_ceiling_field_half": 1,
+    "lower_half_and_nonfinish": 0,
+    "upper_half_cutoff": "ceil(group_size/2)"
+  },
+  "fixed_lightgbm": {
+    "objective": "lambdarank",
+    "label_gain": [0, 1, 3, 7],
+    "lambdarank_truncation_level": 6,
+    "eval_at": [1, 3, 5]
+  },
+  "acceptance": {
+    "probability_path": {
+      "log_loss_improvement_min": 0.002,
+      "log_loss_improvement_ci_lower_strictly_positive": true,
+      "brier_improvement_min": 0.0,
+      "ndcg_at_3_improvement_min": -0.002,
+      "top_1_improvement_min": -0.005
+    },
+    "ranking_path": {
+      "ndcg_at_3_improvement_ci_lower_strictly_positive": true,
+      "log_loss_improvement_min": -0.002,
+      "brier_improvement_min": -0.001,
+      "top_1_improvement_min": -0.005
+    }
+  },
+  "uncertainty": {
+    "bootstrap_resamples": 10000,
+    "bootstrap_seed": 20240830,
+    "block_length_dates": 4,
+    "confidence_level": 0.95
+  }
+}

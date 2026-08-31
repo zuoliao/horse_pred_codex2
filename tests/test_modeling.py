@@ -14,10 +14,12 @@ from horse_pred.modeling import (
     fit_platt_from_frame,
     fit_temperature,
     fit_temperature_from_frame,
+    grouped_ranking_relevance_targets,
     history_rate_probabilities,
     predict,
     race_balanced_weights,
     race_softmax,
+    ranking_relevance_targets,
     train_binary,
     train_ranker,
     uniform_baseline,
@@ -27,6 +29,85 @@ from horse_pred.modeling import (
     validate_race_splits,
     validate_standard_split_partition,
 )
+
+
+def test_graded_field_half_relevance_handles_even_odd_and_small_fields() -> None:
+    positions = [
+        *range(1, 9),
+        *range(1, 10),
+        1,
+        1,
+        2,
+        1,
+        2,
+        3,
+    ]
+    assert grouped_ranking_relevance_targets(
+        positions,
+        [8, 9, 1, 2, 3],
+        relevance_scheme="graded_field_half",
+    ) == [
+        3,
+        2,
+        2,
+        1,
+        0,
+        0,
+        0,
+        0,
+        3,
+        2,
+        2,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        3,
+        3,
+        2,
+        3,
+        2,
+        2,
+    ]
+
+
+def test_graded_field_half_relevance_handles_dead_heats_and_dnf() -> None:
+    assert grouped_ranking_relevance_targets(
+        [1, 1, 3, 4, 5, 6, 7, 9],
+        [8],
+        relevance_scheme="graded_field_half",
+    ) == [3, 3, 2, 1, 0, 0, 0, 0]
+    # In a two-runner group, position 3 is the DNF sentinel, not a top-three finish.
+    assert grouped_ranking_relevance_targets(
+        [1, 3],
+        [2],
+        relevance_scheme="graded_field_half",
+    ) == [3, 0]
+
+
+def test_grouped_relevance_default_is_existing_top3_mapping() -> None:
+    positions = [1, 2, 3, 4, 1, 1, 3, 5, 6]
+    assert grouped_ranking_relevance_targets(positions, [4, 5]) == (
+        ranking_relevance_targets(positions)
+    )
+
+
+@pytest.mark.parametrize(
+    ("positions", "group_sizes", "message"),
+    [
+        ([1, 2], [3], "expected 3"),
+        ([1], [0], "positive integers"),
+        ([0], [1], "finish_positions"),
+        ([3], [1], "finish_positions"),
+    ],
+)
+def test_grouped_relevance_validates_group_sizes_and_positions(
+    positions: list[int], group_sizes: list[int], message: str
+) -> None:
+    with pytest.raises(ValueError, match=message):
+        grouped_ranking_relevance_targets(positions, group_sizes)
 
 
 def test_group_sizes_require_contiguous_complete_races() -> None:
@@ -198,6 +279,60 @@ def _lightgbm_fixture() -> pd.DataFrame:
                     }
                 )
     return pd.DataFrame(rows)
+
+
+def test_train_ranker_propagates_relevance_scheme_to_train_and_validation(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    class CapturingRanker:
+        def __init__(self) -> None:
+            self.training_targets: list[int] | None = None
+            self.validation_targets: list[int] | None = None
+
+        def fit(
+            self,
+            features: object,
+            targets: list[int],
+            *,
+            eval_X: object = None,
+            eval_y: list[int] | None = None,
+            **fit_options: object,
+        ) -> CapturingRanker:
+            del features, eval_X, fit_options
+            self.training_targets = targets
+            self.validation_targets = eval_y
+            return self
+
+    capturing_ranker = CapturingRanker()
+    monkeypatch.setattr(
+        "horse_pred.modeling.build_lightgbm_estimator",
+        lambda model_kind, *, params=None: capturing_ranker,
+    )
+    rows = []
+    for split, race_id, field_size in [
+        ("train", "train-race", 8),
+        ("model_validation", "validation-race", 9),
+    ]:
+        for position in range(1, field_size + 1):
+            rows.append(
+                {
+                    "race_id": race_id,
+                    "finish_position": position,
+                    "split": split,
+                    "form": float(field_size - position),
+                }
+            )
+
+    fitted = train_ranker(
+        pd.DataFrame(rows),
+        feature_columns=["form"],
+        relevance_scheme="graded_field_half",
+        early_stopping_rounds=None,
+    )
+
+    assert fitted is capturing_ranker
+    assert capturing_ranker.training_targets == [3, 2, 2, 1, 0, 0, 0, 0]
+    assert capturing_ranker.validation_targets == [3, 2, 2, 1, 1, 0, 0, 0, 0]
 
 
 def test_lightgbm_binary_and_ranker_use_same_frame_contract() -> None:
