@@ -624,6 +624,7 @@ Phase 8: 自動予測処理・Web UI
 | PACE-02 | 完了・未採用 | PACE-01から他馬だけの先行圧を1列追加。Binary/Rankともprimary CIが0を跨ぎinconclusive |
 | PACE-03 | 完了・未採用 | 最終通過位置履歴を1列追加。Binary inconclusive、Rank NDCG `-.00276 [-.00473,-.00084]`でreject |
 | PACE-04 | 完了・未採用 | 遷移数補正した前進・後退履歴を1列追加。Binary/Rankともinconclusive。PACE派生探索を終了 |
+| SPEED-01 | rolling両family採択・2024 Binary支持 | 過去日だけの条件別期待勝ち時計と各馬時計の差を90日履歴1列化。rolling LLはBinary `+.00769 [+.00457,+.01078]`、Rank `+.00823 [+.00523,+.01128]`。2024はBinary支持、Rank方向一致 |
 | LIVE-DATA | 基盤完了・ユーザー保留 | 公式JV-Link限定のschema/append-only archiveを実装。公式transportがWindowsのみで現環境がMacのため、実収集は後日に延期 |
 | LambdaRank教師 | 開発維持 | 従来の`1着=3, 2着=2, 3着=1, その他=0`を維持。2・3着を統合して上位半数へ教師を広げたGR-001は2022でLog Loss/Brierを有意に悪化させreject |
 | probabilistic ranking | 調査推奨・延期 | Plackett–Luceを最初の高度baseline候補とするが、順位別biasを検証してから採否判断 |
@@ -634,10 +635,10 @@ Phase 8: 自動予測処理・Web UI
 
 S0/S1は完了しました。統合判断は[S-rank no-odds model research conclusions](docs/experiments/s_rank_model_research_conclusions_20260831.md)、living queueは[no-odds予測モデル研究の優先順位](docs/model_research_priorities.md)です。
 
-- 2024で確認済みのBinary development incumbentはPV-01 254特徴のままです。pre-2024 rollingではPV-01+PACE-01 255特徴を採択しました。
-- 2024の保守的LambdaRank referenceはlean 253特徴のままです。pre-2024 rollingではlean+SEC-3F+PACE-01 255特徴を採択しました。
+- 2024で支持されたBinary development incumbentはPV-01+PACE-01+SPEED-01の256特徴です。NDCG `.49763`、Top-1 `.29695`、Log Loss `2.06821`、Brier `.82534`です。
+- LambdaRankはlean+SEC-3F+PACE-01+SPEED-01の256特徴をrolling採択しました。2024は改善方向ですが区間上inconclusiveのため、保守的referenceと区別します。
 - OPP-RECENTは未採用、HPO parameterは変更なし、固定50:50 ensembleはrejectです。
 - 新馬戦はcold-startで難しいものの、fitからの除外は通常レースにも効かずrejectしました。
 - LIVE-DATAは公式JV-Link source gateと保存基盤まで完了しましたが、現環境がMacで公式transportはWindowsのみのため、ユーザー判断で後日に延期しました。
 
-PACE-01～PACE-04を完了しました。採用したのはPACE-01の序盤位置履歴1列だけで、相手先行圧、最終位置、前進・後退履歴は増分根拠が不足したため採用しません。次の独立modeling taskは`SPEED-01`です。course、surface、distance、馬場、class、age条件等から期待時計を過去情報だけで推定し、条件補正済みの過去走performance residualを一表現だけrolling評価します。同日後続raceや未来期間のtrack variantは使用しません。2024は重要候補のmilestoneに限定し、2025は反復選択に使用しません。
+PACE-01～PACE-04とSPEED-01を完了しました。PACEからは序盤位置履歴1列だけを採用し、SPEED-01は両familyでrolling採択、Binaryは2024 one-shotでも支持されました。次の独立modeling taskは`COND-01`です。surface変更、距離変更、休養日数と過去performanceの関係を、履歴数の少ない馬で極端値を作らない縮約付き表現として一仮説だけrolling評価します。2024は重要候補のmilestoneに限定し、2025は反復選択に使用しません。

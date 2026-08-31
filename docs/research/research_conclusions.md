@@ -608,3 +608,25 @@ speed residualを一表現だけ固定し、rolling評価する。詳細根拠�
 `docs/experiments/pace_02_field_pressure_20260831.md`から
 `pace_04_position_gain_20260831.md`、機械可読結果は
 `experiments/pace_02_20260831/`から`pace_04_20260831/`を参照する。
+
+## 25. SPEED-01追補
+
+course×surface、distance、going、class tier、race age restrictionのmain effect
+だけを持つprequential ridgeで、過去日から期待勝ち時計（秒/1000 m）を推定した。
+同日全raceを予測後に一括更新し、各馬の`期待勝ち時計-own時計`を既存PV-01と同じ
+`[-5,+5]`へclip、90日半減履歴1列とした。full-period fit、同日後続race、
+day/course track variant、current target raceの結果は使わない。
+
+2014～2021 auditではclean winner clockが26,563 race、逐次期待値coverageは
+97.95%、horse履歴coverageは88.24%。2020～2023 rollingではBinary/Rankの
+Log Lossをそれぞれ`+.00769 [+.00457,+.01078]`、
+`+.00823 [+.00523,+.01128]`改善し、両familyをprobability pathで採択した。
+
+事前登録後に一度だけ開いた2024では、Binary Log Loss `+.00654
+[+.00143,+.01170]`でsupported。Rankは`+.00335 [-.00355,+.01022]`で改善方向
+だが区間上inconclusiveだった。Binaryの256特徴candidateをdevelopment incumbentへ
+昇格し、Rank candidateはrolling-acceptedと保守的2024 referenceを区別する。
+2025は未使用。次はCOND-01を一仮説として評価し、SPEED-01を再調整しない。
+
+詳細は`docs/experiments/speed_01_condition_adjusted_20260901.md`、機械可読結果は
+`experiments/speed_01_20260901/summary.json`を参照する。

@@ -56,6 +56,7 @@
 | 36 | PACE-03 | final recorded position history | PACE-01 | 最終通過位置percentileの90日履歴1列をrolling評価 |
 | 37 | PACE-04 | normalized position-gain history | PACE-01 | 序盤から最終位置への変化を遷移数補正した90日履歴1列でrolling評価 |
 | 38 | SPEED-01 | condition-adjusted speed figure | PACE-01～04 | 期待時計を過去情報だけで推定し、条件補正済み残差の履歴1列をrolling評価 |
+| 39 | COND-01 | condition-transition suitability | SPEED-01 | surface・距離・休養transitionと過去performanceを縮約付き一仮説でrolling評価 |
 
 ## 2026-08-31実行状態
 
@@ -81,7 +82,8 @@
 | PACE-02 | 完了・未採用 | rival-only先行圧1列。両family inconclusive |
 | PACE-03 | 完了・未採用 | 最終位置履歴1列。Binary inconclusive、LambdaRank reject |
 | PACE-04 | 完了・未採用 | 遷移数補正position gain履歴1列。両family inconclusive |
-| SPEED-01 | 次task | 条件補正済みspeed residualを一表現だけ事前固定しrolling評価 |
+| SPEED-01 | 完了・両family rolling採択 | prequential条件補正speed履歴1列。2024 Binary supported、Rank directionally consistent |
+| COND-01 | 次task | 少数履歴で極端値を作らないcondition-transition適性を一仮説だけ固定 |
 
 現在のwork queueは[model research priorities](model_research_priorities.md)、実験結果のsource of truthは`experiments/`、統合判断は`docs/experiments/`と`docs/handoff.md`である。完全なmodel・prediction・bootstrap artifactはGit対象外の`artifacts/`に置く。
 

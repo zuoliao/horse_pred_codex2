@@ -169,7 +169,7 @@ PACE-04の遷移数補正position gainは両family inconclusiveだった。い�
 2024/2025を開かず、再定義・threshold調整を行わない。PACE路線はPACE-01だけを
 採用して終了する。
 
-次taskは`SPEED-01`とする。course、surface、distance、going、class、age条件等の
+PACE完了時点の次taskを`SPEED-01`とした。course、surface、distance、going、class、age条件等の
 期待時計を過去情報だけで推定し、過去走の条件補正済みresidualを一表現だけ
 事前固定する。同日後続raceや未来期間からtrack variantを作らず、rolling foldの
 外側で期待時計をfitして評価年へ漏らさない。
@@ -177,3 +177,19 @@ PACE-04の遷移数補正position gainは両family inconclusiveだった。い�
 LIVE-DATA実収集は、公式JV-LinkがWindowsのみで現環境がMacであるため、
 ユーザー判断で後日に延期した。非公式Mac transportやJRA Web scrapingへは
 切り替えない。
+
+## 9. SPEED-01完了と次task
+
+SPEED-01は、過去日だけで更新する51次元main-effect ridgeで条件別の期待勝ち時計
+を推定し、各馬の秒/1000 mとの差を`[-5,+5]`にclipした90日履歴1列として固定した。
+同日全raceをpredict後にbatch updateし、future fit、同日後続race、track variantを
+禁止した。
+
+2020～2023 rollingではBinary Log Loss `+.00769 [+.00457,+.01078]`、
+LambdaRank `+.00823 [+.00523,+.01128]`で両familyがprobability pathを通過した。
+2024 one-shotはBinary `+.00654 [+.00143,+.01170]`でsupported、LambdaRank
+`+.00335 [-.00355,+.01022]`でdirectionally consistent。2025は未使用である。
+
+次taskは`COND-01`とする。surface変更、距離変更、休養日数と過去performanceの
+interactionを、少数履歴horseで極端値を作らない縮約付き表現として一仮説だけ
+固定する。SPEED-01の定義・clip・ridgeを2024に合わせて変更しない。
