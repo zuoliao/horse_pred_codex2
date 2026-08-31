@@ -226,6 +226,15 @@ def build_private_views(
     normalized: pd.DataFrame, *, split_config: Mapping[str, Any]
 ) -> dict[str, pd.DataFrame]:
     dataset = build_features(normalized, config=FeatureConfig(), split_config=split_config)
+    flat_started = (
+        dataset.frame["started"].fillna(False)
+        & dataset.frame["meta__is_flat_race"].fillna(False)
+    )
+    predictive = (
+        flat_started
+        & dataset.frame["pit_c_scoring_eligible"].fillna(False)
+        & dataset.frame["meta__is_scored_race"].fillna(False)
+    )
     safe_meta = [
         "race_id",
         "race_date",
@@ -238,7 +247,7 @@ def build_private_views(
         "horse_number",
     ]
     runner = dataset.frame.loc[
-        dataset.frame["started"].fillna(False),
+        predictive,
         [column for column in safe_meta if column in dataset.frame] + list(dataset.feature_columns),
     ].copy()
     forbidden = MARKET_COLUMNS.union(CURRENT_OUTCOME_COLUMNS).intersection(runner.columns)
@@ -246,7 +255,7 @@ def build_private_views(
         raise AssertionError(f"runner_pre_race contains forbidden columns: {sorted(forbidden)}")
     runner["analysis_period"] = _period_label(runner["race_date"])
     outcomes = dataset.frame.loc[
-        dataset.frame["started"].fillna(False),
+        predictive,
         [
             "race_id",
             "race_date",
@@ -279,15 +288,21 @@ def build_private_views(
         connection[f"{entity}__posterior_win_rate_sd"] = np.sqrt(
             alpha * beta / ((alpha + beta) ** 2 * (alpha + beta + 1))
         )
-    historical = build_historical_performance(normalized)
+    flat_race_ids = dataset.frame.loc[flat_started, "race_id"].unique()
+    historical = build_historical_performance(
+        normalized.loc[normalized["race_id"].isin(flat_race_ids)]
+    )
     rating_columns = [
         "rating__horse_elo_pre",
         "rating__field_mean_elo_pre",
         "rating__field_max_elo_pre",
         "rating__field_std_elo_pre",
     ]
+    rating_frame = dataset.frame.loc[
+        flat_started, ["race_id", "horse_id"] + rating_columns
+    ]
     historical = historical.merge(
-        runner[["race_id", "horse_id"] + rating_columns],
+        rating_frame,
         on=["race_id", "horse_id"],
         how="left",
         validate="one_to_one",
@@ -378,9 +393,13 @@ def build_aggregate_tables(views: Mapping[str, pd.DataFrame]) -> dict[str, pd.Da
     field["uniform_win_rate"] = 1 / field["starter_count"]
 
     missing_columns = ["last_3f_seconds", "winner_relative_time_gap", "margin_raw", "passing_order_raw"]
+    def missing_rate(values: pd.Series) -> float:
+        text_missing = values.astype("string").str.strip().isin(["", "--", "---"])
+        return float((values.isna() | text_missing.fillna(False)).mean())
+
     missing = (
         hist.groupby("analysis_period", observed=True)[missing_columns]
-        .agg(lambda x: float(x.isna().mean()))
+        .agg(missing_rate)
         .reset_index()
     )
     counts = hist.groupby("analysis_period", observed=True).agg(
