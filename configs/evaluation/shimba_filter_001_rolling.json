@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "experiment_id": "shimba_filter_001_rolling",
+  "hypothesis": "Removing new-horse races only from Binary gradient fitting reduces cold-start label noise and improves all-race predictive probability without changing the PIT state, early-stopping, calibration, or evaluation populations.",
+  "seed": 42,
+  "maximum_outcome_year": 2023,
+  "folds": [
+    {
+      "id": "roll_2020",
+      "train_start_year": 2014,
+      "train_end_year": 2017,
+      "early_stopping_year": 2018,
+      "calibration_year": 2019,
+      "evaluation_year": 2020
+    },
+    {
+      "id": "roll_2021",
+      "train_start_year": 2014,
+      "train_end_year": 2018,
+      "early_stopping_year": 2019,
+      "calibration_year": 2020,
+      "evaluation_year": 2021
+    },
+    {
+      "id": "roll_2022",
+      "train_start_year": 2014,
+      "train_end_year": 2019,
+      "early_stopping_year": 2020,
+      "calibration_year": 2021,
+      "evaluation_year": 2022
+    },
+    {
+      "id": "roll_2023",
+      "train_start_year": 2014,
+      "train_end_year": 2020,
+      "early_stopping_year": 2021,
+      "calibration_year": 2022,
+      "evaluation_year": 2023
+    }
+  ],
+  "methods": {
+    "binary_control": {
+      "model_kind": "binary",
+      "model_config": "configs/exp_001_binary.json",
+      "feature_config": "configs/performance/pv_001_candidate_signed_time_gap.json",
+      "expected_feature_count": 254,
+      "expected_columns_sha256": "e5228bb4ffd605888b7266030d5e1e9f0931e8468b6fbbf124f3cea60905e51d"
+    },
+    "binary_candidate": {
+      "model_kind": "binary",
+      "model_config": "configs/exp_001_binary.json",
+      "feature_config": "configs/performance/pv_001_candidate_signed_time_gap.json",
+      "expected_feature_count": 254,
+      "expected_columns_sha256": "e5228bb4ffd605888b7266030d5e1e9f0931e8468b6fbbf124f3cea60905e51d"
+    }
+  },
+  "comparisons": [
+    {
+      "id": "binary_shimba_filter_vs_control",
+      "candidate": "binary_candidate",
+      "reference": "binary_control",
+      "type": "hypothesis"
+    }
+  ],
+  "selection_accounting": {
+    "candidate_comparisons_this_run": 1,
+    "prior_selection_uses_by_evaluation_year": {
+      "2020": 28,
+      "2021": 28,
+      "2022": 32,
+      "2023": 7
+    },
+    "multiple_comparison_note": "One Binary-only fit-population comparison. The lower-bound inventory adds OPP-RECENT, SEC-3F, both eleven-profile HPO screens, and the one HPO Rank confirmation to the previously documented rolling uses; no 2024/2025 outcome is used."
+  },
+  "uncertainty": {
+    "bootstrap_resamples": 10000,
+    "bootstrap_seed": 20240830,
+    "block_length_dates": 4,
+    "confidence_level": 0.95
+  },
+  "fit_population": {
+    "control": "all_train_races",
+    "candidate": "exclude_new_horse_races_from_train_only",
+    "new_horse_definition": {
+      "race_class_contains_after_whitespace_normalization": "新馬",
+      "validated_context_column": "context__class_tier",
+      "validated_context_value": 0.0
+    },
+    "early_stopping_population": "all_races",
+    "calibration_population": "all_races",
+    "evaluation_population": "all_races",
+    "pit_cache_and_state": "unchanged"
+  },
+  "decision_rule": {
+    "primary_metric": "race_log_loss",
+    "primary_ci_lower_strictly_greater_than": 0.0,
+    "minimum_primary_improved_years": 3,
+    "guardrail_minimum_improvements": {
+      "race_brier": -0.001,
+      "ndcg_at_3": -0.002,
+      "top_1_winner_mass": -0.005
+    }
+  }
+}

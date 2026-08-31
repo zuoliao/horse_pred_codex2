@@ -55,6 +55,7 @@ from horse_pred.race_content import (
 from horse_pred.rating_study import run_rating_study
 from horse_pred.rolling_evaluation import run_rolling_evaluation
 from horse_pred.sectional_recent import build_sectional_recent_cache_from_raw
+from horse_pred.shimba_filter_study import run_shimba_filter_study
 from horse_pred.uncertainty import run_uncertainty_analysis
 
 
@@ -166,6 +167,18 @@ def parser() -> argparse.ArgumentParser:
     ensemble.add_argument("--config", type=Path, required=True)
     ensemble.add_argument("--output", type=Path, required=True)
     ensemble.add_argument("--repo-root", type=Path, default=Path.cwd())
+    shimba_filter = commands.add_parser(
+        "run-shimba-filter-study",
+        help="run the preregistered Binary-only new-horse fit-population ablation",
+    )
+    shimba_filter.add_argument("--cache", type=Path, required=True)
+    shimba_filter.add_argument(
+        "--config",
+        type=Path,
+        default=Path("configs/evaluation/shimba_filter_001_rolling.json"),
+    )
+    shimba_filter.add_argument("--output", type=Path, required=True)
+    shimba_filter.add_argument("--repo-root", type=Path, default=Path.cwd())
     diagnostics = commands.add_parser(
         "diagnose-baseline",
         help="run 2024-only importance, permutation, and conditional diagnostics",
@@ -476,6 +489,24 @@ def main(argv: Sequence[str] | None = None) -> int:
             "experiment_id": metrics["experiment_id"],
             "decision": metrics["decision"],
             "confirmation_opened": metrics["scope"]["confirmation_opened"],
+            "rows_used_2024": metrics["scope"]["rows_used_2024"],
+            "rows_used_2025": metrics["scope"]["rows_used_2025"],
+            "elapsed_seconds": metrics["elapsed_seconds"],
+        }
+        print(json.dumps(summary, ensure_ascii=False, indent=2))
+        return 0
+    if args.command == "run-shimba-filter-study":
+        metrics = run_shimba_filter_study(
+            repo_root=args.repo_root,
+            cache_path=args.cache,
+            config_path=args.config,
+            output_dir=args.output,
+        )
+        summary = {
+            "output": str(args.output.resolve()),
+            "experiment_id": metrics["experiment_id"],
+            "decision": metrics["decision"]["decision"],
+            "evaluation_years": metrics["scope"]["evaluation_years"],
             "rows_used_2024": metrics["scope"]["rows_used_2024"],
             "rows_used_2025": metrics["scope"]["rows_used_2025"],
             "elapsed_seconds": metrics["elapsed_seconds"],
