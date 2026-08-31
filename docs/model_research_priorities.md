@@ -134,7 +134,7 @@ SランクはS0とS1を含む。次をすべて満たした時だけ完了とす
 |---|---|
 | DOC-SYNC | 完了 |
 | EVAL-ROLL | 完了。2020～2023の4 fold baselineを固定 |
-| LIVE-DATA | 公式JV-Link source gate、schema、append-only archive、test完了。実収集はprivate Windows host・契約/key・transport不足でactivation blocked |
+| LIVE-DATA | 公式JV-Link source gate、schema、append-only archive、test完了。実収集はWindowsのみの公式transportとMac環境の不一致によりユーザー保留 |
 | PV-06 | inconclusive、2024未開封 |
 | OPP-RECENT | Binary inconclusive、LambdaRank reject、未採用 |
 | SEC-3F | Binary inconclusive、LambdaRank rolling acceptance |
@@ -147,5 +147,22 @@ SランクはS0とS1を含む。次をすべて満たした時だけ完了とす
 統合結論は
 `docs/experiments/s_rank_model_research_conclusions_20260831.md`、機械可読集約は
 `experiments/s_rank_model_research_20260831/summary.json`を参照する。次のmodeling
-taskは`PACE-01`とし、支持された場合のみ`PACE-02`へ進む。LIVE-DATA実収集の
-activationは上記外部前提が整った時点で別に再開する。
+S完了時点の次taskは`PACE-01`だった。現在の結果と次taskは§8を参照する。
+LIVE-DATA実収集はユーザーが明示的に再開するまで保留する。
+
+## 8. PACE-01完了と次task
+
+`PACE-01`は2014～2021だけのmapping監査後、2区間以上ある過去走の最初の
+通過位置をrace内percentile化し、90日半減履歴1列として固定した。1区間のみの
+198 raceは全て新潟芝直線1000 mであり、corner位置と解釈せず観測更新から
+除外した。
+
+2020～2023 rollingでBinaryはLog Loss `+.00659 [+.00333,+.00978]`、
+LambdaRankはNDCG `+.00440 [+.00197,+.00683]`。Binaryはprobability path、
+LambdaRankはranking/probability両pathを通過し、両familyで採択した。2024/2025
+は未使用。次taskは`PACE-02`とし、固定済みPACE-01からcurrent-fieldの先行集中を
+一表現だけ作る。最終corner、position gain、複数thresholdは混ぜない。
+
+LIVE-DATA実収集は、公式JV-LinkがWindowsのみで現環境がMacであるため、
+ユーザー判断で後日に延期した。非公式Mac transportやJRA Web scrapingへは
+切り替えない。

@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "experiment_id": "pace_01_early_position_rolling",
+  "run_commit": "074f54e86ace8a3d51bbf5f386166b72ba6e7db2",
+  "run_dirty": false,
+  "data_fingerprint": "270923ce73c4441e64173f242a8719de7d1e9b205508140463ca547ef7b1ca87",
+  "cache_sha256": "8b4480da6d6396d9bac54b92d947948708e0bccc30cfe0ac24be40e427d5e732",
+  "transformation_hash": "9b9dcadf4080a0dc059900848f5b2587d7f17ce980e37e86e12db7003a934ca5",
+  "scope": {
+    "evaluation_years": [2020, 2021, 2022, 2023],
+    "rows_used_2024": 0,
+    "rows_used_2025": 0,
+    "odds_used": false,
+    "candidate_representations_screened": 1
+  },
+  "cache_control": {
+    "row_count": 533853,
+    "baseline_feature_count": 270,
+    "candidate_feature_count": 271,
+    "old_feature_mismatch_count": 0,
+    "pre2025_feature_nonmissing": 440460,
+    "retrospective_2025_feature_nonmissing": 0
+  },
+  "binary": {
+    "control": "pv_001_candidate_signed_time_gap_254_features",
+    "candidate": "pv_001_plus_pace_01_255_features",
+    "improvement": {
+      "ndcg_at_3": {"point": 0.0003729942, "lower": -0.0018308838, "upper": 0.0025292933, "improved_years": 2},
+      "top_1_winner_mass": {"point": 0.0018907905, "lower": -0.0020302344, "upper": 0.0057781267, "improved_years": 2},
+      "race_log_loss": {"point": 0.0065904122, "lower": 0.0033291925, "upper": 0.0097797517, "improved_years": 4},
+      "race_brier": {"point": 0.0010444568, "lower": 0.0001699922, "upper": 0.0019223618, "improved_years": 4}
+    },
+    "accepted_path": "probability",
+    "decision": "accept"
+  },
+  "lambdarank": {
+    "control": "lean_plus_sec_3f_254_features",
+    "candidate": "lean_plus_sec_3f_plus_pace_01_255_features",
+    "improvement": {
+      "ndcg_at_3": {"point": 0.0044021332, "lower": 0.0019704008, "upper": 0.0068268674, "improved_years": 4},
+      "top_1_winner_mass": {"point": 0.0052418416, "lower": 0.0006521129, "upper": 0.0097321515, "improved_years": 4},
+      "race_log_loss": {"point": 0.0153735297, "lower": 0.0125560241, "upper": 0.0180769581, "improved_years": 4},
+      "race_brier": {"point": 0.0031812767, "lower": 0.0023174089, "upper": 0.0040338950, "improved_years": 4}
+    },
+    "accepted_paths": ["ranking", "probability"],
+    "decision": "accept"
+  },
+  "development_2024_opened": false,
+  "lightgbm_parameters_changed": false,
+  "next_task": "PACE-02"
+}

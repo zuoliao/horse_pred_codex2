@@ -1,7 +1,7 @@
 # PACE-01 race-relative early-position history
 
 Date: 2026-08-31 JST  
-Status: preregistered; model outcomes unopened
+Status: complete; accepted for Binary and LambdaRank on rolling evidence
 
 ## Hypothesis
 
@@ -82,7 +82,39 @@ Passing either path is `accept`. If no path passes and a guardrail fails or a
 primary interval is wholly adverse, mark `reject`; otherwise `inconclusive`.
 This protocol does not authorize opening 2024 automatically.
 
-## Planned reproduction
+## Rolling result
+
+The frozen run used clean commit
+`074f54e86ace8a3d51bbf5f386166b72ba6e7db2`, excluded all 2024/2025 rows,
+and used no odds or popularity. The cache preserved all 270 baseline features
+exactly and added the one registered column. It was nonmissing for
+440,460/489,674 pre-2025 scoring rows (`89.95%`) and for zero 2025 rows.
+
+| Family | NDCG improvement | Top-1 improvement | Log Loss improvement | Brier improvement | Decision |
+|---|---:|---:|---:|---:|---|
+| Binary | +.00037 `[-.00183,+.00253]` | +.00189 `[-.00203,+.00578]` | +.00659 `[+.00333,+.00978]` | +.00104 `[+.00017,+.00192]` | accept |
+| LambdaRank | +.00440 `[+.00197,+.00683]` | +.00524 `[+.00065,+.00973]` | +.01537 `[+.01256,+.01808]` | +.00318 `[+.00232,+.00403]` | accept |
+
+Binary passed the probability path: Log Loss and Brier improved in all four
+years, its Log Loss interval was wholly positive, and every ranking guardrail
+passed. NDCG itself improved in two years and remains statistically
+inconclusive, so the evidence is primarily probability quality.
+
+LambdaRank passed both registered paths. NDCG, Top-1, Log Loss, and Brier all
+improved in every year, and both NDCG and Log Loss intervals were wholly
+positive. The PACE column averaged 2.05% of Binary gain and 2.66% of
+LambdaRank gain across folds.
+
+The accepted pre-2024 rolling candidates are therefore PV-01 plus PACE-01 for
+Binary and lean plus SEC-3F plus PACE-01 for LambdaRank, each with 255 features
+and unchanged LightGBM parameters. No 2024 milestone was opened. This support
+authorizes PACE-02 as a separate experiment; it does not authorize adding
+final-corner, position-gain, or multiple field-pressure variants at once.
+
+Tracked decision evidence is `experiments/pace_01_20260831/summary.json`;
+complete local artifacts are under `artifacts/pace_01_rolling_20260831/`.
+
+## Reproduction
 
 ```bash
 uv run horse-pred build-pace-recent-cache \

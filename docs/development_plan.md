@@ -70,9 +70,11 @@
 | SEC-3F | 完了・Rank rolling採択 | Binary inconclusive。LambdaRank NDCG `+.00256 [+.00045,+.00465]` |
 | HPO-01 | 完了・変更なし | Binary no-change、Ranker候補は2023 reject |
 | ENS-01 | 完了・reject | 固定50:50はBinary比minimum未達、2023 confirmation未開封 |
-| LIVE-DATA | groundwork完了・activation blocked | 公式JV-Link source gate、schema、append-only archive実装。private Windows host・契約/key・transport待ち |
+| LIVE-DATA | groundwork完了・ユーザー保留 | 公式JV-Link source gate、schema、append-only archive実装。JV-LinkはWindowsのみで現環境がMacのため後日に延期 |
 | S0/S1 goal | 完了 | 統合判断は`docs/experiments/s_rank_model_research_conclusions_20260831.md` |
 | SHIMBA-FILTER-001 | 完了・reject | 新馬戦fit除外はLL/NDCG悪化。新馬戦を学習に維持 |
+| PACE-01 | 完了・両family採択 | 序盤位置percentile 90日履歴1列。Binary probability pathとRank ranking/probability pathが通過。2024未開封 |
+| PACE-02 | 次task | 固定済みPACE-01からcurrent-field pace pressureを一表現だけrolling評価 |
 
 現在のwork queueは[model research priorities](model_research_priorities.md)、実験結果のsource of truthは`experiments/`、統合判断は`docs/experiments/`と`docs/handoff.md`である。完全なmodel・prediction・bootstrap artifactはGit対象外の`artifacts/`に置く。
 

@@ -1,6 +1,6 @@
 # LIVE-DATA prospective snapshot design
 
-**Status:** groundwork implemented; operational collection has **not** started  
+**Status:** groundwork implemented; operational collection deferred by the user
 **Decision date:** 2026-08-31 JST  
 **Scope:** private, individual, no-odds-model research support only; no wagering automation
 
@@ -14,6 +14,12 @@ This repository now defines only the transport-neutral boundary after JV-Link:
 a Windows-side private adapter may export a normalized batch envelope, and the
 local archive validates and stores it. The repository does not contain a paid
 key, call JV-Link, contact JRA/JRA-VAN, or claim that live collection is active.
+
+On 2026-08-31 the user deferred operational collection because the current
+machine is a Mac and the official JV-Link transport is Windows-only. Keep this
+design dormant until the user explicitly revisits a supported private Windows
+environment. Do not seek an unofficial Mac transport or substitute JRA Web
+scraping.
 
 ## 2. Official-source evidence
 

@@ -572,3 +572,18 @@ referenceはlean 253特徴のまま、pre-2024 rolling candidateはlean+SEC-3F
 PACE-02へ進む。統合根拠は
 `docs/experiments/s_rank_model_research_conclusions_20260831.md`および
 `experiments/s_rank_model_research_20260831/summary.json`を参照する。
+
+## 23. PACE-01追補
+
+通過順位の最初の2区間以上あるtokenをrace内序盤位置percentileに変換し、
+90日半減のhorse履歴1列として評価した。2014～2021 auditでは1区間のみの
+198 raceが全て新潟芝直線1000 mだったため、これらはcorner位置と解釈せず
+観測更新から除外した。
+
+2020～2023 rollingでBinary Log Lossは`+.00659 [+.00333,+.00978]`、
+LambdaRank NDCGは`+.00440 [+.00197,+.00683]`。BinaryはLog Loss/Brier、
+LambdaRankは全4 primary/guardrail metricが4年全て改善し、両familyで採択した。
+2024/2025は未使用である。次はこの固定済みstyle履歴だけからfield pace pressure
+を作るPACE-02を一仮説として評価する。根拠は
+`docs/experiments/pace_01_early_position_20260831.md`と
+`experiments/pace_01_20260831/summary.json`を参照する。

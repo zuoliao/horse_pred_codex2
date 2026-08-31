@@ -620,7 +620,8 @@ Phase 8: 自動予測処理・Web UI
 | LightGBM HPO | 完了・変更なし | Binaryはeligible候補なし。Rankerのfeature fraction `.75`は2023 confirmationでreject |
 | Binary/Rank ensemble | 完了・reject | 固定50:50はBinary比Log Loss改善が+.00157でminimum未達。weight探索せず、2023未開封 |
 | 新馬戦の学習 | 完了・維持 | fitから新馬戦を除くとLog Loss `-.00097`、NDCG `-.00225`。難しいが純ノイズではなく学習に残す |
-| LIVE-DATA | 基盤完了・activation blocked | 公式JV-Link限定のschema/append-only archiveを実装。実収集はprivate Windows host・契約/key・transport待ち |
+| PACE-01 | rolling採択 | 過去走のrace-relative序盤位置percentile 90日履歴1列を追加。Binary LL `+.00659 [+.00333,+.00978]`、Rank NDCG `+.00440 [+.00197,+.00683]`で両family採択、2024未開封 |
+| LIVE-DATA | 基盤完了・ユーザー保留 | 公式JV-Link限定のschema/append-only archiveを実装。公式transportがWindowsのみで現環境がMacのため、実収集は後日に延期 |
 | LambdaRank教師 | 開発維持 | 従来の`1着=3, 2着=2, 3着=1, その他=0`を維持。2・3着を統合して上位半数へ教師を広げたGR-001は2022でLog Loss/Brierを有意に悪化させreject |
 | probabilistic ranking | 調査推奨・延期 | Plackett–Luceを最初の高度baseline候補とするが、順位別biasを検証してから採否判断 |
 | artifact管理 | MVP決定 | config、git/data fingerprint、aggregate metricsを追跡し、raw・model・runner予測はGit対象外 |
@@ -630,10 +631,10 @@ Phase 8: 自動予測処理・Web UI
 
 S0/S1は完了しました。統合判断は[S-rank no-odds model research conclusions](docs/experiments/s_rank_model_research_conclusions_20260831.md)、living queueは[no-odds予測モデル研究の優先順位](docs/model_research_priorities.md)です。
 
-- Binaryのdevelopment incumbentはPV-01 254特徴のままです。
-- 2024の保守的LambdaRank referenceはlean 253特徴のままです。pre-2024 rollingではlean+SEC-3F 254特徴を採択しましたが、2024 milestoneは未実施です。
+- 2024で確認済みのBinary development incumbentはPV-01 254特徴のままです。pre-2024 rollingではPV-01+PACE-01 255特徴を採択しました。
+- 2024の保守的LambdaRank referenceはlean 253特徴のままです。pre-2024 rollingではlean+SEC-3F+PACE-01 255特徴を採択しました。
 - OPP-RECENTは未採用、HPO parameterは変更なし、固定50:50 ensembleはrejectです。
 - 新馬戦はcold-startで難しいものの、fitからの除外は通常レースにも効かずrejectしました。
-- LIVE-DATAは公式JV-Link source gateと保存基盤まで完了し、実収集はprivate Windows host・契約/key・transport待ちです。
+- LIVE-DATAは公式JV-Link source gateと保存基盤まで完了しましたが、現環境がMacで公式transportはWindowsのみのため、ユーザー判断で後日に延期しました。
 
-次の独立modeling taskは`PACE-01`です。通過順位からhorse-levelの位置取り・脚質履歴を少数列で固定し、直線1000 m等の1区間raceを明示的に扱ってrolling評価します。`PACE-02`のfield pace pressureはPACE-01が支持された場合だけ実施します。2024は重要候補のmilestoneに限定し、2025は反復選択に使用しません。
+PACE-01は完了し、BinaryとLambdaRankの両方で採択しました。次の独立modeling taskは`PACE-02`です。固定済みPACE-01履歴だけから今回fieldの先行集中度を少数列で表現し、rolling評価します。最終corner、position gain、複数のstyle閾値は同時に追加しません。2024は重要候補のmilestoneに限定し、2025は反復選択に使用しません。
