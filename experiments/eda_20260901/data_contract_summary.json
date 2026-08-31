@@ -1,0 +1,98 @@
+{
+  "analysis_id": "eda_20260901",
+  "git_commit": "e144a452c8e7691d8e9a5999acf4fa0b977d037f",
+  "max_target_date": "2022-12-31",
+  "raw_sha256": "270923ce73c4441e64173f242a8719de7d1e9b205508140463ca547ef7b1ca87",
+  "views": {
+    "connection_state": {
+      "date_max": "2022-12-28",
+      "date_min": "2013-01-05",
+      "feature_availability_time": "strict PIT-C before target date",
+      "key_columns": [
+        "race_id",
+        "horse_id"
+      ],
+      "key_unique": true,
+      "race_count": 31689,
+      "row_count": 450340,
+      "schema_hash": "36631bc9e704bf602b10917ba68a536386c269883b3b5a450043d951a1908d70"
+    },
+    "historical_performance": {
+      "date_max": "2022-12-28",
+      "date_min": "2013-01-05",
+      "feature_availability_time": "available only from the following date",
+      "key_columns": [
+        "race_id",
+        "horse_id"
+      ],
+      "key_unique": true,
+      "race_count": 33240,
+      "row_count": 471557,
+      "schema_hash": "0db650840291148215f287018cf711d04e2b8083be5234b370044fdbd742f9da"
+    },
+    "market_oracle": {
+      "date_max": "2022-12-28",
+      "date_min": "2013-01-05",
+      "feature_availability_time": "final market; explicit oracle join only",
+      "key_columns": [
+        "race_id",
+        "horse_id"
+      ],
+      "key_unique": true,
+      "race_count": 34504,
+      "row_count": 488715,
+      "schema_hash": "8f3e78609d31201c85fcc0811f53321e20bf52a29ce7ceb08c0180212b6f4df3"
+    },
+    "outcomes": {
+      "date_max": "2022-12-28",
+      "date_min": "2013-01-05",
+      "feature_availability_time": "analysis-only current-race outcome",
+      "key_columns": [
+        "race_id",
+        "horse_id"
+      ],
+      "key_unique": true,
+      "race_count": 31689,
+      "row_count": 450340,
+      "schema_hash": "5634788f45527e2c74e585174161280f0b20fd802183cfd36dd074d3371f0860"
+    },
+    "race_table": {
+      "date_max": "2022-12-28",
+      "date_min": "2013-01-05",
+      "feature_availability_time": "mixed pre-race context and explicitly named analysis outcomes",
+      "key_columns": [
+        "race_id"
+      ],
+      "key_unique": true,
+      "race_count": 34504,
+      "row_count": 34504,
+      "schema_hash": "313fa278b085ce85a02a493e8c363335e01a10a0b4c754b2dd178ce370eba146"
+    },
+    "raw_status_population": {
+      "date_max": "2022-12-28",
+      "date_min": "2013-01-05",
+      "feature_availability_time": "analysis-only result/status audit",
+      "key_columns": [
+        "race_id",
+        "horse_id"
+      ],
+      "key_unique": true,
+      "race_count": 34504,
+      "row_count": 488715,
+      "schema_hash": "cff25a77f9920b886b27ff7c43b287da156a7a84711afca05b7a7407721f55a6"
+    },
+    "runner_pre_race": {
+      "date_max": "2022-12-28",
+      "date_min": "2013-01-05",
+      "feature_availability_time": "strict PIT-C before target date",
+      "key_columns": [
+        "race_id",
+        "horse_id"
+      ],
+      "key_unique": true,
+      "race_count": 31689,
+      "row_count": 450340,
+      "schema_hash": "ab15de63cc418507799702cffe1c7aa15d2fbf65d1c366f079b98f3a4a2457c3"
+    }
+  }
+}

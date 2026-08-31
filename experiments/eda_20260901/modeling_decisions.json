@@ -1,0 +1,14 @@
+{
+  "alternative_gbdt": "defer until representation tests",
+  "binary_winner": "retain as frozen control",
+  "condition_specific_models": "do not split; test reliability interactions first",
+  "continuous_performance_target": "priority S experiment after review",
+  "dnn": "defer",
+  "ensemble": "do not reopen without new component evidence",
+  "full_order": "do not use unweighted all-pairs; lower ranks dominate",
+  "lambdarank_top_heavy": "retain as frozen control; relevance redesign remains unproven",
+  "lightgbm": "retain as primary nonlinear control",
+  "multitask": "defer until an auxiliary performance target has standalone OOT value",
+  "production_changed": false,
+  "race_wise_probability": "priority S transparent baseline"
+}

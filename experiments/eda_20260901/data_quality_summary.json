@@ -1,0 +1,17 @@
+{
+  "duplicate_keys": 0,
+  "flat_races": 33240,
+  "flat_started_performances": 471557,
+  "main_risks": [
+    "2014 history is left-truncated by 2013 warm-up",
+    "race-class token regime drift",
+    "historical publication timestamps unavailable"
+  ],
+  "max_target_date": "2022-12-31",
+  "post_2022_retained": 0,
+  "predictive_races": 31689,
+  "predictive_rows": 450340,
+  "raw_sha256": "270923ce73c4441e64173f242a8719de7d1e9b205508140463ca547ef7b1ca87",
+  "retained_raw_races": 34504,
+  "retained_raw_rows": 488715
+}

@@ -1,0 +1,18 @@
+{
+  "analysis_id": "eda_20260901",
+  "local_artifact": "artifacts/eda_20260901 (gitignored)",
+  "periods": {
+    "confirmation": "2022",
+    "discovery": "2014-2019",
+    "replication": "2020-2021",
+    "warmup": "2013"
+  },
+  "phase": "Phase 5A: systematic exploratory data analysis and problem reformulation",
+  "production_model_changed": false,
+  "review_status": "three independent reviews completed; major findings corrected and re-reviewed",
+  "top_hypotheses": [
+    "EDA-S01-RACE-VALUE-2AXIS",
+    "EDA-S02-RACEWISE-CHOICE",
+    "EDA-S03-PERFORMANCE-TARGET"
+  ]
+}

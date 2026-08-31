@@ -1,0 +1,40 @@
+{
+  "interpretation": "directional replication, not untouched confirmatory inference",
+  "signals": [
+    {
+      "confirmation": 0.459,
+      "direction_consistency": "3/3 positive",
+      "discovery": 0.457,
+      "replication": 0.43,
+      "signal": "90d horse-history decay"
+    },
+    {
+      "confirmation": 0.258,
+      "direction_consistency": "3/3 positive",
+      "discovery": 0.276,
+      "replication": 0.262,
+      "signal": "jockey career EB"
+    },
+    {
+      "confirmation": 0.19,
+      "direction_consistency": "3/3 positive",
+      "discovery": 0.189,
+      "replication": 0.18,
+      "signal": "trainer career EB"
+    },
+    {
+      "confirmation": 0.181,
+      "direction_consistency": "3/3 positive",
+      "discovery": 0.221,
+      "replication": 0.156,
+      "signal": "field quality vs performance residual daily Spearman"
+    },
+    {
+      "confirmation": "0.379-0.410 vs 0.210-0.247",
+      "direction_consistency": "3/3",
+      "discovery": "0.381-0.415 vs 0.253-0.281",
+      "replication": "0.361-0.398 vs 0.197-0.247",
+      "signal": "same vs switched surface persistence"
+    }
+  ]
+}

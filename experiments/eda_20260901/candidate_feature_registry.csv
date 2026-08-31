@@ -1,0 +1,6 @@
+candidate_id,hypothesis_id,representation,source,available_at,missingness,PIT_status,redundancy_risk,status
+CF-01,EDA-S01-RACE-VALUE-2AXIS,90d performance residual history,horse,after past race,<0.4% outcome-side,safe,medium,ready
+CF-02,EDA-S01-RACE-VALUE-2AXIS,90d race-constant field-quality history,opponent,pre-race rating,rating cold-start structural,safe,medium,ready
+CF-03,EDA-A01-TRANSITION-RELIABILITY,past-state reliability under one condition switch,horse+context,pre-race,history0 structural,safe,medium,proposed
+CF-04,EDA-A02-CONNECTION-COMPRESSION,EB level/deviation/support/uncertainty,connection,pre-race,EB level none,safe,low,proposed
+CF-05,EDA-A03-LAST3F-RELATIVE,race-relative last3F decay history,horse,after past race,3 completed rows,safe,medium,proposed
