@@ -37,7 +37,7 @@
       "model_config": "configs/exp_002_lambdarank.json",
       "feature_config": "configs/performance/pace_02_lambdarank_candidate.json",
       "expected_feature_count": 256,
-      "expected_columns_sha256": "30aab7301e82ed52ea9a4ae53c27c6e85b1be758eee4ce89e4fa56166e60d6b3e"
+      "expected_columns_sha256": "30aab7301e82ed52ea9a4ae53c27c6e85b1be758eee4ce89e4fa56166e60d6b3"
     }
   },
   "comparisons": [

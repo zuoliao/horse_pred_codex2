@@ -73,7 +73,7 @@ PACE-02. Parameters and labels are unchanged.
 | Binary control | 255 | `a50da361280b6f892ef7dfbe017768bbaa1657a6e95cb744ef7df6417f03275c` |
 | Binary candidate | 256 | `28fa3413c8f5ac5477c81be83e111a2b3e1dce3ef87c09ff1d271711f131e776` |
 | Rank control | 255 | `0bebb3ab682423318d239d338b370d1d6f162f0bbb8d4678f8bc0760b4c63d3e` |
-| Rank candidate | 256 | `30aab7301e82ed52ea9a4ae53c27c6e85b1be758eee4ce89e4fa56166e60d6b3e` |
+| Rank candidate | 256 | `30aab7301e82ed52ea9a4ae53c27c6e85b1be758eee4ce89e4fa56166e60d6b3` |
 
 ## Decision rule
 
