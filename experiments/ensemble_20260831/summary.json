@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "experiment_id": "ens_01_fixed_5050",
+  "run_commit": "df5c8c9c6b9c123d58e3966ee9efaa0ac39a0e11",
+  "run_dirty": false,
+  "source_predictions_sha256": "876657c5e8cdd3976a28f1eec41823fd9b47a201a8c99e0112381f4cfb370cf1",
+  "source_manifest_sha256": "f1ca8320e5c46a95cb79bcac4f26f3dd1de9e7485ff09d2e94da913cb3a10afe",
+  "scope": {
+    "screen_evaluation_years": [2020, 2021, 2022],
+    "confirmation_evaluation_year": 2023,
+    "confirmation_opened": false,
+    "rows_used_2024": 0,
+    "rows_used_2025": 0,
+    "odds_used": false,
+    "model_refit": false,
+    "weight_search_candidates": 0
+  },
+  "blend": {"binary_weight": 0.5, "lambdarank_weight": 0.5, "input_probability": "probability_t1", "temperature": "independent_per_fold_calibration_role"},
+  "screen": {
+    "ensemble_vs_binary": {
+      "passed": false,
+      "reason": "race_log_loss improvement below 0.002 minimum",
+      "ndcg_at_3_improvement": {"point": 0.0011175887, "lower": -0.0007044603, "upper": 0.0029723507, "improved_years": 3},
+      "top_1_winner_mass_improvement": {"point": -0.0009404268, "lower": -0.0044811850, "upper": 0.0026407235, "improved_years": 1},
+      "race_log_loss_improvement": {"point": 0.0015743531, "lower": -0.0007015450, "upper": 0.0038730686, "improved_years": 2},
+      "race_brier_improvement": {"point": 0.0009390502, "lower": 0.0003739718, "upper": 0.0015189832, "improved_years": 3}
+    },
+    "ensemble_vs_lambdarank": {
+      "passed": true,
+      "ndcg_at_3_improvement": {"point": 0.0014803214, "lower": -0.0010826392, "upper": 0.0039652265, "improved_years": 1},
+      "top_1_winner_mass_improvement": {"point": -0.0005750035, "lower": -0.0054593998, "upper": 0.0043021305, "improved_years": 1},
+      "race_log_loss_improvement": {"point": 0.0153654449, "lower": 0.0123680193, "upper": 0.0183285724, "improved_years": 3},
+      "race_brier_improvement": {"point": 0.0028611554, "lower": 0.0019766502, "upper": 0.0037337954, "improved_years": 3}
+    }
+  },
+  "decision": "reject",
+  "confirmation_decision": "not_opened",
+  "adopted": false,
+  "local_artifacts": "artifacts/ens_01_fixed_5050_20260831"
+}
