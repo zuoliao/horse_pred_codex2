@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "experiment_id": "speed_01_condition_adjusted_rolling",
+  "run_commit": "f4b38b8744dc7a49d701b23c1c14badc6a663571",
+  "run_dirty": false,
+  "data_fingerprint": "270923ce73c4441e64173f242a8719de7d1e9b205508140463ca547ef7b1ca87",
+  "cache_sha256": "c0a45553adf6a4258a4d2c9bd186866ef9cc9d43a225ee37224a7f4b95cae48f",
+  "transformation_hash": "55f5e4a5eb9c7bb12368bed9faa0a617b35ade5cbae918ffa8046be33b2d5c43",
+  "scope": {
+    "evaluation_years": [2020, 2021, 2022, 2023],
+    "rows_used_2024": 0,
+    "rows_used_2025": 0,
+    "odds_used": false,
+    "candidate_representations_screened": 1
+  },
+  "cache_control": {
+    "row_count": 533853,
+    "baseline_feature_count": 271,
+    "candidate_feature_count": 272,
+    "old_feature_mismatch_count": 0,
+    "pre2025_feature_nonmissing": 440324,
+    "retrospective_2025_feature_nonmissing": 0
+  },
+  "binary": {
+    "improvement": {
+      "ndcg_at_3": {"point": 0.0016877540, "lower": -0.0006944254, "upper": 0.0040328737, "improved_years": 3},
+      "top_1_winner_mass": {"point": -0.0001150891, "lower": -0.0051643257, "upper": 0.0048110704, "improved_years": 1},
+      "race_log_loss": {"point": 0.0076873677, "lower": 0.0045656400, "upper": 0.0107813209, "improved_years": 4},
+      "race_brier": {"point": 0.0022803021, "lower": 0.0012726519, "upper": 0.0032949833, "improved_years": 4}
+    },
+    "accepted_paths": ["probability"],
+    "decision": "accept"
+  },
+  "lambdarank": {
+    "improvement": {
+      "ndcg_at_3": {"point": 0.0017247803, "lower": -0.0006692843, "upper": 0.0041555510, "improved_years": 3},
+      "top_1_winner_mass": {"point": 0.0011393804, "lower": -0.0037450989, "upper": 0.0061597015, "improved_years": 3},
+      "race_log_loss": {"point": 0.0082276206, "lower": 0.0052258760, "upper": 0.0112756652, "improved_years": 3},
+      "race_brier": {"point": 0.0022248739, "lower": 0.0012107741, "upper": 0.0032281520, "improved_years": 4}
+    },
+    "accepted_paths": ["probability"],
+    "decision": "accept"
+  },
+  "adopted": true,
+  "development_2024_opened": false,
+  "next_task": "SPEED-01-2024-MILESTONE"
+}

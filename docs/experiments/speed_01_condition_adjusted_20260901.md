@@ -1,7 +1,7 @@
 # SPEED-01 prequential condition-adjusted speed history
 
 Date: 2026-09-01 JST  
-Status: preregistered; model outcomes unopened
+Status: rolling complete; accepted for both families via probability path
 
 ## Hypothesis
 
@@ -80,3 +80,34 @@ acceptance substitutes a positive NDCG CI with Log Loss/Brier/Top-1 guardrails
 of `-.002/-.001/-.005`. A failed guardrail or wholly adverse primary interval
 is reject; otherwise inconclusive. Passing a path does not automatically open
 2024.
+
+## Rolling result
+
+The frozen run used clean commit
+`f4b38b8744dc7a49d701b23c1c14badc6a663571`, no odds, and zero 2024/2025
+rows. Cache control preserved all 271 PACE-01 cache features exactly and added
+only the registered SPEED-01 column.
+
+| Family | NDCG improvement | Top-1 improvement | Log Loss improvement | Brier improvement | Decision |
+|---|---:|---:|---:|---:|---|
+| Binary | +.00169 `[-.00069,+.00403]` | -.00012 `[-.00516,+.00481]` | +.00769 `[+.00457,+.01078]` | +.00228 `[+.00127,+.00329]` | accept: probability |
+| LambdaRank | +.00172 `[-.00067,+.00416]` | +.00114 `[-.00375,+.00616]` | +.00823 `[+.00523,+.01128]` | +.00222 `[+.00121,+.00323]` | accept: probability |
+
+Binary Log Loss and Brier improved in all four years; NDCG improved in three,
+and all point guardrails pass. LambdaRank Log Loss, NDCG, and Top-1 improved in
+three years and Brier in all four; its probability path also passes. The
+candidate is therefore accepted for both rolling incumbents. LambdaRank does
+not separately pass the ranking path because its NDCG interval includes zero.
+
+SPEED-01 is the first accepted post-PACE independent signal and is materially
+distinct from PV-01: it estimates the race's expected condition-adjusted winner
+clock before comparing each runner's own time, rather than using only the
+within-race winner gap. The transformation, clip, ridge, and feature scope must
+not be changed in response to these results.
+
+The result is strong enough to preregister one unchanged 2024 milestone. That
+milestone is confirmation only: no mapping, parameter, feature, or calibration
+choice may be made from its outcome, and 2025 remains closed.
+
+Tracked rolling evidence is `experiments/speed_01_20260901/summary.json`; full
+local artifacts are under `artifacts/speed_01_rolling_20260901/`.
