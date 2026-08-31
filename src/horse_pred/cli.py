@@ -43,6 +43,7 @@ from horse_pred.margin_token_rating_study import (
     audit_margin_tokens_from_raw,
     run_margin_token_rating_study,
 )
+from horse_pred.opponent_recent import build_opponent_recent_cache_from_raw
 from horse_pred.pipeline import run_mvp
 from horse_pred.race_content import (
     build_race_content_augmented_cache,
@@ -182,6 +183,19 @@ def parser() -> argparse.ArgumentParser:
         default=Path("configs/performance/pv_001_race_content_time.json"),
     )
     race_content.add_argument("--repo-root", type=Path, default=Path.cwd())
+    opponent_recent = commands.add_parser(
+        "build-opponent-recent-cache",
+        help="build the preregistered one-column OPP-RECENT cache without 2025",
+    )
+    opponent_recent.add_argument("--raw-path", type=Path, required=True)
+    opponent_recent.add_argument("--baseline-cache", type=Path, required=True)
+    opponent_recent.add_argument("--output", type=Path, required=True)
+    opponent_recent.add_argument(
+        "--config",
+        type=Path,
+        default=Path("configs/features/opp_recent_001.json"),
+    )
+    opponent_recent.add_argument("--repo-root", type=Path, default=Path.cwd())
     margin_rating = commands.add_parser(
         "run-margin-rating-study",
         help="run the preregistered PV-02 time-margin standalone rating study",
@@ -454,6 +468,16 @@ def main(argv: Sequence[str] | None = None) -> int:
             history,
             args.output,
             config=config,
+        )
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0
+    if args.command == "build-opponent-recent-cache":
+        result = build_opponent_recent_cache_from_raw(
+            repo_root=args.repo_root,
+            raw_path=args.raw_path,
+            baseline_cache_path=args.baseline_cache,
+            output_path=args.output,
+            config_path=args.config,
         )
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0

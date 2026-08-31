@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "experiment_id": "opp_recent_001",
+  "hypothesis": "A 90-day decayed history of opponent-only pre-race field strength adds information beyond the current self-inclusive career field-strength history.",
+  "candidate_column": "opponent_recent__decay_90d__mean_opponent_only_pre_elo",
+  "transformation_hash": "801e2a282629d4951af5d4c770a78f56f6e10c1311b76f1e5d6ba68cbdf7d940",
+  "transformation": {
+    "feature_id": "OPP-RECENT",
+    "rating": {
+      "family": "pairwise_elo",
+      "initial_rating": 1500.0,
+      "k": 24.0,
+      "scale": 400.0,
+      "pairwise_actual": "ordinal",
+      "same_date_batch": true
+    },
+    "eligible_race": "JRA flat",
+    "eligible_runner": "started",
+    "past_race_transform": {
+      "value": "(sum_pre_race_rating - own_pre_race_rating)/(n_started-1)",
+      "min_started": 2,
+      "own_result_used": false
+    },
+    "history": {
+      "half_life_days": 90,
+      "same_date_batch": true,
+      "missing_history": "NaN"
+    },
+    "output_column": "opponent_recent__decay_90d__mean_opponent_only_pre_elo"
+  },
+  "source_scope": {
+    "raw_fingerprint": "270923ce73c4441e64173f242a8719de7d1e9b205508140463ca547ef7b1ca87",
+    "mapping_audit_years": [
+      2014,
+      2021
+    ],
+    "state_warmup_starts": 2013,
+    "raw_cutoff_before_normalization": 2024,
+    "retrospective_2025_used": false
+  },
+  "evaluation_policy": {
+    "runner": "rolling-origin",
+    "evaluation_years": [
+      2020,
+      2021,
+      2022,
+      2023
+    ],
+    "binary_control": "pv_001_candidate_signed_time_gap",
+    "lambdarank_control": "abl_006_drop_field_relative",
+    "candidate_change": "add exactly the one registered opponent_recent column",
+    "development_2024": "closed until the rolling decision authorizes a milestone",
+    "retrospective_2025": "never used for selection"
+  },
+  "multiple_testing": {
+    "hypotheses_in_this_experiment": 1,
+    "candidate_representations_screened": 1,
+    "same_rolling_evaluation_seen_before_this_experiment": 0
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "experiment_id": "opp_recent_001_rolling",
+  "hypothesis": "The frozen one-column 90-day opponent-only pre-race Elo history improves the current Binary and/or conservative LambdaRank model on pre-2024 rolling-origin folds.",
+  "seed": 42,
+  "maximum_outcome_year": 2023,
+  "folds": [
+    {
+      "id": "roll_2020",
+      "train_start_year": 2014,
+      "train_end_year": 2017,
+      "early_stopping_year": 2018,
+      "calibration_year": 2019,
+      "evaluation_year": 2020
+    },
+    {
+      "id": "roll_2021",
+      "train_start_year": 2014,
+      "train_end_year": 2018,
+      "early_stopping_year": 2019,
+      "calibration_year": 2020,
+      "evaluation_year": 2021
+    },
+    {
+      "id": "roll_2022",
+      "train_start_year": 2014,
+      "train_end_year": 2019,
+      "early_stopping_year": 2020,
+      "calibration_year": 2021,
+      "evaluation_year": 2022
+    },
+    {
+      "id": "roll_2023",
+      "train_start_year": 2014,
+      "train_end_year": 2020,
+      "early_stopping_year": 2021,
+      "calibration_year": 2022,
+      "evaluation_year": 2023
+    }
+  ],
+  "methods": {
+    "binary_control": {
+      "model_kind": "binary",
+      "model_config": "configs/exp_001_binary.json",
+      "feature_config": "configs/performance/pv_001_candidate_signed_time_gap.json",
+      "expected_feature_count": 254,
+      "expected_columns_sha256": "e5228bb4ffd605888b7266030d5e1e9f0931e8468b6fbbf124f3cea60905e51d"
+    },
+    "binary_candidate": {
+      "model_kind": "binary",
+      "model_config": "configs/exp_001_binary.json",
+      "feature_config": "configs/performance/opp_recent_001_binary_candidate.json",
+      "expected_feature_count": 255,
+      "expected_columns_sha256": "986b6877b1f1724b1b936687cdd376f4e7ce5561f36a215a926b1eb5c2f0990e"
+    },
+    "lambdarank_control": {
+      "model_kind": "lambdarank",
+      "model_config": "configs/exp_002_lambdarank.json",
+      "feature_config": "configs/performance/pv_001_control_lean.json",
+      "expected_feature_count": 253,
+      "expected_columns_sha256": "fd8735cf6f8472a5c7322e3622c83fde1ff7720b022b75637745c96a1bc1062f"
+    },
+    "lambdarank_candidate": {
+      "model_kind": "lambdarank",
+      "model_config": "configs/exp_002_lambdarank.json",
+      "feature_config": "configs/performance/opp_recent_001_lambdarank_candidate.json",
+      "expected_feature_count": 254,
+      "expected_columns_sha256": "02072139d487c34e7a53150a55f58bb2a87f215405c0cbdc7e43199011179069"
+    }
+  },
+  "comparisons": [
+    {
+      "id": "binary_opp_recent_vs_control",
+      "candidate": "binary_candidate",
+      "reference": "binary_control",
+      "type": "hypothesis"
+    },
+    {
+      "id": "lambdarank_opp_recent_vs_control",
+      "candidate": "lambdarank_candidate",
+      "reference": "lambdarank_control",
+      "type": "hypothesis"
+    }
+  ],
+  "selection_accounting": {
+    "candidate_comparisons_this_run": 2,
+    "prior_selection_uses_by_evaluation_year": {
+      "2020": 2,
+      "2021": 2,
+      "2022": 6,
+      "2023": 2
+    },
+    "multiple_comparison_note": "Two within-family comparisons test the same single frozen feature. Counts are the documented lower-bound prior-use inventory inherited from EVAL-ROLL-001; the OPP train-only audit did not inspect target metrics."
+  },
+  "uncertainty": {
+    "bootstrap_resamples": 10000,
+    "bootstrap_seed": 20240830,
+    "block_length_dates": 4,
+    "confidence_level": 0.95
+  }
+}

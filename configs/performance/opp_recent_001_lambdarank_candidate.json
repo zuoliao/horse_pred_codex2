@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "experiment_id": "opp_recent_001_lambdarank_candidate",
+  "parent_experiment_id": "pv_001_control_lean",
+  "hypothesis": "The frozen OPP-RECENT feature adds rolling-origin signal to the conservative lean LambdaRank incumbent.",
+  "seed": 42,
+  "model_configs": {
+    "binary": "configs/exp_001_binary.json",
+    "lambdarank": "configs/exp_002_lambdarank.json"
+  },
+  "feature_selection": {
+    "include": [
+      "current_context",
+      "horse_performance",
+      "form_workload",
+      "suitability",
+      "connections",
+      "rating_value",
+      "opponent_recent"
+    ]
+  }
+}

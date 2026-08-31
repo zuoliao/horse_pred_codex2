@@ -43,6 +43,9 @@ MODULAR_RATING_COLUMNS: tuple[str, ...] = (
 RACE_CONTENT_COLUMNS: tuple[str, ...] = (
     "race_content__decay_90d__mean_signed_time_gap_per_1000m",
 )
+OPPONENT_RECENT_COLUMNS: tuple[str, ...] = (
+    "opponent_recent__decay_90d__mean_opponent_only_pre_elo",
+)
 
 
 def _positional_mismatch_count(left: Sequence[str], right: Sequence[str]) -> int:
@@ -359,6 +362,30 @@ def compare_race_content_cache_control(
         comparison_name="race_content_time_cache_control",
         count_key="candidate_race_content_time",
         contract_key="race_content_time",
+        output_path=output_path,
+        chunk_size=chunk_size,
+        expected_baseline_feature_count=expected_baseline_feature_count,
+    )
+
+
+def compare_opponent_recent_cache_control(
+    baseline_cache_path: str | Path,
+    candidate_cache_path: str | Path,
+    *,
+    output_path: str | Path | None = None,
+    chunk_size: int = 10_000,
+    expected_baseline_feature_count: int = 268,
+) -> dict[str, Any]:
+    """Verify that an OPP-RECENT cache adds only its frozen column."""
+
+    return _compare_opt_in_cache_control(
+        baseline_cache_path,
+        candidate_cache_path,
+        expected_experimental_columns=OPPONENT_RECENT_COLUMNS,
+        experimental_prefix="opponent_recent__",
+        comparison_name="opponent_recent_cache_control",
+        count_key="candidate_opponent_recent",
+        contract_key="opponent_recent",
         output_path=output_path,
         chunk_size=chunk_size,
         expected_baseline_feature_count=expected_baseline_feature_count,
