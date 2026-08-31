@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "experiment_id": "pace_01_early_position_rolling",
+  "hypothesis": "The frozen one-column 90-day race-relative early-position history improves the current Binary and/or accepted rolling LambdaRank candidate on pre-2024 rolling-origin folds.",
+  "seed": 42,
+  "maximum_outcome_year": 2023,
+  "folds": [
+    {"id": "roll_2020", "train_start_year": 2014, "train_end_year": 2017, "early_stopping_year": 2018, "calibration_year": 2019, "evaluation_year": 2020},
+    {"id": "roll_2021", "train_start_year": 2014, "train_end_year": 2018, "early_stopping_year": 2019, "calibration_year": 2020, "evaluation_year": 2021},
+    {"id": "roll_2022", "train_start_year": 2014, "train_end_year": 2019, "early_stopping_year": 2020, "calibration_year": 2021, "evaluation_year": 2022},
+    {"id": "roll_2023", "train_start_year": 2014, "train_end_year": 2020, "early_stopping_year": 2021, "calibration_year": 2022, "evaluation_year": 2023}
+  ],
+  "methods": {
+    "binary_control": {
+      "model_kind": "binary",
+      "model_config": "configs/exp_001_binary.json",
+      "feature_config": "configs/performance/pv_001_candidate_signed_time_gap.json",
+      "expected_feature_count": 254,
+      "expected_columns_sha256": "e5228bb4ffd605888b7266030d5e1e9f0931e8468b6fbbf124f3cea60905e51d"
+    },
+    "binary_candidate": {
+      "model_kind": "binary",
+      "model_config": "configs/exp_001_binary.json",
+      "feature_config": "configs/performance/pace_01_binary_candidate.json",
+      "expected_feature_count": 255,
+      "expected_columns_sha256": "a50da361280b6f892ef7dfbe017768bbaa1657a6e95cb744ef7df6417f03275c"
+    },
+    "lambdarank_control": {
+      "model_kind": "lambdarank",
+      "model_config": "configs/exp_002_lambdarank.json",
+      "feature_config": "configs/performance/sec_3f_001_lambdarank_candidate.json",
+      "expected_feature_count": 254,
+      "expected_columns_sha256": "fff37fcb9c1b40611df1a1813908be8d4b9eba2fd5dcd9a575858cc1f4942183"
+    },
+    "lambdarank_candidate": {
+      "model_kind": "lambdarank",
+      "model_config": "configs/exp_002_lambdarank.json",
+      "feature_config": "configs/performance/pace_01_lambdarank_candidate.json",
+      "expected_feature_count": 255,
+      "expected_columns_sha256": "0bebb3ab682423318d239d338b370d1d6f162f0bbb8d4678f8bc0760b4c63d3e"
+    }
+  },
+  "comparisons": [
+    {"id": "binary_pace_01_vs_control", "candidate": "binary_candidate", "reference": "binary_control", "type": "hypothesis"},
+    {"id": "lambdarank_pace_01_vs_control", "candidate": "lambdarank_candidate", "reference": "lambdarank_control", "type": "hypothesis"}
+  ],
+  "selection_accounting": {
+    "candidate_comparisons_this_run": 2,
+    "prior_selection_uses_by_evaluation_year": {"2020": 31, "2021": 31, "2022": 35, "2023": 8},
+    "multiple_comparison_note": "Two within-family comparisons test one frozen PACE-01 representation. Counts include the prior rolling baselines, OPP-RECENT, SEC-3F, HPO screens/confirmation, ENS-01 screen, and SHIMBA-FILTER-001; no 2024/2025 target metric was inspected."
+  },
+  "uncertainty": {
+    "bootstrap_resamples": 10000,
+    "bootstrap_seed": 20240830,
+    "block_length_dates": 4,
+    "confidence_level": 0.95
+  }
+}
