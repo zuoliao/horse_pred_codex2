@@ -545,3 +545,30 @@ model、calibrator、thresholdを同じ実験で同時変更しない。
 および`experiments/graded_rank_20260831/summary.json`、詳細protocol/resultは
 `docs/experiments/pv_006_margin_token_refinement_20260831.md`と
 `docs/experiments/gr_001_graded_lambdarank_20260831.md`をsource of truthとする。
+
+## 22. 2026-08-31 Sランク完了追補
+
+EVAL-ROLLを実装して2020～2023の4 expanding foldを固定し、S0/S1を全て
+完了した。Sランク選択に2024/2025、odds、人気は使用していない。
+
+- OPP-RECENTの相手のみpre-race Elo履歴は既存career相手水準と高相関で、
+  Binaryはinconclusive、LambdaRankはproper scoreを有意に悪化させreject。
+- SEC-3Fのrace内上がりpercentile 90日履歴はLambdaRank NDCGを
+  `+.00256 [+.00045,+.00465]`改善し、ranking pathで採択。Binaryは
+  inconclusive。絶対上がり秒やpace interactionは混ぜていない。
+- HPO-01はBinaryでeligible候補なし。Rankerは2020～2022で選んだ
+  `feature_fraction=.75`が2023で全point悪化しreject。parameterは維持。
+- ENS-01固定50:50はLambdaRankより強かったが、Binary比Log Loss改善
+  `+.00157`が事前minimum `+.002`未達でreject。weight探索せず、2023未開封。
+- 新馬戦はhorse履歴がなく難しいが、fitからだけ除くと全race Log Loss
+  `-.00097`、NDCG `-.00225`。通常race sliceにも改善がなく、学習に維持。
+- LIVE-DATAはJRA Web scrapingではなく公式JRA-VAN/JV-Linkだけを許す。
+  timestamp付きappend-only archiveまで実装したが、actual collectionは
+  private Windows host・契約/key・transportがないためactivation blocked。
+
+現Binary development incumbentはPV-01 254特徴。2024の保守的LambdaRank
+referenceはlean 253特徴のまま、pre-2024 rolling candidateはlean+SEC-3F
+254特徴とする。次はPACE-01を一仮説としてrolling評価し、支持時だけ
+PACE-02へ進む。統合根拠は
+`docs/experiments/s_rank_model_research_conclusions_20260831.md`および
+`experiments/s_rank_model_research_20260831/summary.json`を参照する。

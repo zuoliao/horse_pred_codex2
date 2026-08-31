@@ -1,8 +1,8 @@
 # No-odds予測モデル研究の優先順位
 
 **記録日:** 2026-08-31 (JST)  
-**状態:** ユーザー承認済みのliving work queue  
-**適用期間:** この文書の全Sランク完了、またはユーザーによる明示的な改訂まで
+**状態:** S0/S1完了。Aランク移行判断のsource of truth
+**適用期間:** ユーザーによる明示的な改訂まで
 
 ## 1. 現状認識
 
@@ -43,8 +43,8 @@ estimateだけで小さな改善を採用しない。2025は反復選択に使�
 | ENS-01 | Binary/LambdaRank単純ensemble | coherent probabilityの固定50:50またはlog-space平均を最初に評価。weightを選ぶならrollingだけ。独立temperatureをfit | 2024でweight探索しない。単体bestを明確に上回らなければ採用しない |
 
 PV-06は2026-08-31に完了済みで、全point改善だがprimary Log Loss区間が
-0を跨ぎinconclusiveだった。再調整しない。S1の残りはEVAL-ROLL固定後に
-一仮説ずつ実行する。
+0を跨ぎinconclusiveだった。再調整しない。S1の残りもEVAL-ROLL固定後に
+一仮説ずつ完了した。
 
 ### A: S完了後の有力候補
 
@@ -125,3 +125,27 @@ SランクはS0とS1を含む。次をすべて満たした時だけ完了とす
    rolling evaluation、machine-readable result、accept/reject判断を持つ。
 6. README、`docs/research/research_conclusions.md`、`docs/handoff.md`が
    Sランクの結果と次のAランクtaskを示す。
+
+## 7. 2026-08-31完了判定
+
+上記6条件を満たし、Sランクは完了した。結果は次のとおり。
+
+| ID | 状態・判断 |
+|---|---|
+| DOC-SYNC | 完了 |
+| EVAL-ROLL | 完了。2020～2023の4 fold baselineを固定 |
+| LIVE-DATA | 公式JV-Link source gate、schema、append-only archive、test完了。実収集はprivate Windows host・契約/key・transport不足でactivation blocked |
+| PV-06 | inconclusive、2024未開封 |
+| OPP-RECENT | Binary inconclusive、LambdaRank reject、未採用 |
+| SEC-3F | Binary inconclusive、LambdaRank rolling acceptance |
+| HPO-01 | Binary no-change、LambdaRank candidate reject。parameter維持 |
+| ENS-01 | 固定50:50はscreen reject。weight探索なし、2023 confirmation未開封 |
+
+追加で、新馬戦をBinary fitからだけ除外する`SHIMBA-FILTER-001`もrolling
+評価しrejectした。新馬戦は難しいが学習からは除外しない。
+
+統合結論は
+`docs/experiments/s_rank_model_research_conclusions_20260831.md`、機械可読集約は
+`experiments/s_rank_model_research_20260831/summary.json`を参照する。次のmodeling
+taskは`PACE-01`とし、支持された場合のみ`PACE-02`へ進む。LIVE-DATA実収集の
+activationは上記外部前提が整った時点で別に再開する。

@@ -2,7 +2,7 @@
 
 **作成日:** 2026-08-30 (JST)  
 **更新日:** 2026-08-31 (JST)
-**前提:** 調査、既存raw採用、GOV-01～QA-01、corrected LightGBM baseline、2024健全性・不確実性・ablation・限定改善、R0～R6、PV-00～PV-06、GR-001まで完了。
+**前提:** 調査、既存raw採用、GOV-01～QA-01、corrected LightGBM baseline、2024健全性・不確実性・ablation・限定改善、R0～R6、PV-00～PV-06、GR-001、S0/S1まで完了。
 **対象:** JRA平地競走、no-odds予測を先行し、購入判断を別層にする。
 
 ## 進行原則
@@ -50,6 +50,8 @@
 | 30 | SEC-3F | race-relative上がり3F履歴 | EVAL-ROLL | race内relative表現を1案固定し、90日半減履歴1列だけをrolling評価 |
 | 31 | HPO-01 | LightGBM限定時系列探索 | EVAL-ROLL | Binary/Rankerを別々にrolling foldsだけで限定探索。feature実験と混ぜない |
 | 32 | ENS-01 | Binary/Ranker単純ensemble | EVAL-ROLL | 固定50:50 coherent probability ensembleと独立temperatureをrolling評価 |
+| 33 | SHIMBA-FILTER-001 | 新馬戦fit-population ablation | EVAL-ROLL | Binaryのgradient fitからだけ新馬戦を除外し、全race評価でnoise仮説を検証 |
+| 34 | PACE-01 | horse-level位置取り・脚質履歴 | EVAL-ROLL | 通過順位の少数表現を固定し、直線1000 m等を別扱いしてrolling評価 |
 
 ## 2026-08-31実行状態
 
@@ -63,7 +65,14 @@
 | Rating R0～R6 | 完了 | K48/scale200 ordinalをfreeze。margin-aware actualは校正後standalone支持、LightGBM統合は未採用 |
 | PV-00～PV-06 | 完了 | PV-01 Binary採用。PV-02 raw reject、PV-03 standalone支持、PV-04/05未採用、PV-06 2022 inconclusive |
 | GR-001 | 完了・reject | upper-half graded relevanceは2022 proper scoresを有意悪化。従来top-three教師を維持 |
-| S0/S1 goal | 進行中 | `docs/model_research_priorities.md`をsource of truthにDOC-SYNC→EVAL-ROLL→OPP-RECENT→SEC-3F→HPO-01→ENS-01。LIVE-DATAは並行 |
+| EVAL-ROLL | 完了 | 2020～2023の4 expanding fold、year macro、方向一致、paired date-block CI、2024/2025 firewall |
+| OPP-RECENT | 完了・未採用 | Binary inconclusive、LambdaRank reject |
+| SEC-3F | 完了・Rank rolling採択 | Binary inconclusive。LambdaRank NDCG `+.00256 [+.00045,+.00465]` |
+| HPO-01 | 完了・変更なし | Binary no-change、Ranker候補は2023 reject |
+| ENS-01 | 完了・reject | 固定50:50はBinary比minimum未達、2023 confirmation未開封 |
+| LIVE-DATA | groundwork完了・activation blocked | 公式JV-Link source gate、schema、append-only archive実装。private Windows host・契約/key・transport待ち |
+| S0/S1 goal | 完了 | 統合判断は`docs/experiments/s_rank_model_research_conclusions_20260831.md` |
+| SHIMBA-FILTER-001 | 完了・reject | 新馬戦fit除外はLL/NDCG悪化。新馬戦を学習に維持 |
 
 現在のwork queueは[model research priorities](model_research_priorities.md)、実験結果のsource of truthは`experiments/`、統合判断は`docs/experiments/`と`docs/handoff.md`である。完全なmodel・prediction・bootstrap artifactはGit対象外の`artifacts/`に置く。
 
@@ -77,6 +86,7 @@
 | M4: MVP評価完了 | EVAL-01～DEC-01 | 多面的評価とoracle市場診断を再現可能なartifactとして提示する |
 | M4.1: baseline validation | DEC-01、IMP-001～003 | data/evaluation health、uncertainty、ablation、model/error診断と限定改善を2024だけで完了する |
 | M4.2: rolling selection | EVAL-ROLL、OPP-RECENT、SEC-3F、HPO-01、ENS-01 | 2024/2025をparameter選択に使わず、複数年rolling evidenceでS1を判断する |
+| M4.3: structured A-rank signals | PACE-01、支持時のみPACE-02、SPEED-01 | 一仮説ずつrollingでscreenし、重要候補だけ2024 milestoneへ送る |
 | M5: 実行可能市場評価 | LIVE-01～LIVE-02 | 締切前snapshotを用いたprospective shadow期間が蓄積される |
 
 GOV-01～QA-01のdecision gateはmetric確認前に固定済みである。baseline結果を見てこれらを変更する場合は、新しいexperiment IDと将来評価期間を必要とする。

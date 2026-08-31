@@ -585,7 +585,7 @@ Phase 1: データソース・既存手法の調査           完了
 Phase 2: 既存rawのcoverage/PIT gateと仕様確定    完了
 Phase 3: point-in-time特徴量基盤                 実装・検証済み
 Phase 4: LightGBM Binary / LambdaRank baseline   完了
-Phase 5: 特徴量・rating・calibration改善         進行中（PV-01～PV-06、GR-001完了）
+Phase 5: 特徴量・rating・calibration改善         進行中（S0/S1完了、Aランクへ移行）
 Phase 6: 確率的ランキングおよび高度なモデル
 Phase 7: 購入戦略・リスク管理の改善
 Phase 8: 自動予測処理・Web UI
@@ -615,6 +615,12 @@ Phase 8: 自動予測処理・Web UI
 | split期間 | 開発更新 | 既存baselineは2014～21 train、2022 validation、2023 calibration、2024 development。新仮説はrolling-origin複数年でscreenし、2024はmilestoneのみ、2025は反復選択に使わず、2026+ prospective finalを維持 |
 | rating方式 | 開発更新 | K48/scale200のmargin-aware actual (`tau=.125`) は前年温度校正で2019～22全改善、2024校正LL 2.3957（ordinal 2.4015）。standaloneは置換候補。LightGBMへのabsolute/delta 1列追加はPV-01比inconclusiveで未採用 |
 | 過去走race-content | 開発採用候補 | 90日減衰signed時計差1列はBinaryで採用基準通過、LambdaRankはinconclusive。2026+ prospective確認が必要 |
+| rolling-origin | 実装・固定 | 2020～2023の4 expanding foldでfit/early stop/calibration/evaluationを年内完結。以後の新仮説screenに使用 |
+| 上がり3F履歴 | rolling採用候補 | race内上がりpercentileの90日減衰1列はLambdaRank NDCG `+.00256 [+.00045,+.00465]`で採択。Binaryはinconclusive、2024未開封 |
+| LightGBM HPO | 完了・変更なし | Binaryはeligible候補なし。Rankerのfeature fraction `.75`は2023 confirmationでreject |
+| Binary/Rank ensemble | 完了・reject | 固定50:50はBinary比Log Loss改善が+.00157でminimum未達。weight探索せず、2023未開封 |
+| 新馬戦の学習 | 完了・維持 | fitから新馬戦を除くとLog Loss `-.00097`、NDCG `-.00225`。難しいが純ノイズではなく学習に残す |
+| LIVE-DATA | 基盤完了・activation blocked | 公式JV-Link限定のschema/append-only archiveを実装。実収集はprivate Windows host・契約/key・transport待ち |
 | LambdaRank教師 | 開発維持 | 従来の`1着=3, 2着=2, 3着=1, その他=0`を維持。2・3着を統合して上位半数へ教師を広げたGR-001は2022でLog Loss/Brierを有意に悪化させreject |
 | probabilistic ranking | 調査推奨・延期 | Plackett–Luceを最初の高度baseline候補とするが、順位別biasを検証してから採否判断 |
 | artifact管理 | MVP決定 | config、git/data fingerprint、aggregate metricsを追跡し、raw・model・runner予測はGit対象外 |
@@ -622,6 +628,12 @@ Phase 8: 自動予測処理・Web UI
 
 ## 15. 次の作業
 
-PV-06とGR-001まで完了しました。PV-06は2014～2021のraw着差tokenから0.1秒同時計だけを決定的に補間し、2022で全point指標が改善しましたが、primary Log Loss差 `+.00003 [-.00022,+.00028]` のためinconclusiveで、2024は開いていません。GR-001は2着と3着を統合し、4着から上位半数へcoarse教師を加えましたが、2022 Log Loss差 `-.01539 [-.02068,-.01023]`、Brier差 `-.00201 [-.00349,-.00058]` でrejectです。現bestはBinary PV-01 254特徴、保守的LambdaRankはlean 253特徴・従来top-three教師のままです。
+S0/S1は完了しました。統合判断は[S-rank no-odds model research conclusions](docs/experiments/s_rank_model_research_conclusions_20260831.md)、living queueは[no-odds予測モデル研究の優先順位](docs/model_research_priorities.md)です。
 
-現在のliving work queueは[no-odds予測モデル研究の優先順位](docs/model_research_priorities.md)です。S0/S1を一つのGoalとし、DOC-SYNC、EVAL-ROLL、LIVE-DATA、完了済みPV-06、OPP-RECENT、SEC-3F、HPO-01、ENS-01を閉じます。新規model仮説はEVAL-ROLLを先に固定してからrolling foldsでscreenし、LIVE-DATAはsource gateの下で並行開始します。
+- Binaryのdevelopment incumbentはPV-01 254特徴のままです。
+- 2024の保守的LambdaRank referenceはlean 253特徴のままです。pre-2024 rollingではlean+SEC-3F 254特徴を採択しましたが、2024 milestoneは未実施です。
+- OPP-RECENTは未採用、HPO parameterは変更なし、固定50:50 ensembleはrejectです。
+- 新馬戦はcold-startで難しいものの、fitからの除外は通常レースにも効かずrejectしました。
+- LIVE-DATAは公式JV-Link source gateと保存基盤まで完了し、実収集はprivate Windows host・契約/key・transport待ちです。
+
+次の独立modeling taskは`PACE-01`です。通過順位からhorse-levelの位置取り・脚質履歴を少数列で固定し、直線1000 m等の1区間raceを明示的に扱ってrolling評価します。`PACE-02`のfield pace pressureはPACE-01が支持された場合だけ実施します。2024は重要候補のmilestoneに限定し、2025は反復選択に使用しません。

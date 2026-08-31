@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "program_id": "s_rank_model_research_20260831",
+  "status": "complete",
+  "selection_years": [2020, 2021, 2022, 2023],
+  "rows_used_2024_for_s_rank_selection": 0,
+  "rows_used_2025_for_s_rank_selection": 0,
+  "items": {
+    "DOC-SYNC": {"status": "complete"},
+    "EVAL-ROLL": {"status": "complete", "summary": "experiments/evaluation_rolling_20260831/summary.json"},
+    "LIVE-DATA": {"status": "groundwork_complete_activation_blocked", "reason": "requires private supported Windows JV-Link host, contract, key, and transport"},
+    "PV-06": {"status": "complete", "decision": "inconclusive", "summary": "experiments/race_content_20260831/pv_006_summary.json"},
+    "OPP-RECENT": {"status": "complete", "binary": "inconclusive", "lambdarank": "reject", "summary": "experiments/opp_recent_20260831/summary.json"},
+    "SEC-3F": {"status": "complete", "binary": "inconclusive", "lambdarank": "accept", "summary": "experiments/sec_3f_20260831/summary.json"},
+    "HPO-01": {"status": "complete", "binary": "no_change", "lambdarank": "reject", "summary": "experiments/hpo_20260831/summary.json"},
+    "ENS-01": {"status": "complete", "decision": "reject", "confirmation_opened": false, "summary": "experiments/ensemble_20260831/summary.json"}
+  },
+  "additional_user_hypothesis": {
+    "id": "SHIMBA-FILTER-001",
+    "status": "complete",
+    "decision": "reject",
+    "summary": "experiments/shimba_filter_20260831/summary.json"
+  },
+  "current_binary": "pv_001_candidate_signed_time_gap_254_features",
+  "current_2024_conservative_lambdarank": "abl_006_drop_field_relative_253_features",
+  "accepted_rolling_lambdarank_candidate": "lean_plus_sec_3f_254_features",
+  "lightgbm_parameters_changed": false,
+  "ensemble_adopted": false,
+  "next_modeling_task": "PACE-01"
+}

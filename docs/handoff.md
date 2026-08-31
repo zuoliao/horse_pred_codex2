@@ -7,8 +7,9 @@ Read `README.md`, `AGENTS.md`, this file, and relevant `docs/` before changing m
 ## Current state
 
 The corrected LightGBM baseline validation, standalone rating-module R0–R6,
-time/margin stages PV-00 through PV-06, and graded-label experiment GR-001 are
-complete. This includes data/evaluation health, 2024 uncertainty, semantic
+time/margin stages PV-00 through PV-06, graded-label experiment GR-001, and the
+S0/S1 rolling program are complete. This includes data/evaluation health, 2024
+uncertainty, semantic
 ablation, diagnostics, training-period rating selection, frozen PIT rating
 generation, the accepted PV-01 time-history feature, margin-aware actual and
 calibration studies, two one-column integrations, raw margin-token clock
@@ -20,6 +21,13 @@ refinement, and one independent LambdaRank-label test.
 - Baseline Binary and LambdaRank both stably beat Uniform/History-rate. Their family difference remains unresolved.
 - Current best Binary config: `pv_001_candidate_signed_time_gap`, 254 features. NDCG@3 .4976, Top-1 .2965, Log Loss 2.0787, Brier .82767.
 - Conservative LambdaRank config remains `abl_006_drop_field_relative`, 253 features. The 254-feature PV-01 Ranker improved every point metric but its NDCG/Log Loss intervals crossed zero, so it is an inconclusive prospective candidate rather than an accepted replacement.
+- EVAL-ROLL now provides four expanding 2020--2023 folds. Current rolling macro is Binary NDCG .47045 / LL 2.14231 and lean Rank NDCG .46746 / LL 2.15388. These are screening years with prior exposure, not untouched final holdouts.
+- OPP-RECENT was not adopted: Binary was inconclusive; Rank Log Loss worsened by .00393 `[-.00590,-.00195]`.
+- SEC-3F race-relative last-3F history passed the Rank rolling path: NDCG +.00256 `[+.00045,+.00465]`, with Brier improved in all four years. Binary was inconclusive. Lean+SEC-3F is the accepted pre-2024 rolling Rank candidate; no 2024 milestone was opened.
+- HPO-01 retained both parameter sets. Binary had no eligible profile; Rank `feature_fraction=.75` failed its single 2023 confirmation with wholly adverse Log Loss/Brier intervals.
+- Fixed 50:50 ENS-01 was rejected because Binary-relative Log Loss improvement was .00157, below the .002 minimum. No weight search occurred and 2023 confirmation stayed unopened.
+- SHIMBA-FILTER-001 rejected removing new-horse races from Binary fitting: all-race improvement was LL `-.00097` and NDCG `-.00225`; keep new-horse races in training and evaluation.
+- LIVE-DATA official-source archive groundwork is complete. Actual JV-Link collection is not active and is blocked on a private supported Windows host, user contract/key, and transport schedule.
 - Binary versus LambdaRank on the 254-feature config remains unresolved: Binary ranking is higher and LambdaRank Log Loss is lower by .00084, but all paired family intervals cross zero.
 - Surface-conditioned Elo adds a supported LambdaRank ranking signal relative to the corrected 268-feature baseline, but adding the same 3-column family to the lean 253-feature config was rejected for both families in IMP-004.
 - IMP-005 added one 90-day decayed global-Elo expected-vs-actual race-value. Binary was inconclusive with all point metrics worse; LambdaRank was rejected. The feature was highly redundant with 90-day mean finish and is not adopted.
@@ -60,9 +68,13 @@ Known selection limits:
 - PV-02 through PV-05 protocols/results: `docs/experiments/pv_002_margin_aware_rating_20260831.md`, `docs/experiments/pv_003_margin_rating_temporal_calibration_20260831.md`, `docs/experiments/pv_004_margin_rating_integration_20260831.md`, `docs/experiments/pv_005_margin_rating_delta_20260831.md`
 - PV-06 protocol/result: `docs/experiments/pv_006_margin_token_refinement_20260831.md`
 - GR-001 protocol/result: `docs/experiments/gr_001_graded_lambdarank_20260831.md`
+- S-rank integrated result: `docs/experiments/s_rank_model_research_conclusions_20260831.md`
+- Rolling/feature/HPO/ensemble/new-horse details: `docs/experiments/eval_roll_001_rolling_origin_20260831.md`, `docs/experiments/opp_recent_001_20260831.md`, `docs/experiments/sec_3f_001_20260831.md`, `docs/experiments/hpo_01_lightgbm_rolling_20260831.md`, `docs/experiments/ens_01_fixed_5050_20260831.md`, `docs/experiments/shimba_filter_001_20260831.md`
+- LIVE-DATA source/activation state: `docs/live_data_prospective_snapshot.md`
 - Tracked machine source of truth: `experiments/baseline_validation_20260830/`
 - Tracked PV summaries: `experiments/race_content_20260831/summary.json` and `pv_002_summary.json` through `pv_006_summary.json`
 - Tracked GR-001 summary: `experiments/graded_rank_20260831/summary.json`
+- Tracked S-rank aggregate: `experiments/s_rank_model_research_20260831/summary.json`
 
 Local complete artifacts are under `artifacts/` and intentionally ignored. Rating artifacts are `artifacts/rating_module_r0_r5_20260830/`, `artifacts/r6_*`. PV-01 artifacts are `artifacts/pv_001_*`, with paired comparison at `artifacts/pv_001_comparison/comparison.json`; its augmented cache is `data/model_frame_race_content_time_20260831.pkl` (269 total cache features). PV-06 uses `artifacts/pv_006_margin_token_audit_20260831_clean/` and `artifacts/pv_006_margin_token_refinement_20260831/`; GR-001 uses `artifacts/gr_001_graded_lambdarank_20260831/`. Existing corrected/surface/race-value/rating caches remain local and ignored.
 
@@ -110,18 +122,21 @@ These are nominal intervals across five hypotheses and two model families. They 
 - Candidate versus control: LL −.015391 `[-.020677,−.010227]`, Brier −.002007 `[-.003486,−.000580]`, NDCG −.003986 `[-.008313,+.000301]`, Top-1 −.003778 `[-.010414,+.002901]`. Both acceptance paths failed; reject.
 - Descriptively, Log Loss worsened in every field-size band. Small and 17+ fields had positive NDCG points, but these small, unqualified slices do not justify retuning. Retain the original top-three training labels.
 
-## Active S0/S1 goal
+## Next task after completed S0/S1 goal
 
-`docs/model_research_priorities.md` is the living source of truth. The active
-goal is to complete all S-ranked work: DOC-SYNC, EVAL-ROLL, LIVE-DATA,
-completed PV-06 evidence integration, OPP-RECENT, SEC-3F, HPO-01, and ENS-01.
+`docs/model_research_priorities.md` remains the living source of truth; the
+completed S-rank decision is in
+`docs/experiments/s_rank_model_research_conclusions_20260831.md`.
 
-DOC-SYNC precedes experiments. EVAL-ROLL is then frozen before new hypotheses.
-Run OPP-RECENT, SEC-3F, HPO-01, and ENS-01 as separate rolling experiments in
-that order. LIVE-DATA source/schema/collector work proceeds in parallel because
-timestamped snapshots cannot be reconstructed later. Do not select using 2024
-or 2025, retune PV-06, rescue GR-001 from descriptive slices, or mix feature,
-parameter, and ensemble hypotheses.
+The next independent modeling task is PACE-01. Freeze a small horse-level
+passing-position/style history representation, explicitly handle one-section
+straight 1000 m races, and evaluate it on EVAL-ROLL without SEC-3F interaction
+or field-relative proliferation. Only a supported PACE-01 may lead to PACE-02.
+Continue to keep 2024 milestone-only and 2025 outside iterative selection.
+
+Separately, LIVE-DATA may move from groundwork to actual collection only when
+the private supported Windows JV-Link host, contract/key, and transport are
+available. Do not substitute JRA website scraping.
 
 ## Useful commands
 
@@ -199,4 +214,4 @@ uv run horse-pred run-mvp \
 - PV-06 run commit `ea725d94821886b06dc717dad5adf5e50cb6a3cc`, dirty=false; mapping hash `4998d728af91250c3ae5c7d43c3904af4df6a8e02f140d73664756ebbf8fc4db`.
 - GR-001 run commit `9d3eeabe49c3755d6b15d7bd5075e1af0a6306d4`, dirty=false; feature-column hash `fd8735cf6f8472a5c7322e3622c83fde1ff7720b022b75637745c96a1bc1062f`.
 - PV-04 cache SHA-256 `525ccf39ae654d78e72d2909bcc4ec184165f86d91fa7828466793887b1e7b96`; PV-05 delta cache SHA-256 `e9c6c0ccd5c9b5aeb20c4dfc1f95ea92e121937dba000975c1535d6f04c1ccfd`.
-- Final verification after PV-06/GR-001 documentation: 144 tests passed, Ruff passed, compileall passed.
+- Final verification after S-rank synthesis and SHIMBA-FILTER-001: 196 tests passed, Ruff passed, compileall passed.
