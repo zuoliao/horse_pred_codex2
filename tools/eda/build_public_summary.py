@@ -377,8 +377,9 @@ def main() -> None:
             "periods": {"warmup": "2013", "discovery": "2014-2019", "replication": "2020-2021", "confirmation": "2022"},
             "top_hypotheses": [row["hypothesis_id"] for row in HYPOTHESES if row["priority"] == "S"],
             "production_model_changed": False,
+            "status": "complete_awaiting_human_selection",
             "local_artifact": "artifacts/eda_20260901 (gitignored)",
-            "review_status": "three independent reviews completed; major findings corrected and re-reviewed",
+            "review_status": "PASS: PIT/leakage, statistics/validation, and domain/semantics",
         },
     )
 

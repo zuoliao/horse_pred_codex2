@@ -9,7 +9,8 @@
   },
   "phase": "Phase 5A: systematic exploratory data analysis and problem reformulation",
   "production_model_changed": false,
-  "review_status": "three independent reviews completed; major findings corrected and re-reviewed",
+  "review_status": "PASS: PIT/leakage, statistics/validation, and domain/semantics",
+  "status": "complete_awaiting_human_selection",
   "top_hypotheses": [
     "EDA-S01-RACE-VALUE-2AXIS",
     "EDA-S02-RACEWISE-CHOICE",
