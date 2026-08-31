@@ -111,3 +111,18 @@ choice may be made from its outcome, and 2025 remains closed.
 
 Tracked rolling evidence is `experiments/speed_01_20260901/summary.json`; full
 local artifacts are under `artifacts/speed_01_rolling_20260901/`.
+
+## Preregistered 2024 milestone
+
+Before opening 2024, freeze the one-shot contract in
+`configs/evaluation/speed_01_2024_milestone.json`. Each family compares its
+unchanged 255-column PACE-01 incumbent with the corresponding 256-column
+SPEED-01 candidate. Fit remains 2014--2021, early stopping 2022, and temperature
+calibration 2023.
+
+The milestone is supported when the paired Log Loss CI is wholly positive and
+Brier/NDCG/Top-1 point guardrails remain above `-.001/-.002/-.005`.
+Positive Log Loss with passing guardrails but an interval crossing zero is only
+directionally consistent. A wholly negative Log Loss interval or failed
+guardrail is contradicted; other outcomes are inconclusive. This classification
+does not authorize any refit or mapping change, and 2025 remains closed.
