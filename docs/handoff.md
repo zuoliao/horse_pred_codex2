@@ -2,28 +2,26 @@
 
 ## Operating Rule
 
-`Phase 5A: systematic exploratory data analysis and problem reformulation` is complete. Do not automatically resume PV-06, margin-token refinement, rating transformations, COND-01, other local feature work, data collection, betting optimization, or UI work. These tracks are paused, not rejected. Wait for the human user to choose one of the three experiments in `docs/eda/15_next_research_roadmap.md`.
+The active phase is `Phase 5B: EDA-guided representation / objective research`. Phase 5A is complete, and the human user selected S1 Two-axis past-race value. Preregister and execute only S1 as a four-arm rolling experiment, then stop for human review. Do not run S2 or S3 automatically.
 
-No follow-up may use new 2024 evidence for hypothesis/parameter selection or use 2025. Keep 2023 in its prior calibration role. Final odds remain a physically isolated market-oracle diagnostic. Never commit raw data, cache, models, runner predictions, or recoverable runner-level views.
+S1 may not use 2024/2025 outcomes or any market information for definition, parameter selection, or acceptance. Keep 2023 in its prior calibration role and outside S1 evaluation. Never commit raw data, cache, models, runner predictions, or recoverable runner-level views.
 
 ## Current Goal
 
-Wait for human selection among the three Phase 5A priorities. When one is selected, preregister exactly one interpretable experiment and use the frozen common PIT contract and rolling-origin evaluation. Do not infer a selection from the roadmap order alone.
+Complete S1 definition audit, preregistration, PIT-safe two-axis feature implementation, leakage tests, and C0/C1/C2/C3 rolling comparison. Classify the performance axis, field-quality axis, and joint representation separately, update S2/S3 readiness, and stop.
 
 ## Current State
 
-- Phase 5A EDA, all workstreams A–I, and PIT/statistics/domain cross-review are complete. All three final review verdicts are PASS.
+- Phase 5A EDA and all three reviews are complete. Phase 5B S1 is current.
 - Frozen controls remain Binary `pv_001_candidate_signed_time_gap` with 254 features and conservative LambdaRank `abl_006_drop_field_relative` with 253 features.
-- PV-00 through PV-05 are complete. PV-06's 2022 token gate was inconclusive; continuation and mapping refinement remain paused.
+- PV-00 through PV-05 are complete. PV-06's 2022 token gate was inconclusive and is `deferred_by_eda`.
 - Margin-aware rating improved standalone calibrated predictions, but PV-04/PV-05/R6 did not establish incremental LightGBM value.
-- Later PACE/SPEED results remain archived reproducible evidence and do not authorize local feature search.
+- Margin-rating arithmetic, old recent-opponent runner-relative work, and broad COND-01 are `superseded_by_eda`. Old field-relative restoration and new-horse exclusion are rejected. A1/A2/A3 remain deferred future candidates.
 - Phase 5A used 2013 only for warm-up/quality, 2014–2019 for discovery, 2020–2021 for replication, and 2022 for confirmation. It newly accessed neither 2023/2024 targets nor 2025.
 - New-horse race exclusion is not supported. Race-class debut and `0_observed_history` are distinct.
 - The EDA does not establish production metric, ROI, or profit improvement.
-- The only prioritized next hypotheses are:
-  1. `EDA-S01-RACE-VALUE-2AXIS`
-  2. `EDA-S02-RACEWISE-CHOICE`
-  3. `EDA-S03-PERFORMANCE-TARGET`
+- Priority order is S1 current, S2 queued, S3 queued. They must not be combined.
+- S1 controls: Binary PV-01 254 features; LambdaRank lean 253 features. LambdaRank PV-01 254 is point-improved but interval-inconclusive and prospective-only.
 
 ## Implemented Artifacts
 
@@ -57,15 +55,16 @@ Independent review checked common/workstream hashes and concluded PASS for PIT/l
 - Historical `published_at` is unavailable, so this is retrospective PIT-C rather than snapshot-proven PIT-A.
 - Local JRA history omits some external/overseas history and lacks bloodline, training, exact weight/handicap conditions, and reliable T-close snapshots.
 - 2022 is confirmation evidence already exposed to research, not an untouched final holdout.
-- EDA associations do not prove incremental value after retraining the current model.
+- EDA associations do not prove S1 incremental value after retraining the current model.
 - Final market gaps cannot identify the causal contribution of missing data versus model, target, calibration, or selection effects.
 
 ## Next Tasks
 
-1. Wait for human selection of S1, S2, or S3; do not execute any of them automatically.
-2. After selection, preregister one experiment, one transform/target/objective, its fixed rolling folds, guardrails, and multiplicity count.
-3. Reuse the Phase 5A PIT contract and frozen Binary/LambdaRank controls.
-4. Record negative or inconclusive results machine-readably and return for review before another hypothesis.
+1. Reconcile the post-EDA queue and commit the Phase 5B state.
+2. Audit/fix one performance residual and one race-constant pre-race field-quality definition using discovery data only; preregister fixed folds and gates.
+3. Implement the two 90-day historical state columns and the ten required PIT/invariance tests.
+4. Run C0/C1/C2/C3 for both frozen families through 2022 only; save aggregate evidence and ignored full artifacts.
+5. Update S2/S3 priority/readiness from the S1 result, stop, and request human selection.
 
 ## Useful Commands
 
@@ -83,4 +82,4 @@ git status --short --branch
 
 ## Handoff Notes
 
-The main new conclusion is not that one engineered column won. Stable information exists in decayed horse history, connections, and same-condition persistence, while the larger unresolved gaps concern how a past race is represented and what the objective teaches. Preserve the separation between observation, interpretation, and hypothesis. The roadmap order is a recommendation for human review, not permission to start S1 automatically.
+S1 asks whether past-race value should be split into horse performance and race-constant field quality. The latter must be identical for every runner in a race and use only frozen pre-race strength; a leave-one-out opponent mean is not field quality. Do not add interactions, alternate windows, uncertainty, or condition-specific variants. S2/S3 remain unauthorized until S1 is reported.

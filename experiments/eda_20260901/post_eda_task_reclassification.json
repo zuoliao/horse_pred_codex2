@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "decision_date": "2026-09-01",
+  "phase": "Phase 5B: EDA-guided representation / objective research",
+  "source_registry": "experiments/eda_20260901/hypothesis_registry.csv",
+  "selection_firewall": {
+    "max_evaluation_date": "2022-12-31",
+    "outcomes_2024_used": false,
+    "outcomes_2025_used": false,
+    "market_used": false
+  },
+  "tasks": [
+    {"id": "EDA-S01-RACE-VALUE-2AXIS", "lifecycle": "still_valid_future_candidate", "queue": "priority_S1_current", "next_action": "run_preregistered_four_arm_experiment"},
+    {"id": "EDA-S02-RACEWISE-CHOICE", "lifecycle": "still_valid_future_candidate", "queue": "priority_S2_queued", "next_action": "wait_for_S1_and_human_selection"},
+    {"id": "EDA-S03-PERFORMANCE-TARGET", "lifecycle": "still_valid_future_candidate", "queue": "priority_S3_queued", "next_action": "wait_for_S1_and_human_selection"},
+    {"id": "EDA-A01-TRANSITION-RELIABILITY", "lifecycle": "still_valid_future_candidate", "queue": "priority_A1_deferred", "next_action": "do_not_run_before_S1_to_S3_review"},
+    {"id": "EDA-A02-CONNECTION-COMPRESSION", "lifecycle": "still_valid_future_candidate", "queue": "priority_A2_deferred", "next_action": "do_not_run_before_S1_to_S3_review"},
+    {"id": "EDA-A03-LAST3F-RELATIVE", "lifecycle": "still_valid_future_candidate", "queue": "priority_A3_deferred", "next_action": "audit_SEC_3F_redundancy_before_any_experiment"},
+    {"id": "PV-06-MARGIN-SECONDS", "lifecycle": "inconclusive", "queue": "deferred_by_eda", "next_action": "require_new_authoritative_semantics_evidence"},
+    {"id": "MARGIN-RATING-ARITHMETIC", "lifecycle": "superseded_by_eda", "queue": "closed", "next_action": "preserve_PV_02_to_PV_05_negative_and_inconclusive_artifacts"},
+    {"id": "OPP-RECENT-RUNNER-RELATIVE", "lifecycle": "superseded_by_eda", "queue": "closed", "next_action": "replace_with_race_constant_field_quality_in_S1"},
+    {"id": "OLD-FIELD-RELATIVE-15", "lifecycle": "rejected", "queue": "closed", "next_action": "do_not_restore"},
+    {"id": "TOP3-MULTITASK-DIRECT", "lifecycle": "deferred_by_eda", "queue": "closed_pending_S3_evidence", "next_action": "do_not_run"},
+    {"id": "NEW-HORSE-TRAINING-EXCLUSION", "lifecycle": "rejected", "queue": "closed", "next_action": "retain_new_races_in_training"},
+    {"id": "COND-01-BROAD-INTERACTIONS", "lifecycle": "superseded_by_eda", "queue": "closed", "next_action": "use_A1_narrow_reliability_hypothesis_if_later_selected"},
+    {"id": "SEC-3F", "lifecycle": "completed", "queue": "historical_evidence", "next_action": "preserve_rank_support_and_binary_inconclusive_result"},
+    {"id": "HPO-01", "lifecycle": "completed", "queue": "closed_no_change", "next_action": "do_not_mix_parameter_search_with_S1"},
+    {"id": "ENS-01", "lifecycle": "rejected", "queue": "closed", "next_action": "require_new_component_evidence_before_reopening"}
+  ]
+}

@@ -2,10 +2,10 @@
 
 JRA中央競馬を主対象とする、競馬予測・馬券購入判断支援システムの研究開発リポジトリです。
 
-> **現在の段階:** `Phase 5A: systematic exploratory data analysis and problem reformulation`は完了。production modelを変更せず、最優先3仮説を提示して人間の選択を待っている。局所的な特徴量実験は棄却ではなくpauseを維持する。凍結比較基準はBinaryがPV-01を含む254特徴、LambdaRankがfield-relativeを除いた253特徴である。
+> **現在の段階:** `Phase 5B: EDA-guided representation / objective research`。Phase 5Aは完了し、人間が選択した最優先仮説S1 Two-axis past-race valueだけを実行する。正式controlはBinaryがPV-01を含む254特徴、LambdaRankがfield-relativeを除いたlean 253特徴である。
 > **最終更新:** 2026-09-01 (JST)
 
-Phase 5Aは2014～2019をdiscovery、2020～2021をreplication、2022をconfirmationに限定し、2023を既存calibration用途のまま、2024を新たに参照せず、2025を使用せず完了しました。PV-00～PV-05は完了済みです。margin-aware ratingはstandaloneで改善しましたがLightGBM追加特徴には採用していません。PV-06、PACE、SPEED等の既存結果は再現証拠として保存し、追加調整・production採用・旧queueへの自動復帰はしません。
+Phase 5Bの順序はS1 Two-axis past-race value、S2 Supervised race-wise probability、S3 Condition-adjusted performance targetです。一度に混ぜず、S1を4-arm rolling-originで評価して停止します。S2/S3はS1後の人間判断までqueuedです。2024/2025、final odds、市場情報はS1の設計・parameter選択・採否に使いません。EDA前のfeature queueは単なるpauseではなく、完了・棄却・EDAによる延期・置換へ再分類済みです。
 
 ## 1. プロジェクトの目的
 
@@ -591,8 +591,9 @@ Phase 1: データソース・既存手法の調査           完了
 Phase 2: 既存rawのcoverage/PIT gateと仕様確定    完了
 Phase 3: point-in-time特徴量基盤                 実装・検証済み
 Phase 4: LightGBM Binary / LambdaRank baseline   完了
-Phase 5: 特徴量・rating・calibration改善         pause（Phase 5A review待ち）
-Phase 5A: systematic EDA / problem reformulation 完了（人間選択待ち）
+Phase 5: 特徴量・rating・calibration改善         Phase 5Bへ再編
+Phase 5A: systematic EDA / problem reformulation 完了
+Phase 5B: EDA-guided representation/objective    S1実行中、S2/S3 queued
 Phase 6: 確率的ランキングおよび高度なモデル
 Phase 7: 購入戦略・リスク管理の改善
 Phase 8: 自動予測処理・Web UI
@@ -632,7 +633,9 @@ Phase 8: 自動予測処理・Web UI
 | PACE-03 | 完了・未採用 | 最終通過位置履歴を1列追加。Binary inconclusive、Rank NDCG `-.00276 [-.00473,-.00084]`でreject |
 | PACE-04 | 完了・未採用 | 遷移数補正した前進・後退履歴を1列追加。Binary/Rankともinconclusive。PACE派生探索を終了 |
 | SPEED-01 | rolling両family採択・2024 Binary支持 | 過去日だけの条件別期待勝ち時計と各馬時計の差を90日履歴1列化。rolling LLはBinary `+.00769 [+.00457,+.01078]`、Rank `+.00823 [+.00523,+.01128]`。2024はBinary支持、Rank方向一致 |
-| Phase 5A EDA | 完了・review待ち | pre-2023の全workstreamとPIT/statistics/domain reviewを完了。production変更なし。最優先はrace-value二軸、race-wise choice、condition-adjusted performance targetの3件 |
+| Phase 5A EDA | 完了 | pre-2023の全workstreamとPIT/statistics/domain reviewを完了。production変更なし |
+| Phase 5B | S1実行中 | Two-axis past-race valueを最初に4-arm検証。S2 race-wise probability、S3 performance targetは結果確認までqueued |
+| Phase 5B controls | 固定 | BinaryはPV-01 254列、LambdaRankはlean 253列。LambdaRank PV-01 254列版は全point改善だがinterval inconclusiveのprospective candidateに限定 |
 | LIVE-DATA | 基盤完了・ユーザー保留 | 公式JV-Link限定のschema/append-only archiveを実装。公式transportがWindowsのみで現環境がMacのため、実収集は後日に延期 |
 | LambdaRank教師 | 開発維持 | 従来の`1着=3, 2着=2, 3着=1, その他=0`を維持。2・3着を統合して上位半数へ教師を広げたGR-001は2022でLog Loss/Brierを有意に悪化させreject |
 | probabilistic ranking | 調査推奨・延期 | Plackett–Luceを最初の高度baseline候補とするが、順位別biasを検証してから採否判断 |
@@ -641,10 +644,12 @@ Phase 8: 自動予測処理・Web UI
 
 ## 15. 次の作業
 
-Phase 5Aは完了し、次のproduction実験をまだ開始せず人間の選択を待っています。最優先候補は次の3件だけです。
+Phase 5Aは完了し、人間がS1を選択しました。Phase 5Bでは次の順序を維持します。
 
 1. `EDA-S01-RACE-VALUE-2AXIS`: 過去走をcondition-adjusted performanceとrace-constant opponent field qualityの二軸で表す。
 2. `EDA-S02-RACEWISE-CHOICE`: 同一PIT feature/splitで透明なconditional logit / top-choice Plackett–Luce baselineを比較する。
 3. `EDA-S03-PERFORMANCE-TARGET`: fold内で作るcondition residualをHuber回帰し、race内順位・勝率へ変換する。
 
-EDAはこの3件の優劣やmetric改善を実証していません。`COND-01`、PV-06 refinement、rating変形、旧field-relative復活、Top3 multitask、追加データ収集を含む従来queueはpauseのままです。次の一件が人間に選択された後だけ、`one experiment = one hypothesis`でpreregisterしてrolling-origin評価へ進みます。2024/2025、final market、ROIは選択に使いません。
+S1はperformance residualだけ、race-constant field qualityだけ、両方、controlの4 armをBinary/LambdaRankで比較します。S1終了後はS2/S3を自動実行せず停止します。
+
+旧queueの扱いは次のとおりです。PV-06秒mappingは`deferred_by_eda`、margin-rating追加算術branchと旧recent opponent runner-relative案および旧COND-01は`superseded_by_eda`、旧field-relative復活と新馬fit除外は`rejected`です。A1 transition reliability、A2 connection compression、A3 last3F relativeは`still_valid_future_candidate`ですがS1～S3より後へ延期します。negative/inconclusive artifactは改変しません。

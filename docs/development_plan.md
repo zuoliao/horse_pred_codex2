@@ -2,7 +2,7 @@
 
 **作成日:** 2026-08-30 (JST)  
 **更新日:** 2026-09-01 (JST)
-**前提:** 調査、既存raw採用、GOV-01～QA-01、corrected LightGBM baseline、2024健全性・不確実性・ablation・限定改善、R0～R6、PV-00～PV-06、GR-001、S0/S1まで完了。
+**前提:** Phase 5A EDAまで完了。Phase 5BではEDA-guided仮説を一件ずつ検証し、S1 Two-axis past-race valueを現在taskとする。
 **対象:** JRA平地競走、no-odds予測を先行し、購入判断を別層にする。
 
 ## 進行原則
@@ -56,12 +56,18 @@
 | 36 | PACE-03 | final recorded position history | PACE-01 | 最終通過位置percentileの90日履歴1列をrolling評価 |
 | 37 | PACE-04 | normalized position-gain history | PACE-01 | 序盤から最終位置への変化を遷移数補正した90日履歴1列でrolling評価 |
 | 38 | SPEED-01 | condition-adjusted speed figure | PACE-01～04 | 期待時計を過去情報だけで推定し、条件補正済み残差の履歴1列をrolling評価 |
-| 39 | COND-01 | condition-transition suitability | SPEED-01 | **pause（rejectではない）**。Phase 5A完了後も自動再開せず、人間が再選択した場合のみ実行 |
+| 39 | COND-01 | condition-transition suitability | SPEED-01 | `superseded_by_eda`。広い旧案を閉じ、狭いA1 transition reliabilityへ再定義 |
 | 40 | EDA-5A | systematic EDA and problem reformulation | 既存実験の安全なcheckpoint | **完了**。2014～2022の時間再現、共通view、全workstream、三者PASS、仮説registry、最大3候補のroadmapを1 commandで再現。production変更なし |
+| 41 | S1-RACE-VALUE-2AXIS | horse performanceとrace-constant field qualityの二軸履歴 | EDA-5A | **current**。定義監査後、90日減衰2列をC0/C1/C2/C3でBinary/Rank rolling比較し停止 |
+| 42 | S2-RACEWISE-CHOICE | supervised race-wise probability objective | S1 decision | `priority_S2 / queued`。S1後の人間選択まで実行しない |
+| 43 | S3-PERFORMANCE-TARGET | condition-adjusted continuous performance target | S1 decision | `priority_S3 / queued`。S1後の人間選択まで実行しない |
+| 44 | A1-TRANSITION-RELIABILITY | condition switch時のstate reliability | S1～S3 review | `still_valid_future_candidate / deferred_by_eda` |
+| 45 | A2-CONNECTION-COMPRESSION | 130 connection列の階層的縮約 | S1～S3 review | `still_valid_future_candidate / deferred_by_eda` |
+| 46 | A3-LAST3F-RELATIVE | race-relative last3F履歴 | SEC-3F重複監査、S1～S3 review | `still_valid_future_candidate / deferred_by_eda` |
 
 ## 2026-08-31実行状態
 
-> 2026-09-01 phase decision: Phase 5Aは完了した。下表の過去結果は証拠として保持するが、局所的特徴量探索は人間の次仮説選択までpauseする。比較基準はBinary PV-01 254特徴、LambdaRank lean 253特徴に固定し、2024/2025を新しいEDA判断に使っていない。
+> 2026-09-01 phase decision: Phase 5Aは完了し、Phase 5BのS1を人間が選択した。比較基準はBinary PV-01 254特徴、LambdaRank lean 253特徴。LambdaRank PV-01 254特徴版はpoint改善・interval inconclusiveのprospective候補に限定する。2024/2025とmarketはS1判断に使わない。
 
 | 範囲 | 状態 | 証拠 |
 |---|---|---|
@@ -86,8 +92,29 @@
 | PACE-03 | 完了・未採用 | 最終位置履歴1列。Binary inconclusive、LambdaRank reject |
 | PACE-04 | 完了・未採用 | 遷移数補正position gain履歴1列。両family inconclusive |
 | SPEED-01 | 完了・両family rolling採択 | prequential条件補正speed履歴1列。2024 Binary supported、Rank directionally consistent |
-| COND-01 | pause | EDA完了後も自動再開しない。人間が明示的に再選択するまで実行しない。棄却ではない |
-| EDA-5A | 完了・人間選択待ち | 全workstream、共通contract、再現CLI、三者review、registry、synthesis、roadmapを完了。次候補を3件に限定して停止 |
+| COND-01 | superseded_by_eda | broad interaction案を閉じ、A1 transition reliabilityへ狭く再定義 |
+| EDA-5A | completed | 全workstream、共通contract、再現CLI、三者review、registry、synthesis、roadmapを完了 |
+| S1-RACE-VALUE-2AXIS | current / priority_S1 | definition auditとpreregistrationを先行し、4-arm rolling comparisonを実行 |
+| S2-RACEWISE-CHOICE | queued / priority_S2 | S1 decision後にpriorityを再確認。今回実行しない |
+| S3-PERFORMANCE-TARGET | queued / priority_S3 | S1 decision後にpriorityを再確認。今回実行しない |
+| A1 / A2 / A3 | deferred_by_eda | valid future candidates。S1～S3より後 |
+
+## EDA後のlegacy queue再分類
+
+| Task | Lifecycle status | Result / reason | Next action |
+|---|---|---|---|
+| PV-06 margin seconds mapping | `inconclusive` + `deferred_by_eda` | 2022全point改善だがprimary LL CI跨ぎ。秒scale未同定 | official semantics新証拠まで再開しない |
+| margin-aware rating arithmetic | `superseded_by_eda` / branch closed | PV-02～05完了、追加算術はincremental価値未確立 | artifactを保持し、二軸S1へ置換 |
+| OPP-RECENT旧runner-relative案 | `superseded_by_eda` | runner-relative opponent meanはrace qualityではなくself rank逆変換を含む | race-constant field qualityのS1へ置換 |
+| old field-relative 15列 | `rejected` | retrained dropで両family全point改善 | 復活しない |
+| Top3 multitask直行 | `deferred_by_eda` | 3着/4着に自然な断絶なし | S3 standalone evidence後だけ再検討 |
+| new-horse fit exclusion | `rejected` | SHIMBA-FILTER-001悪化、EDAも除外を支持せず | 学習母集団に維持 |
+| SEC-3F追加branch | `completed`、A3は`still_valid_future_candidate` | Rank rolling支持済み。EDA候補は定義重複の可能性 | S1～S3後に重複監査 |
+| transition interaction旧案 | `superseded_by_eda` | broad COND-01を解体 | A1 one-transition reliabilityとして将来検証 |
+| connection追加案 | `still_valid_future_candidate` / `deferred_by_eda` | signalは強いが130列が冗長 | A2 compressionとして将来検証 |
+| PACE-02 / PACE-03 / PACE-04 | `inconclusive` / `rejected` / `inconclusive`、completed | 保存済みnegative evidence | 再探索しない |
+| HPO-01 | `completed` | parameter変更なし | new representationと混ぜない |
+| ENS-01 | `rejected` | fixed 50:50 minimum未達 | new component evidenceまで再開しない |
 
 現在のwork queueは[model research priorities](model_research_priorities.md)、実験結果のsource of truthは`experiments/`、統合判断は`docs/experiments/`と`docs/handoff.md`である。完全なmodel・prediction・bootstrap artifactはGit対象外の`artifacts/`に置く。
 
