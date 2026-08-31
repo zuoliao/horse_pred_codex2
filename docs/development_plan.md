@@ -1,7 +1,7 @@
 # 開発タスクリスト
 
 **作成日:** 2026-08-30 (JST)  
-**更新日:** 2026-08-31 (JST)
+**更新日:** 2026-09-01 (JST)
 **前提:** 調査、既存raw採用、GOV-01～QA-01、corrected LightGBM baseline、2024健全性・不確実性・ablation・限定改善、R0～R6、PV-00～PV-06、GR-001、S0/S1まで完了。
 **対象:** JRA平地競走、no-odds予測を先行し、購入判断を別層にする。
 
@@ -56,9 +56,12 @@
 | 36 | PACE-03 | final recorded position history | PACE-01 | 最終通過位置percentileの90日履歴1列をrolling評価 |
 | 37 | PACE-04 | normalized position-gain history | PACE-01 | 序盤から最終位置への変化を遷移数補正した90日履歴1列でrolling評価 |
 | 38 | SPEED-01 | condition-adjusted speed figure | PACE-01～04 | 期待時計を過去情報だけで推定し、条件補正済み残差の履歴1列をrolling評価 |
-| 39 | COND-01 | condition-transition suitability | SPEED-01 | surface・距離・休養transitionと過去performanceを縮約付き一仮説でrolling評価 |
+| 39 | COND-01 | condition-transition suitability | SPEED-01 | **Phase 5A完了までpause（rejectではない）**。EDA後に人間が再選択した場合のみ実行 |
+| 40 | EDA-5A | systematic EDA and problem reformulation | 既存実験の安全なcheckpoint | 2014～2022の時間再現、共通view、全workstream、三者review、仮説registry、最大3候補のroadmapを1 commandで再現。production変更はしない |
 
 ## 2026-08-31実行状態
+
+> 2026-09-01 phase decision: 下表の完了済み結果は証拠として保持するが、局所的特徴量探索はすべてEDA完了までpauseする。Phase 5Aの比較基準はBinary PV-01 254特徴、LambdaRank lean 253特徴に固定し、2024/2025を新しいEDA判断に使わない。
 
 | 範囲 | 状態 | 証拠 |
 |---|---|---|
@@ -83,7 +86,8 @@
 | PACE-03 | 完了・未採用 | 最終位置履歴1列。Binary inconclusive、LambdaRank reject |
 | PACE-04 | 完了・未採用 | 遷移数補正position gain履歴1列。両family inconclusive |
 | SPEED-01 | 完了・両family rolling採択 | prequential条件補正speed履歴1列。2024 Binary supported、Rank directionally consistent |
-| COND-01 | 次task | 少数履歴で極端値を作らないcondition-transition適性を一仮説だけ固定 |
+| COND-01 | pause | EDA完了後の人間レビューまで実行しない。棄却ではない |
+| EDA-5A | 実行中 | `docs/eda/02_eda_protocol.md`を正とし、完了後は最大3仮説を提示して停止 |
 
 現在のwork queueは[model research priorities](model_research_priorities.md)、実験結果のsource of truthは`experiments/`、統合判断は`docs/experiments/`と`docs/handoff.md`である。完全なmodel・prediction・bootstrap artifactはGit対象外の`artifacts/`に置く。
 

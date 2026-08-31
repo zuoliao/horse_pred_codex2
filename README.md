@@ -2,8 +2,10 @@
 
 JRA中央競馬を主対象とする、競馬予測・馬券購入判断支援システムの研究開発リポジトリです。
 
-> **現在の段階:** 時計・着差路線のPV-01～PV-06とgraded LambdaRank GR-001を完了。PV-06のraw着差token補間は2022でinconclusive、GR-001のupper-half教師はreject。PV-01 Binary 254特徴と従来top-three LambdaRank教師を維持する。
-> **最終更新:** 2026-08-31 (JST)
+> **現在の段階:** `Phase 5A: systematic exploratory data analysis and problem reformulation`。局所的なproduction特徴量実験は棄却せず、EDA完了まで停止する。Phase 5Aの凍結比較基準はBinaryがPV-01を含む254特徴、LambdaRankがfield-relativeを除いた253特徴である。
+> **最終更新:** 2026-09-01 (JST)
+
+Phase 5Aでは2014～2019をdiscovery、2020～2021をreplication、2022をconfirmationに限定し、2023は既存calibration用途のまま、2024を新たに参照せず、2025を使用しません。PV-00～PV-05は完了済みです。margin-aware ratingはstandaloneで改善しましたがLightGBM追加特徴には採用していません。PV-06、PACE、SPEED等の既存結果は再現証拠として保存しますが、EDA中に追加調整・production採用・次実験へ進めません。
 
 ## 1. プロジェクトの目的
 
@@ -632,6 +634,8 @@ Phase 8: 自動予測処理・Web UI
 | Web技術 | 未決 | 後続フェーズで決定 |
 
 ## 15. 次の作業
+
+現在の唯一の作業はPhase 5Aの体系的EDAです。共通データ契約、2022-12-31の物理的cutoff、race/date単位の不確実性、時間再現、PIT・統計・競馬意味論の独立レビューを完了し、次候補を最大3件に絞って人間レビューを待ちます。以下の従来候補は履歴として残しますが、EDA完了までは実行しません。
 
 S0/S1は完了しました。統合判断は[S-rank no-odds model research conclusions](docs/experiments/s_rank_model_research_conclusions_20260831.md)、living queueは[no-odds予測モデル研究の優先順位](docs/model_research_priorities.md)です。
 

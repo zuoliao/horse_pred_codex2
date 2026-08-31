@@ -1,0 +1,19 @@
+{
+  "analysis_id": "eda_20260901",
+  "schema_version": 1,
+  "seed": 20260901,
+  "timezone": "Asia/Tokyo",
+  "max_target_date": "2022-12-31",
+  "periods": {
+    "warmup": ["2013-01-01", "2013-12-31"],
+    "discovery": ["2014-01-01", "2019-12-31"],
+    "replication": ["2020-01-01", "2021-12-31"],
+    "confirmation": ["2022-01-01", "2022-12-31"]
+  },
+  "forbidden_target_years": [2023, 2024, 2025],
+  "block_unit": "race_date",
+  "bootstrap_resamples": 1000,
+  "market_join": "explicit_oracle_only",
+  "commit_runner_level_outputs": false,
+  "workstreams": ["a", "b", "c", "d", "e", "f", "g", "h"]
+}
