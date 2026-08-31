@@ -1,7 +1,7 @@
 # PACE-04 transition-normalized position gain
 
 Date: 2026-08-31 JST  
-Status: preregistered; model outcomes unopened
+Status: complete; inconclusive for both families, not adopted
 
 ## Hypothesis
 
@@ -86,3 +86,30 @@ Loss CI, at least three improved years, and Brier/NDCG/Top-1 guardrails of
 Log Loss/Brier/Top-1 guardrails of `-.002/-.001/-.005`. A failed guardrail or
 wholly adverse primary interval is reject; otherwise inconclusive. Passing a
 path does not automatically open 2024.
+
+## Rolling result
+
+The frozen run used clean commit
+`517a685a88ccfa7b0c72be3cd3b4a6d0ee8d1d48`, no odds, and zero 2024/2025
+rows. Cache control preserved all 271 incumbent features exactly and added only
+the registered PACE-04 column.
+
+| Family | NDCG improvement | Top-1 improvement | Log Loss improvement | Brier improvement | Decision |
+|---|---:|---:|---:|---:|---|
+| Binary | +.00054 `[-.00164,+.00260]` | -.00051 `[-.00436,+.00338]` | +.00048 `[-.00219,+.00314]` | +.00009 `[-.00078,+.00095]` | inconclusive |
+| LambdaRank | -.00189 `[-.00389,+.00017]` | -.00367 `[-.00730,+.00011]` | -.00114 `[-.00324,+.00103]` | -.00047 `[-.00118,+.00024]` | inconclusive |
+
+Binary Log Loss and Brier improved in three of four years, but its Log Loss
+interval includes zero. Its guardrails pass, so the result is inconclusive.
+LambdaRank NDCG improved in only one year and is adverse at the point estimate,
+but the interval narrowly includes zero and its point guardrails remain within
+their frozen limits. It too is inconclusive rather than rejected.
+
+PACE-04 is not adopted or tuned. The PACE sequence is now closed: PACE-01 early
+position is accepted for both families; PACE-02 rival pressure and PACE-04
+position gain are inconclusive; PACE-03 final position is Binary inconclusive
+and LambdaRank rejected. PACE-01 remains the sole pace incumbent, and 2024 was
+not opened for any PACE experiment.
+
+Tracked evidence is `experiments/pace_04_20260831/summary.json`; full local
+artifacts are under `artifacts/pace_04_rolling_20260831/`.

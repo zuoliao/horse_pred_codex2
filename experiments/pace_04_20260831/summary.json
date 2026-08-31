@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "experiment_id": "pace_04_position_gain_rolling",
+  "run_commit": "517a685a88ccfa7b0c72be3cd3b4a6d0ee8d1d48",
+  "run_dirty": false,
+  "data_fingerprint": "270923ce73c4441e64173f242a8719de7d1e9b205508140463ca547ef7b1ca87",
+  "cache_sha256": "ddd1365a098c2b4b0b63dc742da352f05213f1b6ecf07f6a4f345d360f01775c",
+  "transformation_hash": "271a348b74fbf45fece5c8686583bfae4ea8753f15b235049899202cc2106934",
+  "scope": {
+    "evaluation_years": [2020, 2021, 2022, 2023],
+    "rows_used_2024": 0,
+    "rows_used_2025": 0,
+    "odds_used": false,
+    "candidate_representations_screened": 1
+  },
+  "cache_control": {
+    "row_count": 533853,
+    "baseline_feature_count": 271,
+    "candidate_feature_count": 272,
+    "old_feature_mismatch_count": 0,
+    "pre2025_feature_nonmissing": 440460,
+    "retrospective_2025_feature_nonmissing": 0
+  },
+  "binary": {
+    "improvement": {
+      "ndcg_at_3": {"point": 0.0005428853, "lower": -0.0016447510, "upper": 0.0026039714, "improved_years": 2},
+      "top_1_winner_mass": {"point": -0.0005142627, "lower": -0.0043600185, "upper": 0.0033802255, "improved_years": 2},
+      "race_log_loss": {"point": 0.0004787846, "lower": -0.0021850422, "upper": 0.0031403281, "improved_years": 3},
+      "race_brier": {"point": 0.0000901595, "lower": -0.0007848159, "upper": 0.0009458219, "improved_years": 3}
+    },
+    "decision": "inconclusive"
+  },
+  "lambdarank": {
+    "improvement": {
+      "ndcg_at_3": {"point": -0.0018931338, "lower": -0.0038937601, "upper": 0.0001682806, "improved_years": 1},
+      "top_1_winner_mass": {"point": -0.0036720177, "lower": -0.0072983160, "upper": 0.0001138531, "improved_years": 1},
+      "race_log_loss": {"point": -0.0011354540, "lower": -0.0032401816, "upper": 0.0010270573, "improved_years": 3},
+      "race_brier": {"point": -0.0004696551, "lower": -0.0011811794, "upper": 0.0002428122, "improved_years": 2}
+    },
+    "decision": "inconclusive"
+  },
+  "adopted": false,
+  "development_2024_opened": false,
+  "pace_route_complete": true,
+  "next_task": "SPEED-01"
+}
