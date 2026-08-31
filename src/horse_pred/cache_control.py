@@ -58,6 +58,9 @@ PACE_PRESSURE_COLUMNS: tuple[str, ...] = (
 PACE_FINAL_COLUMNS: tuple[str, ...] = (
     "pace_final__decay_90d__mean_final_position_percentile",
 )
+PACE_GAIN_COLUMNS: tuple[str, ...] = (
+    "pace_gain__decay_90d__mean_transition_normalized_position_gain",
+)
 
 
 def _positional_mismatch_count(left: Sequence[str], right: Sequence[str]) -> int:
@@ -494,6 +497,30 @@ def compare_pace_final_cache_control(
         comparison_name="pace_final_cache_control",
         count_key="candidate_pace_final",
         contract_key="pace_final",
+        output_path=output_path,
+        chunk_size=chunk_size,
+        expected_baseline_feature_count=expected_baseline_feature_count,
+    )
+
+
+def compare_pace_gain_cache_control(
+    baseline_cache_path: str | Path,
+    candidate_cache_path: str | Path,
+    *,
+    output_path: str | Path | None = None,
+    chunk_size: int = 10_000,
+    expected_baseline_feature_count: int = 271,
+) -> dict[str, Any]:
+    """Verify that a PACE-04 cache adds only its frozen column."""
+
+    return _compare_opt_in_cache_control(
+        baseline_cache_path,
+        candidate_cache_path,
+        expected_experimental_columns=PACE_GAIN_COLUMNS,
+        experimental_prefix="pace_gain__",
+        comparison_name="pace_gain_cache_control",
+        count_key="candidate_pace_gain",
+        contract_key="pace_gain",
         output_path=output_path,
         chunk_size=chunk_size,
         expected_baseline_feature_count=expected_baseline_feature_count,
