@@ -27,6 +27,7 @@ from horse_pred.data_health import (
 from horse_pred.diagnostics import run_baseline_diagnostics
 from horse_pred.features import FeatureConfig
 from horse_pred.graded_rank_study import run_graded_rank_study
+from horse_pred.hpo_study import run_hpo_study
 from horse_pred.live_data_archive import (
     archive_jvlink_batch,
     load_live_data_archive_config,
@@ -149,6 +150,14 @@ def parser() -> argparse.ArgumentParser:
     )
     rolling.add_argument("--output", type=Path, required=True)
     rolling.add_argument("--repo-root", type=Path, default=Path.cwd())
+    hpo = commands.add_parser(
+        "run-hpo-study",
+        help="run one preregistered 2020-2022 LightGBM HPO selection and 2023 confirmation",
+    )
+    hpo.add_argument("--cache", type=Path, required=True)
+    hpo.add_argument("--config", type=Path, required=True)
+    hpo.add_argument("--output", type=Path, required=True)
+    hpo.add_argument("--repo-root", type=Path, default=Path.cwd())
     diagnostics = commands.add_parser(
         "diagnose-baseline",
         help="run 2024-only importance, permutation, and conditional diagnostics",
@@ -423,6 +432,25 @@ def main(argv: Sequence[str] | None = None) -> int:
             "output": str(args.output.resolve()),
             "experiment_id": metrics["experiment_id"],
             "evaluation_years": metrics["scope"]["evaluation_years"],
+            "rows_used_2024": metrics["scope"]["rows_used_2024"],
+            "rows_used_2025": metrics["scope"]["rows_used_2025"],
+            "elapsed_seconds": metrics["elapsed_seconds"],
+        }
+        print(json.dumps(summary, ensure_ascii=False, indent=2))
+        return 0
+    if args.command == "run-hpo-study":
+        metrics = run_hpo_study(
+            repo_root=args.repo_root,
+            cache_path=args.cache,
+            config_path=args.config,
+            output_dir=args.output,
+        )
+        summary = {
+            "output": str(args.output.resolve()),
+            "experiment_id": metrics["experiment_id"],
+            "model_kind": metrics["model_kind"],
+            "selected_profile": metrics["selection"]["selection_result"]["selected_profile"],
+            "decision": metrics["confirmation"]["confirmation_result"]["decision"],
             "rows_used_2024": metrics["scope"]["rows_used_2024"],
             "rows_used_2025": metrics["scope"]["rows_used_2025"],
             "elapsed_seconds": metrics["elapsed_seconds"],

@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "experiment_id": "hpo_01b_binary_rolling",
+  "hypothesis": "One bounded LightGBM parameter change improves the frozen 254-feature Binary incumbent consistently before a single 2023 confirmation",
+  "seed": 42,
+  "model_kind": "binary",
+  "maximum_outcome_year": 2023,
+  "feature_config": "configs/performance/pv_001_candidate_signed_time_gap.json",
+  "base_model_config": "configs/exp_001_binary.json",
+  "expected_feature_count": 254,
+  "expected_columns_sha256": "e5228bb4ffd605888b7266030d5e1e9f0931e8468b6fbbf124f3cea60905e51d",
+  "selection_folds": [
+    {"id": "roll_2020", "train_start_year": 2014, "train_end_year": 2017, "early_stopping_year": 2018, "calibration_year": 2019, "evaluation_year": 2020},
+    {"id": "roll_2021", "train_start_year": 2014, "train_end_year": 2018, "early_stopping_year": 2019, "calibration_year": 2020, "evaluation_year": 2021},
+    {"id": "roll_2022", "train_start_year": 2014, "train_end_year": 2019, "early_stopping_year": 2020, "calibration_year": 2021, "evaluation_year": 2022}
+  ],
+  "confirmation_fold": {"id": "roll_2023", "train_start_year": 2014, "train_end_year": 2020, "early_stopping_year": 2021, "calibration_year": 2022, "evaluation_year": 2023},
+  "profiles": [
+    {"id": "control", "parameter_overrides": {}, "complexity_rank": 0},
+    {"id": "leaves_15", "parameter_overrides": {"num_leaves": 15}, "complexity_rank": 2},
+    {"id": "leaves_63", "parameter_overrides": {"num_leaves": 63}, "complexity_rank": 10},
+    {"id": "depth_6", "parameter_overrides": {"max_depth": 6}, "complexity_rank": 3},
+    {"id": "min_child_50", "parameter_overrides": {"min_child_samples": 50}, "complexity_rank": 9},
+    {"id": "min_child_200", "parameter_overrides": {"min_child_samples": 200}, "complexity_rank": 1},
+    {"id": "l1_1", "parameter_overrides": {"reg_alpha": 1.0}, "complexity_rank": 4},
+    {"id": "l2_5", "parameter_overrides": {"reg_lambda": 5.0}, "complexity_rank": 5},
+    {"id": "feature_fraction_075", "parameter_overrides": {"colsample_bytree": 0.75}, "complexity_rank": 6},
+    {"id": "bagging_fraction_075", "parameter_overrides": {"subsample": 0.75}, "complexity_rank": 7},
+    {"id": "max_bin_127", "parameter_overrides": {"max_bin": 127}, "complexity_rank": 8},
+    {"id": "max_bin_511", "parameter_overrides": {"max_bin": 511}, "complexity_rank": 11}
+  ],
+  "selection": {
+    "primary_metric": "race_log_loss",
+    "primary_improvement_min": 0.002,
+    "minimum_improved_selection_years": 2,
+    "primary_tie_tolerance": 0.0001,
+    "guardrail_minimum_improvements": {
+      "race_brier": 0.0,
+      "ndcg_at_3": -0.002,
+      "top_1_winner_mass": -0.005
+    }
+  },
+  "selection_accounting": {
+    "selection_profiles_including_control": 12,
+    "selection_candidate_control_comparisons": 11,
+    "confirmation_comparisons_maximum": 1,
+    "prior_selection_uses_by_evaluation_year": {"2020": 2, "2021": 2, "2022": 6, "2023": 2},
+    "multiple_comparison_note": "The prior-use inventory is the documented EVAL-ROLL-001 lower bound. Eleven one-at-a-time profiles are selected only on 2020-2022; only one frozen candidate may reach 2023. No multiplicity-adjusted claim is made for selection intervals."
+  },
+  "uncertainty": {
+    "bootstrap_resamples": 10000,
+    "bootstrap_seed": 20240830,
+    "block_length_dates": 4,
+    "confidence_level": 0.95
+  }
+}
