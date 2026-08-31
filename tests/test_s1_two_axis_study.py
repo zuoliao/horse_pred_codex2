@@ -11,6 +11,7 @@ import pytest
 from horse_pred.artifacts import write_artifact_manifest
 from horse_pred.data import RAW_COLUMNS
 from horse_pred.s1_two_axis_study import (
+    _decision_payload,
     assign_s1_slice_flags,
     classify_s1_comparison,
     isolate_s1_source,
@@ -268,6 +269,42 @@ def test_comparison_decision_distinguishes_supported_weak_and_rejected() -> None
     assert classify_s1_comparison(rejected, interval, path="ranking") == "rejected"
     with pytest.raises(ValueError, match="probability or ranking"):
         classify_s1_comparison(_comparison_summary(), interval, path="other")
+
+
+def test_conditional_field_increment_does_not_promote_standalone_field_axis() -> None:
+    pairs = ("C1_vs_C0", "C2_vs_C0", "C3_vs_C0", "C3_vs_C2", "C3_vs_C1")
+    comparisons: dict[str, object] = {}
+    intervals: dict[str, object] = {}
+    for family in ("binary", "lambdarank"):
+        for pair in pairs:
+            comparison_id = f"{family}_{pair}"
+            direct_field = pair == "C2_vs_C0"
+            conditional_field = pair == "C3_vs_C1"
+            comparisons[comparison_id] = _comparison_summary(
+                log_loss=-0.003 if direct_field else 0.003,
+                ndcg=-0.003 if direct_field else 0.001,
+                improved_years=0 if direct_field else 3,
+            )
+            lower = -0.001 if conditional_field else 0.001
+            intervals[comparison_id] = {
+                "race_log_loss": {"lower": lower, "upper": 0.005},
+                "ndcg_at_3": {"lower": lower, "upper": 0.002},
+            }
+
+    decision = _decision_payload(
+        {"comparisons": comparisons}, {"paired": intervals}
+    )
+
+    assert decision["axes"]["performance_axis"] == "supported"
+    assert decision["axes"]["field_quality_axis"] == "rejected"
+    assert decision["axes"]["joint_two_axis"] == "supported"
+    assert decision["conditional_increment"]["field_quality_given_performance"] == (
+        "weakly_supported"
+    )
+    assert decision["case"] == "A_performance_supported"
+    assert decision["next_recommendation"] == (
+        "S3_condition_adjusted_performance_target"
+    )
 
 
 def test_artifact_manifest_verification_checks_every_hash_and_detects_tamper(

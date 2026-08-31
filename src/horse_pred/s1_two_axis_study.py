@@ -622,13 +622,19 @@ def _decision_payload(summary: dict[str, Any], bootstrap: dict[str, Any]) -> dic
             return "rejected"
         return "inconclusive"
 
-    performance_ids = [f"{family}_{pair}" for family in _FAMILIES for pair in ("C1_vs_C0", "C3_vs_C2")]
-    field_ids = [f"{family}_{pair}" for family in _FAMILIES for pair in ("C2_vs_C0", "C3_vs_C1")]
+    performance_ids = [f"{family}_C1_vs_C0" for family in _FAMILIES]
+    field_ids = [f"{family}_C2_vs_C0" for family in _FAMILIES]
     joint_ids = [f"{family}_C3_vs_C0" for family in _FAMILIES]
+    performance_increment_ids = [f"{family}_C3_vs_C2" for family in _FAMILIES]
+    field_increment_ids = [f"{family}_C3_vs_C1" for family in _FAMILIES]
     axes = {
         "performance_axis": aggregate(performance_ids),
         "field_quality_axis": aggregate(field_ids),
         "joint_two_axis": aggregate(joint_ids),
+    }
+    conditional_increment = {
+        "performance_given_field_quality": aggregate(performance_increment_ids),
+        "field_quality_given_performance": aggregate(field_increment_ids),
     }
     if axes["performance_axis"] in {"supported", "weakly_supported"} and axes[
         "field_quality_axis"
@@ -651,6 +657,7 @@ def _decision_payload(summary: dict[str, Any], bootstrap: dict[str, Any]) -> dic
         "schema_version": 1,
         "comparisons": comparisons,
         "axes": axes,
+        "conditional_increment": conditional_increment,
         "case": case,
         "next_recommendation": next_recommendation,
         "production_control_change": False,
