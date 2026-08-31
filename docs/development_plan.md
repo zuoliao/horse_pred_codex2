@@ -52,6 +52,10 @@
 | 32 | ENS-01 | Binary/Ranker単純ensemble | EVAL-ROLL | 固定50:50 coherent probability ensembleと独立temperatureをrolling評価 |
 | 33 | SHIMBA-FILTER-001 | 新馬戦fit-population ablation | EVAL-ROLL | Binaryのgradient fitからだけ新馬戦を除外し、全race評価でnoise仮説を検証 |
 | 34 | PACE-01 | horse-level位置取り・脚質履歴 | EVAL-ROLL | 通過順位の少数表現を固定し、直線1000 m等を別扱いしてrolling評価 |
+| 35 | PACE-02 | rival-only field pace pressure | PACE-01 | 固定PACE-01から他馬だけの先行圧を1列表現しrolling評価 |
+| 36 | PACE-03 | final recorded position history | PACE-01 | 最終通過位置percentileの90日履歴1列をrolling評価 |
+| 37 | PACE-04 | normalized position-gain history | PACE-01 | 序盤から最終位置への変化を遷移数補正した90日履歴1列でrolling評価 |
+| 38 | SPEED-01 | condition-adjusted speed figure | PACE-01～04 | 期待時計を過去情報だけで推定し、条件補正済み残差の履歴1列をrolling評価 |
 
 ## 2026-08-31実行状態
 
@@ -74,7 +78,10 @@
 | S0/S1 goal | 完了 | 統合判断は`docs/experiments/s_rank_model_research_conclusions_20260831.md` |
 | SHIMBA-FILTER-001 | 完了・reject | 新馬戦fit除外はLL/NDCG悪化。新馬戦を学習に維持 |
 | PACE-01 | 完了・両family採択 | 序盤位置percentile 90日履歴1列。Binary probability pathとRank ranking/probability pathが通過。2024未開封 |
-| PACE-02 | 次task | 固定済みPACE-01からcurrent-field pace pressureを一表現だけrolling評価 |
+| PACE-02 | 完了・未採用 | rival-only先行圧1列。両family inconclusive |
+| PACE-03 | 完了・未採用 | 最終位置履歴1列。Binary inconclusive、LambdaRank reject |
+| PACE-04 | 完了・未採用 | 遷移数補正position gain履歴1列。両family inconclusive |
+| SPEED-01 | 次task | 条件補正済みspeed residualを一表現だけ事前固定しrolling評価 |
 
 現在のwork queueは[model research priorities](model_research_priorities.md)、実験結果のsource of truthは`experiments/`、統合判断は`docs/experiments/`と`docs/handoff.md`である。完全なmodel・prediction・bootstrap artifactはGit対象外の`artifacts/`に置く。
 

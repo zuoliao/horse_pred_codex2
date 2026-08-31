@@ -8,7 +8,7 @@ Read `README.md`, `AGENTS.md`, this file, and relevant `docs/` before changing m
 
 The corrected LightGBM baseline validation, standalone rating-module R0–R6,
 time/margin stages PV-00 through PV-06, graded-label experiment GR-001, the
-S0/S1 rolling program, and PACE-01 are complete. This includes data/evaluation health, 2024
+S0/S1 rolling program, and PACE-01 through PACE-04 are complete. This includes data/evaluation health, 2024
 uncertainty, semantic
 ablation, diagnostics, training-period rating selection, frozen PIT rating
 generation, the accepted PV-01 time-history feature, margin-aware actual and
@@ -28,6 +28,9 @@ refinement, and one independent LambdaRank-label test.
 - Fixed 50:50 ENS-01 was rejected because Binary-relative Log Loss improvement was .00157, below the .002 minimum. No weight search occurred and 2023 confirmation stayed unopened.
 - SHIMBA-FILTER-001 rejected removing new-horse races from Binary fitting: all-race improvement was LL `-.00097` and NDCG `-.00225`; keep new-horse races in training and evaluation.
 - PACE-01 added one 90-day race-relative early-position history. Binary passed its probability path with LL +.00659 `[+.00333,+.00978]`; Rank passed both paths with NDCG +.00440 `[+.00197,+.00683]`. Both families improved LL/Brier in all four years; accept both rolling candidates.
+- PACE-02 rival-only front pressure was inconclusive for both families and was not adopted.
+- PACE-03 final-position history was Binary inconclusive and LambdaRank rejected: Rank NDCG −.00276 `[−.00473,−.00084]`, worse in all four years.
+- PACE-04 transition-normalized position gain was inconclusive for both families and was not adopted. The pace route is closed with PACE-01 as its sole accepted feature.
 - LIVE-DATA official-source archive groundwork is complete. The user deferred actual collection because JV-Link is Windows-only and the current machine is a Mac. Do not pursue unofficial Mac transport or JRA Web scraping.
 - Binary versus LambdaRank on the 254-feature config remains unresolved: Binary ranking is higher and LambdaRank Log Loss is lower by .00084, but all paired family intervals cross zero.
 - Surface-conditioned Elo adds a supported LambdaRank ranking signal relative to the corrected 268-feature baseline, but adding the same 3-column family to the lean 253-feature config was rejected for both families in IMP-004.
@@ -72,12 +75,12 @@ Known selection limits:
 - S-rank integrated result: `docs/experiments/s_rank_model_research_conclusions_20260831.md`
 - Rolling/feature/HPO/ensemble/new-horse details: `docs/experiments/eval_roll_001_rolling_origin_20260831.md`, `docs/experiments/opp_recent_001_20260831.md`, `docs/experiments/sec_3f_001_20260831.md`, `docs/experiments/hpo_01_lightgbm_rolling_20260831.md`, `docs/experiments/ens_01_fixed_5050_20260831.md`, `docs/experiments/shimba_filter_001_20260831.md`
 - LIVE-DATA source/activation state: `docs/live_data_prospective_snapshot.md`
-- PACE-01 protocol/result: `docs/experiments/pace_01_early_position_20260831.md`
+- PACE-01 through PACE-04 protocols/results: `docs/experiments/pace_01_early_position_20260831.md`, `docs/experiments/pace_02_field_pressure_20260831.md`, `docs/experiments/pace_03_final_position_20260831.md`, `docs/experiments/pace_04_position_gain_20260831.md`
 - Tracked machine source of truth: `experiments/baseline_validation_20260830/`
 - Tracked PV summaries: `experiments/race_content_20260831/summary.json` and `pv_002_summary.json` through `pv_006_summary.json`
 - Tracked GR-001 summary: `experiments/graded_rank_20260831/summary.json`
 - Tracked S-rank aggregate: `experiments/s_rank_model_research_20260831/summary.json`
-- Tracked PACE-01 summary: `experiments/pace_01_20260831/summary.json`
+- Tracked PACE summaries: `experiments/pace_01_20260831/summary.json` through `experiments/pace_04_20260831/summary.json`
 
 Local complete artifacts are under `artifacts/` and intentionally ignored. Rating artifacts are `artifacts/rating_module_r0_r5_20260830/`, `artifacts/r6_*`. PV-01 artifacts are `artifacts/pv_001_*`, with paired comparison at `artifacts/pv_001_comparison/comparison.json`; its augmented cache is `data/model_frame_race_content_time_20260831.pkl` (269 total cache features). PV-06 uses `artifacts/pv_006_margin_token_audit_20260831_clean/` and `artifacts/pv_006_margin_token_refinement_20260831/`; GR-001 uses `artifacts/gr_001_graded_lambdarank_20260831/`. Existing corrected/surface/race-value/rating caches remain local and ignored.
 
@@ -125,17 +128,19 @@ These are nominal intervals across five hypotheses and two model families. They 
 - Candidate versus control: LL −.015391 `[-.020677,−.010227]`, Brier −.002007 `[-.003486,−.000580]`, NDCG −.003986 `[-.008313,+.000301]`, Top-1 −.003778 `[-.010414,+.002901]`. Both acceptance paths failed; reject.
 - Descriptively, Log Loss worsened in every field-size band. Small and 17+ fields had positive NDCG points, but these small, unqualified slices do not justify retuning. Retain the original top-three training labels.
 
-## Next task after PACE-01
+## Next task after PACE-01 through PACE-04
 
 `docs/model_research_priorities.md` remains the living source of truth. The
 latest accepted result is `docs/experiments/pace_01_early_position_20260831.md`.
 
-The next independent modeling task is PACE-02. Use only the frozen PACE-01
-history available for the current field to define one small pace-pressure
-representation, then evaluate it on EVAL-ROLL. Do not simultaneously add
-final-corner history, position gain, multiple style thresholds, or other
-field-relative columns. Continue to keep 2024 milestone-only and 2025 outside
-iterative selection.
+The next independent modeling task is SPEED-01. Freeze one transparent
+condition-adjusted expected-time residual using pre-2022 evidence, then carry
+one PIT-safe historical performance column into EVAL-ROLL. Expected-time fitting
+must remain inside each temporal training boundary or use an equivalent
+forward-only expanding state; evaluation-year outcomes, same-day later races,
+and future-derived track variants are prohibited. Do not mix speed definition,
+hyperparameter tuning, and multiple feature variants in one experiment.
+Continue to keep 2024 milestone-only and 2025 outside iterative selection.
 
 LIVE-DATA actual collection is intentionally deferred. Reopen it only if the
 user explicitly supplies or authorizes a supported private Windows JV-Link
@@ -199,6 +204,17 @@ uv run horse-pred run-rolling-evaluation \
   --config configs/evaluation/pace_01_rolling.json \
   --output artifacts/pace_01_rolling_20260831
 
+# Reproduce the final PACE-04 one-column test from the PACE-01 incumbent
+uv run horse-pred build-pace-gain-cache \
+  --raw-path /path/to/race_results_merged.csv \
+  --baseline-cache data/model_frame_pace_01.pkl \
+  --config configs/features/pace_04_position_gain.json \
+  --output data/model_frame_pace_04.pkl
+uv run horse-pred run-rolling-evaluation \
+  --cache data/model_frame_pace_04.pkl \
+  --config configs/evaluation/pace_04_rolling.json \
+  --output artifacts/pace_04_rolling_20260831
+
 # Rebuild opt-in surface Elo cache (long-running)
 uv run horse-pred run-mvp \
   --raw-path /path/to/race_results_merged.csv \
@@ -230,4 +246,5 @@ uv run horse-pred run-mvp \
 - PV-04 cache SHA-256 `525ccf39ae654d78e72d2909bcc4ec184165f86d91fa7828466793887b1e7b96`; PV-05 delta cache SHA-256 `e9c6c0ccd5c9b5aeb20c4dfc1f95ea92e121937dba000975c1535d6f04c1ccfd`.
 - Final verification after S-rank synthesis and SHIMBA-FILTER-001: 196 tests passed, Ruff passed, compileall passed.
 - PACE-01 run commit `074f54e86ace8a3d51bbf5f386166b72ba6e7db2`, dirty=false; cache SHA-256 `8b4480da6d6396d9bac54b92d947948708e0bccc30cfe0ac24be40e427d5e732`; existing 270 features exact; 2025 PACE values 0.
-- Final verification after PACE-01 result synchronization: 205 tests passed, Ruff passed, compileall passed.
+- PACE-04 run commit `517a685a88ccfa7b0c72be3cd3b4a6d0ee8d1d48`, dirty=false; cache SHA-256 `ddd1365a098c2b4b0b63dc742da352f05213f1b6ecf07f6a4f345d360f01775c`; existing 271 features exact; 2025 PACE-04 values 0.
+- Final verification after PACE-01 through PACE-04 synchronization: 227 tests passed, Ruff passed, compileall passed.

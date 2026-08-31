@@ -621,6 +621,9 @@ Phase 8: 自動予測処理・Web UI
 | Binary/Rank ensemble | 完了・reject | 固定50:50はBinary比Log Loss改善が+.00157でminimum未達。weight探索せず、2023未開封 |
 | 新馬戦の学習 | 完了・維持 | fitから新馬戦を除くとLog Loss `-.00097`、NDCG `-.00225`。難しいが純ノイズではなく学習に残す |
 | PACE-01 | rolling採択 | 過去走のrace-relative序盤位置percentile 90日履歴1列を追加。Binary LL `+.00659 [+.00333,+.00978]`、Rank NDCG `+.00440 [+.00197,+.00683]`で両family採択、2024未開封 |
+| PACE-02 | 完了・未採用 | PACE-01から他馬だけの先行圧を1列追加。Binary/Rankともprimary CIが0を跨ぎinconclusive |
+| PACE-03 | 完了・未採用 | 最終通過位置履歴を1列追加。Binary inconclusive、Rank NDCG `-.00276 [-.00473,-.00084]`でreject |
+| PACE-04 | 完了・未採用 | 遷移数補正した前進・後退履歴を1列追加。Binary/Rankともinconclusive。PACE派生探索を終了 |
 | LIVE-DATA | 基盤完了・ユーザー保留 | 公式JV-Link限定のschema/append-only archiveを実装。公式transportがWindowsのみで現環境がMacのため、実収集は後日に延期 |
 | LambdaRank教師 | 開発維持 | 従来の`1着=3, 2着=2, 3着=1, その他=0`を維持。2・3着を統合して上位半数へ教師を広げたGR-001は2022でLog Loss/Brierを有意に悪化させreject |
 | probabilistic ranking | 調査推奨・延期 | Plackett–Luceを最初の高度baseline候補とするが、順位別biasを検証してから採否判断 |
@@ -637,4 +640,4 @@ S0/S1は完了しました。統合判断は[S-rank no-odds model research concl
 - 新馬戦はcold-startで難しいものの、fitからの除外は通常レースにも効かずrejectしました。
 - LIVE-DATAは公式JV-Link source gateと保存基盤まで完了しましたが、現環境がMacで公式transportはWindowsのみのため、ユーザー判断で後日に延期しました。
 
-PACE-01は完了し、BinaryとLambdaRankの両方で採択しました。次の独立modeling taskは`PACE-02`です。固定済みPACE-01履歴だけから今回fieldの先行集中度を少数列で表現し、rolling評価します。最終corner、position gain、複数のstyle閾値は同時に追加しません。2024は重要候補のmilestoneに限定し、2025は反復選択に使用しません。
+PACE-01～PACE-04を完了しました。採用したのはPACE-01の序盤位置履歴1列だけで、相手先行圧、最終位置、前進・後退履歴は増分根拠が不足したため採用しません。次の独立modeling taskは`SPEED-01`です。course、surface、distance、馬場、class、age条件等から期待時計を過去情報だけで推定し、条件補正済みの過去走performance residualを一表現だけrolling評価します。同日後続raceや未来期間のtrack variantは使用しません。2024は重要候補のmilestoneに限定し、2025は反復選択に使用しません。

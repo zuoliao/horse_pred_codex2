@@ -568,8 +568,8 @@ EVAL-ROLLを実装して2020～2023の4 expanding foldを固定し、S0/S1を全
 
 現Binary development incumbentはPV-01 254特徴。2024の保守的LambdaRank
 referenceはlean 253特徴のまま、pre-2024 rolling candidateはlean+SEC-3F
-254特徴とする。次はPACE-01を一仮説としてrolling評価し、支持時だけ
-PACE-02へ進む。統合根拠は
+254特徴とする。その後PACE-01を一仮説としてrolling評価し、支持後の派生を
+PACE-02～04で分離評価した。現在の結論は§23～24を参照する。Sランク統合根拠は
 `docs/experiments/s_rank_model_research_conclusions_20260831.md`および
 `experiments/s_rank_model_research_20260831/summary.json`を参照する。
 
@@ -583,7 +583,28 @@ PACE-02へ進む。統合根拠は
 2020～2023 rollingでBinary Log Lossは`+.00659 [+.00333,+.00978]`、
 LambdaRank NDCGは`+.00440 [+.00197,+.00683]`。BinaryはLog Loss/Brier、
 LambdaRankは全4 primary/guardrail metricが4年全て改善し、両familyで採択した。
-2024/2025は未使用である。次はこの固定済みstyle履歴だけからfield pace pressure
-を作るPACE-02を一仮説として評価する。根拠は
+2024/2025は未使用である。その後この固定済みstyle履歴からfield pace pressure
+を作るPACE-02を一仮説として評価した。PACE派生全体の結論は§24、PACE-01の根拠は
 `docs/experiments/pace_01_early_position_20260831.md`と
 `experiments/pace_01_20260831/summary.json`を参照する。
+
+## 24. PACE-02～04追補
+
+PACE-01採択後、同じ2020～2023 rolling基盤で三つの派生仮説を一列ずつ評価した。
+2024/2025 outcome、odds、人気は使わず、各表現を結果を見る前に固定した。
+
+- PACE-02は他のcurrent runnerだけから`max(PACE-01-.5,0)`を合計した先行圧。
+  Binary、LambdaRankともprimary intervalが0を跨ぎinconclusive。
+- PACE-03は最終通過位置percentileの90日履歴。Binaryはinconclusive。
+  LambdaRankはNDCG `-.00276 [-.00473,-.00084]`で4年全て悪化しreject。
+- PACE-04は`(final percentile - early percentile)/(segment count-1)`の90日履歴。
+  Binaryは小幅改善寄り、LambdaRankは悪化寄りだったが、両primary intervalが
+  0を跨いだため双方inconclusive。
+
+よってPACE路線では序盤位置の水準だけを採用し、field pressure、最終位置、
+position gainは追加しない。複数threshold、absolute movement、interactionへ
+探索を広げない。次は独立した`SPEED-01`として、未来を使わない条件補正済み
+speed residualを一表現だけ固定し、rolling評価する。詳細根拠は
+`docs/experiments/pace_02_field_pressure_20260831.md`から
+`pace_04_position_gain_20260831.md`、機械可読結果は
+`experiments/pace_02_20260831/`から`pace_04_20260831/`を参照する。

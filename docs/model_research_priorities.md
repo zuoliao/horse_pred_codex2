@@ -150,7 +150,7 @@ SランクはS0とS1を含む。次をすべて満たした時だけ完了とす
 S完了時点の次taskは`PACE-01`だった。現在の結果と次taskは§8を参照する。
 LIVE-DATA実収集はユーザーが明示的に再開するまで保留する。
 
-## 8. PACE-01完了と次task
+## 8. PACE-01～04完了と次task
 
 `PACE-01`は2014～2021だけのmapping監査後、2区間以上ある過去走の最初の
 通過位置をrace内percentile化し、90日半減履歴1列として固定した。1区間のみの
@@ -160,8 +160,19 @@ LIVE-DATA実収集はユーザーが明示的に再開するまで保留する�
 2020～2023 rollingでBinaryはLog Loss `+.00659 [+.00333,+.00978]`、
 LambdaRankはNDCG `+.00440 [+.00197,+.00683]`。Binaryはprobability path、
 LambdaRankはranking/probability両pathを通過し、両familyで採択した。2024/2025
-は未使用。次taskは`PACE-02`とし、固定済みPACE-01からcurrent-fieldの先行集中を
-一表現だけ作る。最終corner、position gain、複数thresholdは混ぜない。
+は未使用。
+
+その後、PACE-01をcontrolに三つの独立した1列仮説を評価した。PACE-02の
+rival-only先行圧は両family inconclusive。PACE-03最終位置履歴はBinary
+inconclusive、LambdaRankはNDCG `-.00276 [-.00473,-.00084]`でreject。
+PACE-04の遷移数補正position gainは両family inconclusiveだった。いずれも
+2024/2025を開かず、再定義・threshold調整を行わない。PACE路線はPACE-01だけを
+採用して終了する。
+
+次taskは`SPEED-01`とする。course、surface、distance、going、class、age条件等の
+期待時計を過去情報だけで推定し、過去走の条件補正済みresidualを一表現だけ
+事前固定する。同日後続raceや未来期間からtrack variantを作らず、rolling foldの
+外側で期待時計をfitして評価年へ漏らさない。
 
 LIVE-DATA実収集は、公式JV-LinkがWindowsのみで現環境がMacであるため、
 ユーザー判断で後日に延期した。非公式Mac transportやJRA Web scrapingへは
