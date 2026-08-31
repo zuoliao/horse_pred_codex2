@@ -25,6 +25,7 @@ from horse_pred.data_health import (
     population_selection_audit,
 )
 from horse_pred.diagnostics import run_baseline_diagnostics
+from horse_pred.ensemble_study import run_ensemble_study
 from horse_pred.features import FeatureConfig
 from horse_pred.graded_rank_study import run_graded_rank_study
 from horse_pred.hpo_study import run_hpo_study
@@ -158,6 +159,13 @@ def parser() -> argparse.ArgumentParser:
     hpo.add_argument("--config", type=Path, required=True)
     hpo.add_argument("--output", type=Path, required=True)
     hpo.add_argument("--repo-root", type=Path, default=Path.cwd())
+    ensemble = commands.add_parser(
+        "run-ensemble-study",
+        help="run the preregistered fixed 50:50 rolling probability ensemble",
+    )
+    ensemble.add_argument("--config", type=Path, required=True)
+    ensemble.add_argument("--output", type=Path, required=True)
+    ensemble.add_argument("--repo-root", type=Path, default=Path.cwd())
     diagnostics = commands.add_parser(
         "diagnose-baseline",
         help="run 2024-only importance, permutation, and conditional diagnostics",
@@ -451,6 +459,23 @@ def main(argv: Sequence[str] | None = None) -> int:
             "model_kind": metrics["model_kind"],
             "selected_profile": metrics["selection"]["selection_result"]["selected_profile"],
             "decision": metrics["confirmation"]["confirmation_result"]["decision"],
+            "rows_used_2024": metrics["scope"]["rows_used_2024"],
+            "rows_used_2025": metrics["scope"]["rows_used_2025"],
+            "elapsed_seconds": metrics["elapsed_seconds"],
+        }
+        print(json.dumps(summary, ensure_ascii=False, indent=2))
+        return 0
+    if args.command == "run-ensemble-study":
+        metrics = run_ensemble_study(
+            repo_root=args.repo_root,
+            config_path=args.config,
+            output_dir=args.output,
+        )
+        summary = {
+            "output": str(args.output.resolve()),
+            "experiment_id": metrics["experiment_id"],
+            "decision": metrics["decision"],
+            "confirmation_opened": metrics["scope"]["confirmation_opened"],
             "rows_used_2024": metrics["scope"]["rows_used_2024"],
             "rows_used_2025": metrics["scope"]["rows_used_2025"],
             "elapsed_seconds": metrics["elapsed_seconds"],

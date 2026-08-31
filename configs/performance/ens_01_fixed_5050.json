@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "experiment_id": "ens_01_fixed_5050",
+  "hypothesis": "A fixed equal-weight arithmetic blend of coherent Binary and accepted SEC-3F LambdaRank probabilities improves race Log Loss consistently over both singleton references",
+  "seed": 42,
+  "source": {
+    "artifact_directory": "artifacts/sec_3f_001_rolling_20260831",
+    "predictions_file": "predictions_scoring.csv.gz",
+    "predictions_sha256": "876657c5e8cdd3976a28f1eec41823fd9b47a201a8c99e0112381f4cfb370cf1",
+    "manifest_file": "artifact_manifest.json",
+    "manifest_sha256": "f1ca8320e5c46a95cb79bcac4f26f3dd1de9e7485ff09d2e94da913cb3a10afe",
+    "experiment_id": "sec_3f_001_rolling",
+    "run_commit": "fa06f83930a8e50b86453fa6168714c2f88cf7cd",
+    "run_dirty": false
+  },
+  "methods": {
+    "binary_reference": "binary_control",
+    "lambdarank_reference": "lambdarank_candidate",
+    "ensemble_candidate": "ensemble_fixed_5050"
+  },
+  "blend": {
+    "binary_weight": 0.5,
+    "lambdarank_weight": 0.5,
+    "input_probability": "probability_t1",
+    "utility": "log_clipped_arithmetic_probability",
+    "clip_epsilon": 1e-15,
+    "temperature": "independent_per_fold_calibration_role"
+  },
+  "screen_evaluation_years": [2020, 2021, 2022],
+  "confirmation_evaluation_year": 2023,
+  "selection": {
+    "primary_metric": "race_log_loss",
+    "primary_improvement_min": 0.002,
+    "minimum_improved_screen_years": 2,
+    "guardrail_minimum_improvements": {
+      "race_brier": 0.0,
+      "ndcg_at_3": -0.002,
+      "top_1_winner_mass": -0.005
+    },
+    "must_pass_against_both_references": true
+  },
+  "selection_accounting": {
+    "candidate_reference_comparisons": 2,
+    "weight_search_candidates": 0,
+    "prior_selection_uses_by_evaluation_year": {
+      "2020": 28,
+      "2021": 28,
+      "2022": 32,
+      "2023": 7
+    },
+    "multiple_comparison_note": "The lower-bound inventory adds the OPP-RECENT and SEC-3F two-family comparisons and both HPO-01 eleven-profile screens/single confirmations to EVAL-ROLL-001. ENS-01 evaluates one fixed candidate against two references and performs no weight or blend-form search."
+  },
+  "uncertainty": {
+    "bootstrap_resamples": 10000,
+    "bootstrap_seed": 20240830,
+    "block_length_dates": 4,
+    "confidence_level": 0.95
+  }
+}
