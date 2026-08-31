@@ -168,7 +168,10 @@ def _rating_events(flat: pd.DataFrame) -> tuple[RatingEvent, ...]:
                 race_date=pd.Timestamp(event_date).normalize(),
                 surface_key=surface_key,
                 horse_ids=tuple(starters["horse_id"].astype(str)),
-                finishes=tuple(float(value) for value in finishes),
+                finishes=tuple(
+                    float(value) if pd.notna(value) else np.nan
+                    for value in finishes
+                ),
                 source_positions=tuple(
                     int(value) for value in starters["_source_position"]
                 ),

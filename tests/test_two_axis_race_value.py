@@ -199,6 +199,32 @@ def test_dnf_and_disqualified_races_do_not_add_performance_observations() -> Non
     assert np.isnan(_feature_row(history, "later-dq", "horse-dq")[PERFORMANCE_COLUMN])
 
 
+def test_nullable_integer_finish_accepts_real_normalized_dnf_missingness() -> None:
+    frame = pd.DataFrame(
+        [
+            *_race("warmup", "2013-01-01", "warm-w", "warm-l"),
+            _runner("dnf", "2014-01-01", "dnf-w", 1, "1:00.0"),
+            _runner(
+                "dnf",
+                "2014-01-01",
+                "horse-dnf",
+                pd.NA,
+                None,
+                status="did_not_finish",
+            ),
+        ]
+    )
+    frame["finish_position"] = pd.array(frame["finish_position"], dtype="Int64")
+
+    history, observations, _ = build_fold_two_axis_history(frame, FOLD, SPEC)
+
+    assert len(history) == 4
+    assert observations.loc[
+        observations["horse_id"].eq("horse-dnf"),
+        "performance_residual_observation",
+    ].isna().all()
+
+
 def test_condition_normalizer_is_train_only_and_frozen_after_train() -> None:
     frame = _base_history()
     _, _, baseline = build_fold_two_axis_history(frame, FOLD, SPEC)
