@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "experiment_id": "pace_03_final_position_rolling",
+  "run_commit": "356e666e6a84d3fdf639deaf6a4a62dccf09a8c0",
+  "run_dirty": false,
+  "data_fingerprint": "270923ce73c4441e64173f242a8719de7d1e9b205508140463ca547ef7b1ca87",
+  "cache_sha256": "96a5ed8619b021478d4f85ad6605fff3746796ecc0f0231b2ae65a1756be8c5f",
+  "transformation_hash": "b0bb8efb6b696cabd52e7da2f9e72ce9d5bbbd6d3ca9b6a95180a643e66be52c",
+  "scope": {
+    "evaluation_years": [2020, 2021, 2022, 2023],
+    "rows_used_2024": 0,
+    "rows_used_2025": 0,
+    "odds_used": false,
+    "candidate_representations_screened": 1
+  },
+  "cache_control": {
+    "row_count": 533853,
+    "baseline_feature_count": 271,
+    "candidate_feature_count": 272,
+    "old_feature_mismatch_count": 0,
+    "pre2025_feature_nonmissing": 440460,
+    "retrospective_2025_feature_nonmissing": 0
+  },
+  "binary": {
+    "improvement": {
+      "ndcg_at_3": {"point": -0.0005378112, "lower": -0.0025575768, "upper": 0.0015191783, "improved_years": 3},
+      "top_1_winner_mass": {"point": -0.0014560658, "lower": -0.0050688290, "upper": 0.0023450400, "improved_years": 2},
+      "race_log_loss": {"point": -0.0003568552, "lower": -0.0030759911, "upper": 0.0024549637, "improved_years": 1},
+      "race_brier": {"point": 0.0001791841, "lower": -0.0006698623, "upper": 0.0010554787, "improved_years": 2}
+    },
+    "decision": "inconclusive"
+  },
+  "lambdarank": {
+    "improvement": {
+      "ndcg_at_3": {"point": -0.0027552011, "lower": -0.0047348458, "upper": -0.0008375071, "improved_years": 0},
+      "top_1_winner_mass": {"point": -0.0033433279, "lower": -0.0072996210, "upper": 0.0004396927, "improved_years": 1},
+      "race_log_loss": {"point": -0.0043145195, "lower": -0.0065333715, "upper": -0.0021859215, "improved_years": 2},
+      "race_brier": {"point": -0.0009490021, "lower": -0.0016467438, "upper": -0.0002732456, "improved_years": 1}
+    },
+    "decision": "reject"
+  },
+  "adopted": false,
+  "development_2024_opened": false,
+  "next_task": "PACE-04"
+}

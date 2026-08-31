@@ -1,7 +1,7 @@
 # PACE-03 final recorded position history
 
 Date: 2026-08-31 JST  
-Status: preregistered; model outcomes unopened
+Status: complete; Binary inconclusive, LambdaRank rejected, not adopted
 
 ## Hypothesis
 
@@ -64,3 +64,33 @@ Loss CI, at least three improved years, and Brier/NDCG/Top-1 guardrails of
 Log Loss/Brier/Top-1 guardrails of `-.002/-.001/-.005`. A failed guardrail or
 wholly adverse primary interval is reject; otherwise inconclusive. Passing a
 path does not automatically open 2024.
+
+## Rolling result
+
+The frozen run used clean commit
+`356e666e6a84d3fdf639deaf6a4a62dccf09a8c0`, no odds, and zero 2024/2025
+rows. The cache preserved all 271 existing features exactly, added one column,
+and generated no 2025 value.
+
+| Family | NDCG improvement | Top-1 improvement | Log Loss improvement | Brier improvement | Decision |
+|---|---:|---:|---:|---:|---|
+| Binary | -.00054 `[-.00256,+.00152]` | -.00146 `[-.00507,+.00235]` | -.00036 `[-.00308,+.00245]` | +.00018 `[-.00067,+.00106]` | inconclusive |
+| LambdaRank | -.00276 `[-.00473,-.00084]` | -.00334 `[-.00730,+.00044]` | -.00431 `[-.00653,-.00219]` | -.00095 `[-.00165,-.00027]` | reject |
+
+Binary's NDCG improved in three of four years, but its Log Loss improved in
+only one year and neither primary interval excluded zero. The point guardrails
+remain within their frozen limits, so Binary is inconclusive rather than
+rejected.
+
+LambdaRank's NDCG worsened in all four years and its paired 95% interval is
+wholly adverse. Its Log Loss also violates the `-.002` ranking-path guardrail
+and is wholly adverse. LambdaRank is therefore rejected under the frozen rule.
+
+PACE-03 is not added to either rolling incumbent. PACE-01 remains the accepted
+pace feature for both families. The final preregistered pace-content hypothesis,
+PACE-04, tests one transition-normalized early-to-final position-gain history
+against those PACE-01 incumbents; it does not include PACE-02 or PACE-03. No
+2024 milestone was opened.
+
+Tracked evidence is `experiments/pace_03_20260831/summary.json`; full local
+artifacts are under `artifacts/pace_03_rolling_20260831/`.
