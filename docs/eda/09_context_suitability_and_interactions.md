@@ -22,7 +22,7 @@ primary populationは、race全行が芝/ダート、非障害、取消・除外
 | replication | 2020--2021 | temporal replication | 88,578 | 6,356 | 215 | 8,945 | 同じ定義、replicated |
 | confirmation | 2022 | priority confirmation | 43,537 | 3,176 | 108 | 4,391 | 同じ定義、confirmedは単年上の優先順位のみ |
 
-既存model errorには`artifacts/eval_roll_001_current_best_20260831/predictions_scoring.csv.gz`の`role=evaluation`だけを使用した。loaderで2020--2022に物理filterし、264,230 runner-prediction rows、9,532 unique races、2 methodsを保持した。calibration role、2023 fold、2024、2025は0行である。model sliceのdenominatorは各raceのwinning runner 1頭で、dead heatを含む特殊raceは本choice-set契約から外れている。
+既存model errorには`artifacts/eval_roll_001_current_best_20260831/predictions_scoring.csv.gz`の`role=evaluation`だけを使用した。chunk loaderで2020--2022に物理filterし、264,230 runner-prediction rows、9,532 unique races、2 methodsを保持した。calibration role、2023 fold、2024、2025の保持は0行である。同着raceはco-winnerへ`1/m` massを配り、各raceの総winner weightを1に保った。
 
 local aggregate sourceは`artifacts/eda_20260901/workstreams/g_context/`にある。`transition_summary.csv`、`bounded_interactions.csv`、`oot_error_slices.csv`、`manifest.json`は集計だけで、raw、runner-level data、prediction rowsをGitへ追加していない。
 
@@ -37,14 +37,14 @@ local aggregate sourceは`artifacts/eda_20260901/workstreams/g_context/`にあ�
 - **class tier:** 新馬/未勝利=0、1勝/旧500万=1、2勝/旧1000万=2、3勝/旧1600万=3、open/graded=4。current minus previousが正ならup、負ならdown。
 - **rest:** 0--13、14--29、30--89、90--179、180日以上。prior startなしは`history0`として別扱い。
 - **field-size transition:** 前走との差が±1以内、2--4増減、5頭以上増減。
-- **OOT error:** winning runnerへのcalibrated probabilityの負対数と、race内最大calibrated probabilityがwinnerかというTop-1。確率比較ではLog Lossを主に読み、Top-1はguardrailとする。
+- **OOT error:** co-winnerへ`1/m`を配ったwinner massで重み付けした負対数と、race内最大calibrated probabilityに対応するwinner massというTop-1。確率比較ではLog Lossを主に読み、Top-1はguardrailとする。
 - **temporal direction:** discovery、replication、confirmationで大小関係または符号が一致するか。単一年のpointだけでinteractionを選ばない。
 
 ## 4. Methods
 
 ### Strict-PIT transition construction
 
-horse内をdate順に並べ、targetをemitしてから当該raceをhistoryへ追加した。previous dateがtarget date以上の行が0であることをassertした。current raceの時計、着差、last 3F、passing order、final odds、人気は入力へ使っていない。race ID、horse IDはjoin/state keyだけである。
+horse内をdate順に並べ、targetをemitしてから当該raceをhistoryへ追加した。previous dateがtarget date以上の行が0であることをassertした。current raceの時計、着差、last 3F、passing order、final odds、人気は入力へ使っていない。race ID、horse IDはjoin/state keyだけである。interactionのcentered winはrunner micro平均ではなく、各race内cell平均を作ってからrace macro平均した。
 
 各transitionについて、sample runners、unique races、date blocks、win rate、uniform base、base-adjusted win、race-macro persistenceを同じ固定定義で集計した。raw win rateはclass-up/downやfield-size transitionで著しくselection-biasedなので、base-adjusted winとpersistenceを併記した。
 
@@ -116,13 +116,13 @@ jockey formとrating spreadのcut pointは2014--2019の三分位で固定し、2
 
 | Interaction cell | Centered win D / R / C | Runners D / R / C | Direction / limitation |
 |---|---:|---:|---|
-| rest 14--29d, starts30=1 | +.0098 / +.0056 / +.0026 | 102,982 / 30,555 / 14,747 | positive、magnitude縮小 |
-| rest 14--29d, starts30=2+ | -.0074 / -.0103 / -.0240 | 5,762 / 1,769 / 813 | negativeが再現、small C |
-| rest 0--13d, starts30=1 | -.0120 / -.0145 / -.0226 | 12,891 / 4,403 / 2,120 | negativeが再現 |
-| rest 180d+, starts30=0 | -.0209 / -.0223 / -.0185 | 9,702 / 3,277 / 1,673 | negativeが再現 |
-| age 3, starts 4--9 | +.0130 / +.0208 / +.0267 | 55,290 / 18,504 / 9,069 | positive、career-stage selection |
-| age 6+, starts 10+ | -.0390 / -.0338 / -.0407 | 22,476 / 8,414 / 3,634 | negativeが再現、class/ability交絡 |
-| age 4--5, starts 10+ | +.0031 / -.0074 / -.0123 | 61,730 / 19,610 / 10,238 | discoveryから符号反転 |
+| rest 14--29d, starts30=1 | +.0153 / +.0082 / +.0048 | 102,982 / 30,555 / 14,747 | positive、magnitude縮小 |
+| rest 14--29d, starts30=2+ | -.0082 / -.0073 / -.0229 | 5,762 / 1,769 / 813 | negativeが再現、small C |
+| rest 0--13d, starts30=1 | -.0099 / -.0146 / -.0285 | 12,891 / 4,403 / 2,120 | negativeが再現 |
+| rest 180d+, starts30=0 | -.0226 / -.0218 / -.0154 | 9,702 / 3,277 / 1,673 | negativeが再現 |
+| age 3, starts 4--9 | +.0224 / +.0364 / +.0553 | 55,290 / 18,504 / 9,069 | positive、career-stage selection |
+| age 6+, starts 10+ | -.0437 / -.0384 / -.0518 | 22,476 / 8,414 / 3,634 | negativeが再現、class/ability交絡 |
+| age 4--5, starts 10+ | +.0041 / -.0112 / -.0147 | 61,730 / 19,610 / 10,238 | discoveryから符号反転 |
 
 **Observation.** 14--29日restで30日内2走以上のcellは、同restの1走cellより全期間低かった。age 3 / starts 4--9とage 6+ / starts 10+も方向が再現したが、age 4--5 / starts 10+は符号が反転した。
 
@@ -134,11 +134,11 @@ jockey formとrating spreadのcut pointは2014--2019の三分位で固定し、2
 
 | Jockey form × horse history | Centered win D / R / C | Runners D / R / C | Reading |
 |---|---:|---:|---|
-| high × history 0 | +.0444 / +.0524 / +.0396 | 9,281 / 2,906 / 1,752 | strong main effect、cold horseでもpositive |
-| high × starts 1--3 | +.0526 / +.0638 / +.0518 | 22,001 / 6,926 / 4,023 | high form内差は小さい |
-| high × starts 4+ | +.0400 / +.0460 / +.0444 | 59,161 / 18,437 / 10,725 | positive |
-| low × history 0 | -.0430 / -.0405 / -.0419 | 9,102 / 3,039 / 1,556 | negative |
-| low × starts 4+ | -.0284 / -.0284 / -.0316 | 57,003 / 18,061 / 9,079 | negativeだが多少縮小 |
+| high × history 0 | +.0375 / +.0505 / +.0453 | 9,281 / 2,906 / 1,752 | strong main effect、cold-history horseでもpositive |
+| high × starts 1--3 | +.0591 / +.0725 / +.0576 | 22,001 / 6,926 / 4,023 | high form内差は小さい |
+| high × starts 4+ | +.0489 / +.0557 / +.0579 | 59,161 / 18,437 / 10,725 | positive |
+| low × history 0 | -.0495 / -.0516 / -.0528 | 9,102 / 3,039 / 1,556 | negative |
+| low × starts 4+ | -.0323 / -.0328 / -.0367 | 57,003 / 18,061 / 9,079 | negativeだが多少縮小 |
 
 **Observation.** discovery三分位で固定したjockey formのhigh/low差は全experience帯・全期間で同方向だった。一方、experienceによる差はjockey main effectより小さく、同じ順序を全期間で保たない。
 
@@ -166,7 +166,7 @@ race全体を同じfield size / spread cellへ割り当てると、`sum(win - 1/
 
 ### 5.6 Observation: frame/courseとpace/styleは追加探索の根拠が不足する
 
-horse-numberをfield内位置へ正規化した限定監査では、outerはsprintでbase-adjusted winが`+.0019 / +.0060 / +.0053`、middle distanceで`-.0018 / -.0034 / -.0042`と方向が再現した。分析denominatorはD/R/Cの全eligible 271,740 / 88,578 / 43,537 runners、horse-number missingは0だった。ただしvenue×distance×surfaceへ分けたcell countとdate-block intervalをこのworkstreamのcanonical aggregateへ固定していないため、course-specific feature候補へ昇格させない。
+horse-numberをfield内位置へ正規化した限定監査は実施したが、venue×distance×surfaceへ分けたcell countとdate-block intervalをcanonical aggregateへ固定していない。したがって数値結果をevidenceとして採用せず、course-specific feature候補へ昇格させない。
 
 PACEについては、own historical early positionのPACE-01は既存rollingで支持されたが、rival-only current-field pressure 1列のPACE-02はBinary NDCG `+.00017 [-.00193,+.00228]`、Rank NDCG `-.00081 [-.00294,+.00129]`で両family inconclusiveだった。PACE-02 train-only auditは2014--2021の329,978 finite rows、25,322 races中2,212 racesがall-missingである。ここからpressure × styleを追加探索すると同じ仮説への事後適合になるため、本EDAでは行っていない。
 
@@ -194,7 +194,7 @@ PACEについては、own historical early positionのPACE-01は既存rollingで
 
 - 主要transition表はD/R/Cの時間変動そのものをuncertainty診断とし、persistenceの有効race数をrunner数と分けた。rare class-downやlarge distance changeではintervalが広い。
 - race-macro Spearmanは同一race内にcell runnerが3頭以上あるraceだけを使う。transition runner数が多くても、persistence race数は小さくなり得る。
-- OOT errorはone winner per raceで集計したが、同日race、同一horse・jockey・trainerの長期依存を完全に区間化していない。表のsmall differencesを有意差と読まない。
+- OOT errorはcoherent dead-heat massでrace単位に集計し、date-level intervalも保存したが、同一horse・jockey・trainerの長期依存を完全に区間化していない。表のsmall differencesを有意差と読まない。
 - class、rest、age、starts、jockey formはrace placementと能力に強く交絡する。`win - 1/n`はfield-size base rateだけを補正し、因果交絡を除かない。
 - transition / interactionを複数見ているのでmultiple-comparison riskはhighである。符号の時間一致、sample support、意味論を使って仮説を絞り、p-value winnerを選んでいない。
 - discovery三分位は時代driftの影響を受ける。固定cutをreplicationへ移したことはthresholdのproduction妥当性を保証しない。

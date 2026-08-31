@@ -28,7 +28,7 @@ performance axisはSPEED-01と同じ51列のcondition design、ridge alpha 1.0�
 
 ## 4. Methods
 
-全pre-race stateは日付順にemitし、その日の全raceをemitした後にだけ更新した。current opponent表現は代数的同値性、within-race Spearman、inclusiveとの差の分布を確認した。historical表現はcoverage、career/recent/window/decay間のrank相関、career opponent-onlyとcareer inclusiveとの差を期間別に比較した。current fieldはclass groupとfield-size bandでも集約し、performance residualとの関係はrunner-level pooled Spearmanを示し、区間はdate内Spearmanをdate-bootstrapした。これは因果効果でもモデル増分価値でもない。
+全pre-race stateは日付順にemitし、その日の全raceをemitした後にだけ更新した。current opponent表現は代数的同値性、within-race Spearman、inclusiveとの差の分布を確認した。historical表現はcoverage、career/recent/window/decay間のrank相関、career opponent-onlyとcareer inclusiveとの差を期間別に比較した。current fieldはclass groupとfield-size bandでも集約し、performance residualとの関係はdateごとのSpearmanを平均し、同じdate-level estimandをdate-bootstrapした。これは因果効果でもモデル増分価値でもない。
 
 探索を広げないためmapping/HPO/interaction searchは行わず、mean/top-k/max/spreadは意味論の比較に限定した。旧field-relative 15列の再投入、future opponent result、current outcomeから作るfield-quality、同日後続race情報は使用していない。
 
@@ -44,7 +44,7 @@ performance axisはSPEED-01と同じ51列のcondition design、ridge alpha 1.0�
 - classで構造差が大きい。新馬は全期間でfield mean 1,500、spread 0、cold share 100%であり、ordinal horse ratingだけではfieldを区別できない。2022のfield mean/spreadは未勝利1,500.34/51.76、1勝1,515.87/87.75、2勝1,538.55/108.01、3勝1,560.92/110.04、open 1,560.81/95.01だった。field meanはclass情報と強く重なるので、それ自体を新規signalと見なせない。
 - cold shareは10.12%/10.23%/10.36%、experienced shareは72.21%/71.25%/70.82%。surface switcher shareはprior surface既知raceを分母に13.31% [13.13, 13.48]、12.79% [12.50, 13.10]、12.88% [12.50, 13.25]だった。
 - PACE履歴既知率は89.85%/89.76%/89.63%。front candidate数は平均6.67/6.50/6.38、front pressureは1.368/1.345/1.322で、方向は緩やかに低下した。ただしこれはPACE-01から決定論的に得るfield compositionの記述で、追加signalの証明ではない。
-- performance residual coverageは99.61%/99.62%/99.69%（270,686/88,241/43,400 runners）。pre-race field meanとのpooled Spearmanは0.216、0.160、0.184で、date-block 95%区間は[0.209, 0.233]、[0.136, 0.176]、[0.151, 0.212]だった。strong-fieldとgood-performanceの同時割合は12.63% [12.17, 13.10]、12.44% [11.71, 13.23]、13.14% [12.00, 14.38]である。
+- performance residual coverageは99.61%/99.62%/99.69%（270,686/88,241/43,400 runners）。pre-race field meanとのdate-level Spearman平均は0.221、0.156、0.181で、date-block 95%区間は[0.209, 0.233]、[0.136, 0.176]、[0.151, 0.212]だった。strong-fieldとgood-performanceの同時割合は12.63% [12.17, 13.10]、12.44% [11.71, 13.23]、13.14% [12.00, 14.38]である。
 
 ### Interpretation
 
@@ -58,7 +58,7 @@ current opponent-only meanは「相手だけ」を名乗れても、race内で�
 
 ## 7. Uncertainty
 
-race-macro率の95%区間はrace date block bootstrap 1,000回、seed 20260901で算出した。performance相関のpointはpooled runner Spearman、区間は各date内Spearman平均をdate単位で再標本化したためestimandが完全には同一でない。この区間は方向の頑健性診断としてのみ使う。多数のclass/window/composition記述を同時に見ており、多重比較補正をしていない。
+race-macro率の95%区間はrace date block bootstrap 1,000回、seed 20260901で算出した。performance相関のpointと区間はともに各date内Spearmanの平均であり、dateを再標本化する。同一horse/connectionの長期依存は残るため、区間は方向の頑健性診断として読む。多数のclass/window/composition記述を同時に見ており、多重比較補正をしていない。
 
 ordinal ratingは真のlatent abilityではなく、初期値1,500、既往数、class移動、履歴期間に依存する。特に新馬は全馬tieで、within-race correlationを定義できないraceがある。top-rated hitのdenominatorは全strict races、tieはwinner該当数/max-tie頭数で按分した。opponent-only履歴は相手のpre-race stateの推定誤差を継承する。
 

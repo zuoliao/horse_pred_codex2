@@ -62,7 +62,7 @@ numeric finisherについてwinnerからの秒/1000m gapを計算し、race内ra
 
 ### Pairwise and race-wise baselines
 
-全pair、比較可能pair、winnerを含むpair、Top3を含むpairをexact countした。race-wise choiceのshallow nullはuniform probabilityで、Log Loss=`log(n)`、Brier=`1-1/n`とした。特徴量を使うmodel、permutation、production retrainingは実行していない。
+全pair、比較可能pair、winnerを含むpair、Top3を含むpairをexact countした。race-wise choiceのshallow nullはuniform probabilityとした。Log Lossは`log(n)`、co-winnerが`m`頭ならcoherent targetに対するBrierは`1/m-1/n`（通常の`m=1`では`1-1/n`）である。特徴量を使うmodel、permutation、production retrainingは実行していない。
 
 ## 5. Descriptive findings
 
@@ -130,7 +130,7 @@ hard winner binaryのrace-macro positive rateは`7.299% / 7.578% / 7.712%`で、
 
 binary/graded runner-label entropyはfield縮小でpositive率が上がるため増えた一方、winner identityやfull-orderのchoice capacityはfield縮小で下がった。この逆方向は、runner label entropyとrace outcome complexityを同じ「noise」と呼べないことを示す。
 
-uniform race-wise choiceのLog Lossは`2.642 [2.638,2.647] / 2.611 [2.604,2.617] / 2.593 [2.583,2.604]` nats、Brierは`.9271/.9244/.9230`だった。後期の改善はfield size低下だけで発生するため、year間metric比較には同一baselineまたはpaired差が必要である。
+uniform race-wise choiceのLog Lossは`2.642 [2.638,2.647] / 2.611 [2.604,2.617] / 2.593 [2.583,2.604]` nats、coherent Brierは`.9264/.9232/.9224`だった。後期の改善は主にfield size低下で発生するため、year間metric比較には同一baselineまたはpaired差が必要である。
 
 ### 6.2 Rank and gap continuity
 

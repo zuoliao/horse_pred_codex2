@@ -55,7 +55,7 @@ ID・氏名はjoin/state keyとしてのみ用い、数値化したmodel feature
 
 ### 5.1 Connectionsは明確なrace内signalを持つ
 
-下表の分母母集団は各期間の全runner / raceである。効果の実計算は「少なくとも2件の非欠損かつrace内で値が変化するrace」に限定される。EB列のrunner欠損は0だが、同値だけのraceは相関から除外されるため、scope race数は厳密な相関分母の上限である。
+下表の分母母集団は各期間の全runner / raceである。効果の実計算は「少なくとも2件の非欠損かつrace内で値が変化するrace」に限定される。career EB列では実効race数がdiscovery 19,925、replication 6,660、confirmation 3,331でscope全raceと一致した。他列を含む実効race・date分母は`connection_signal_summary.csv`へ列として保存した。
 
 | Feature | Discovery 284,883 / 19,925 | Replication 92,732 / 6,660 | Confirmation 45,649 / 3,331 | 判定 |
 |---|---:|---:|---:|---|
@@ -123,7 +123,7 @@ prior-year下位decileから翌年への平均回帰は全期間で見られた�
 
 - race associationの95% intervalはdate block bootstrap 400回。runnerを独立bootstrapしていない。
 - 同一jockey / trainer / horseの反復依存は残る。年次rank表はyear-pair rangeを示すが、entity-cluster CIではない。
-- race association表のscope race数にはfeatureがrace内同値のraceも含む。相関の実分母はnonmissingかつrace内変動のあるraceであり、local CSVはその件数を別列で保存していない。cross-reviewでの修正候補である。
+- race associationの実効分母はnonmissingかつrace内変動のあるraceであり、scope race数と別に`effective_race_count` / `effective_date_count`を保存した。career EBでは全scope raceが有効だが、短window・条件別列ではこの分母を必ず参照する。
 - 22の主要signalと複数support gateを探索したため、個々のintervalをconfirmatory p-valueとして扱わない。
 - 条件別rateはconditionの出現頻度とentity選択に依存する。特にclass、venue、debut、layoffはassignment confoundingが強い。
 - 固定prior effective n=20は説明用の一案であり、最適化していない。rawとEBの小差は縮約方式の採否を決めない。
