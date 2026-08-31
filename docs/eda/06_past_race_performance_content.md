@@ -26,7 +26,7 @@ next-start分析は、target raceに取消・除外がなく、target horseがst
 - **signed time content diagnostic**: sole winnerは2番目の時計との差を正、nonwinnerはwinnerとの差を負にし、1000m当たりへ換算。demotion/DQ raceはmissing。本章ではlast-start診断にだけ用い、production featureを新規実装しない。
 - **last-3F speed percentile**: race内で小さい秒数を速いとしてaverage-tie rankし、`1` fastest、`0` slowest。
 - **early/final position percentile**: 2 segment以上のpassing stringの最初/最後の位置を、`1` frontmost、`0` rearmostへrace内rank化。
-- **transition-normalized gain**: `(final percentile - early percentile) / (segment count - 1)`。正ならfieldに対して前進。
+- **per-recorded-transition position change**: `(final percentile - early percentile) / (segment count - 1)`。正なら記録点あたりfieldに対して前進するが、記録点は等距離・等時間ではなくcourse間で同じ運動量を表さない。
 - **next-start association**: horseの直前flat startの内容を、その後のtarget race内finish qualityと比較する。current target outcomeをfeature側へ戻さない。
 - **clean order race**: demotion/disqualificationがなく、official orderとphysical clock orderの解釈が通常であるrace。
 
@@ -107,7 +107,7 @@ race-level associationやbinary rateの95% intervalは、日付ごとの平均�
 | last-3F vs final-corner frontness | 19,773 / -.1387 | 6,614 / -.1040 | 3,311 / -.1064 | negative、後期で弱い |
 | last-3F vs position gain | 19,670 / .3183 | 6,568 / .3293 | 3,275 / .3075 | stable positive |
 
-winnerがfield最速last 3Fだったraceは7,403 / 19,925 = 37.15% `[36.34,37.82]`、2,610 / 6,660 = 39.19% `[37.96,40.11]`、1,355 / 3,331 = 40.68% `[38.77,42.34]`。したがってfastest-last-3F loserがいるraceはそれぞれ62.85%、60.81%、59.32%である。逆にwinnerがfield最遅だったのは16、6、5 raceだけだった。
+少なくとも1頭のwinnerがfield最小last 3F値を共有したraceは7,403 / 19,925 = 37.15% `[36.34,37.82]`、2,610 / 6,660 = 39.19% `[37.96,40.11]`、1,355 / 3,331 = 40.68% `[38.77,42.34]`。winnerが最小値を共有しなかったraceはそれぞれ62.85%、60.81%、59.32%である。0.1秒丸めによるtieを許す定義で、sole-fastest winner率ではない。winnerとnonwinnerが最小値を共有するraceでは両者がfastestになり得る。逆にwinnerがfield最大last 3F値を共有したのは16、6、5 raceだけだった。
 
 winner-fastest rateは距離で安定して異なった。
 
@@ -144,7 +144,7 @@ missingは257、75、44 startersで、主にnon-finishに伴う。one-segment ru
 
 final-corner positionはfinishに近いためearly positionより強いが、それ自体が将来にも強いとは限らない。position gainはfast last 3Fと相関するため、sectionalとの冗長性がある。
 
-**Hypothesis.** stable semanticsは、2+ segmentに限定したearly/frontness、final-corner frontness、relative gainである。ただしfinal/gainの追加価値は別々に検証し、straight 1000mはstructural missingにする。
+**Hypothesis.** stable semantics候補は、2+ segmentに限定したfirst-recorded position、last-recorded position、per-recorded-transition changeである。ただし記録点を無条件に序盤/cornerや等距離segmentと呼ばない。final/changeの追加価値は別々に検証し、straight 1000mはstructural missingにする。
 
 ### 5.5 Absolute time is condition-dominated; a residual remains
 
@@ -174,7 +174,7 @@ condition residual meanはdiscovery 0.000s、replication -0.129s、confirmation 
 | last-3F percentile | 244,412、17,318 / .3205 [.3170,.3253] / .1397 | 79,490、5,790 / .3089 [.3028,.3156] / .1455 | 39,082、2,895 / .3171 [.3043,.3295] / .1558 | stable positive |
 | early frontness | 242,596、17,317 / .1117 [.1043,.1152] / .1040 | 78,938、5,790 / .1078 [.1002,.1154] / .1110 | 38,821、2,895 / .1191 [.1030,.1297] / .1178 | weak but stable |
 | final-corner frontness | 242,596、17,317 / .1821 [.1758,.1854] / .1178 | 78,938、5,790 / .1790 [.1710,.1856] / .1286 | 38,821、2,895 / .1900 [.1714,.1990] / .1308 | stable positive |
-| normalized gain | 242,596、17,316 / .1342 [.1306,.1388] / .0860 | 78,938、5,790 / .1314 [.1214,.1371] / .0915 | 38,821、2,894 / .1285 [.1170,.1367] / .0929 | weak, stable |
+| per-recorded-transition change | 242,596、17,316 / .1342 [.1306,.1388] / .0860 | 78,938、5,790 / .1314 [.1214,.1371] / .0915 | 38,821、2,894 / .1285 [.1170,.1367] / .0929 | weak, stable; course-independentではない |
 
 signed time contentはfinishよりmean rank associationが少し弱い一方、univariate Top-1 pointは3期間ともわずかに高かった。last 3Fはそれらより弱いが独立に安定し、passing-derived signalも弱いながら同符号で再現した。
 

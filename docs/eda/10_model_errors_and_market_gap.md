@@ -25,7 +25,7 @@ outcome/context/stateはapproved raw（SHA-256 `270923ce73c4441e64173f242a8719de
 - **high-confidence selection/error:** model top probabilityが0.30以上のraceをselection、そのtop horseがofficial winnerでないraceをerrorとする。これは賭けselectionではない。
 - **disagreement:** BinaryとLambdaRankのtop horse IDが異なるrace。正解率はこの診断だけhard winner eventを用いる。
 - **history:** winnerのstrictly-prior JRA平地startsを`0 / 1 / 2–3 / 4–9 / 10+`へ固定区分する。`0`は観測履歴なしであり、race classの「新馬」と同義ではない。
-- **connections:** jockey/trainerのprior starts/winsから各`(wins+1)/(starts+20)`を計算し、その平均を`<.06 / .06–.08 / .08–.10 / >=.10`へ固定区分する。winner-sideのoutcome-conditioned診断である。
+- **connections:** jockey/trainerのprior starts/winsから各`(wins+1)/(starts+20)`を計算し、その平均を`<.06 / .06–.08 / .08–.10 / >=.10`へ固定区分する。winner-sideのoutcome-conditioned診断である。trainerはcanonical IDでなくraw name keyであり、F章のentity-continuity制約を引き継ぐ。
 - **field uncertainty:** race内`mean(1/sqrt(horse_starts_pre+1))`。quartile cutは2014–2019 discovery raceだけで固定し、2020–2022へ変更せず適用した。
 - **market oracle:** complete raceの各`1/final_win_odds`をrace内正規化した事後確率。締切前価格でも実行可能価格でもない。
 
@@ -115,13 +115,13 @@ primary analysis表にはfinal odds/popularity列が存在しないことをasse
 
 | Candidate component | Evidence | What remains unidentified |
 |---|---|---|
-| 当日/追加情報の欠如 | winner starts=0のBinary market gapは.292/.357/.330、6+は.137/.187/.183。cold-startでmarket優位が一貫して大きい | final oddsが使う血統、調教、馬体重、当日馬場、取消等の個別寄与は未分離 |
-| modeling / representation | 6+ startsでもgapは正、winner rank top3外が約42%。既知履歴が多くても取り切れていない | feature不足、GBDT表現、label noiseのどれかは未識別 |
+| 当日/追加情報の欠如 | winnerの観測JRA平地starts=0でBinary market gapは.292/.357/.330、10+では.096/.124/.146。cold-historyでmarket優位が一貫して大きい | final oddsが使う血統、調教、馬体重、当日馬場、取消等の個別寄与は未分離 |
+| modeling / representation | 10+ startsでもgapは正、winner rank top3外が約42%。既知履歴が多くても取り切れていない | feature不足、GBDT表現、label noiseのどれかは未識別 |
 | target / objective | Binary–Rank LL差は.0069/.0248/.0103とmarket gapより小さく、NDCG優位方向も年で変わる。不一致は約24% | supervised race-wise choiceやcontinuous targetの改善余地は未実験 |
 | calibration | fixed-bin ECEは.0016–.0055で、tail overconfidenceは年依存 | ECEとmarket LL gapは同じ加法尺度ではなく、「残差=ranking」とは言えない |
 | selection optimism / temporal drift | 3 foldは既参照、2022のprior useが多い。market自体も2020→2022で改善しgapが拡大 | 真の将来gapにはprospective/untouched期間が必要 |
 
-したがって「market gapの主因はX%」とは定量分解できない。最も再現的な診断はcold-start winnerでgapが大きいこと、既知履歴6+でもgapが消えないこと、calibration誤差だけでは説明しにくいことである。
+したがって「market gapの主因はX%」とは定量分解できない。最も再現的な診断はcold-history winnerでgapが大きいこと、既知履歴10+でもgapが消えないこと、calibration誤差だけでは説明しにくいことである。
 
 ## 11. Candidate hypotheses
 

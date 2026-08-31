@@ -22,7 +22,7 @@ primary denominatorはflat、取消・除外なし、starterのみ、公式winne
 
 pre-race abilityはordinal pairwise Elo（初期値1,500、K=24、scale=400）を同日一括更新で再構成した。current raceのrating列を`r_i`、頭数を`n`とすると、self-inclusive field meanは`mean(r)`、対象馬を除くopponent meanは`(sum(r)-r_i)/(n-1)`である。opponent top-k/max/spreadも各対象馬を除いた集合から計算する。field competitivenessはrating-softmaxの正規化entropy、effective contenders `1/sum(p_i^2)`、rating spreadで記述する。uncertainty proxyは`1/sqrt(starts_pre+1)`、coldはstarts=0、experiencedはstarts>=3とした。
 
-historical opponent observationは各完了済み過去raceにおける対象馬以外のpre-race rating平均であり、そのraceの対象馬の着順、時計、将来の相手成績を使わない。career、last-1/3/5、90日半減指数平均、`decay90-career` trendをemit-before-updateで作る。surface switcherは直前の既知surfaceとの不一致で、初出走はmissingである。front candidateは凍結済みPACE-01履歴が0.5を超える馬、front pressureは`sum(max(PACE01-0.5,0))`とした。
+historical opponent observationは各完了済み過去raceにおける対象馬以外のpre-race rating平均であり、そのraceの対象馬の着順、時計、将来の相手成績を使わない。career、last-1/3/5、90日半減指数平均、`decay90-career` trendをemit-before-updateで作る。surface switcherは直前の既知surfaceとの不一致で、初出走はmissingである。`above-median historical early-position proxy`は凍結済みPACE-01履歴が0.5を超える馬、proxy pressureは`sum(max(PACE01-0.5,0))`とした。これは逃げ・先行馬の直接分類ではない。
 
 performance axisはSPEED-01と同じ51列のcondition design、ridge alpha 1.0、510 clean-race cold start、同日一括更新、±5秒/1,000m clipによる当該runnerの`expected winner clock - runner clock`である。これはoutcome-sideの分析量で、field-quality axisのpre-race field meanとは結合しない。
 
@@ -43,8 +43,8 @@ performance axisはSPEED-01と同じ51列のcondition design、ridge alpha 1.0�
 - field rating meanは1,518.36/1,519.89/1,518.77、field spread平均は79.14/74.11/72.46 Eloだった。正規化entropyは0.99625 [0.99620, 0.99629]、0.99656 [0.99648, 0.99664]、0.99666 [0.99656, 0.99676]で、raw Elo softmaxはかなり平坦である。一方、top-rated horseのtie補正winner率は15.95% [15.48, 16.42]、14.96% [14.07, 15.88]、15.59% [14.26, 16.82]だった。
 - classで構造差が大きい。新馬は全期間でfield mean 1,500、spread 0、cold share 100%であり、ordinal horse ratingだけではfieldを区別できない。2022のfield mean/spreadは未勝利1,500.34/51.76、1勝1,515.87/87.75、2勝1,538.55/108.01、3勝1,560.92/110.04、open 1,560.81/95.01だった。field meanはclass情報と強く重なるので、それ自体を新規signalと見なせない。
 - cold shareは10.12%/10.23%/10.36%、experienced shareは72.21%/71.25%/70.82%。surface switcher shareはprior surface既知raceを分母に13.31% [13.13, 13.48]、12.79% [12.50, 13.10]、12.88% [12.50, 13.25]だった。
-- PACE履歴既知率は89.85%/89.76%/89.63%。front candidate数は平均6.67/6.50/6.38、front pressureは1.368/1.345/1.322で、方向は緩やかに低下した。ただしこれはPACE-01から決定論的に得るfield compositionの記述で、追加signalの証明ではない。
-- performance residual coverageは99.61%/99.62%/99.69%（270,686/88,241/43,400 runners）。pre-race field meanとのdate-level Spearman平均は0.221、0.156、0.181で、date-block 95%区間は[0.209, 0.233]、[0.136, 0.176]、[0.151, 0.212]だった。strong-fieldとgood-performanceの同時割合は12.63% [12.17, 13.10]、12.44% [11.71, 13.23]、13.14% [12.00, 14.38]である。
+- PACE履歴既知率は89.85%/89.76%/89.63%。above-median early-position proxy数は平均6.67/6.50/6.38、proxy pressureは1.368/1.345/1.322で、方向は緩やかに低下した。ただしこれはPACE-01から決定論的に得るfield compositionの記述で、逃げ馬数でも追加signalの証明でもない。
+- performance residual coverageは99.61%/99.62%/99.69%（270,686/88,241/43,400 runners）。race内定数のpre-race field meanとrunner residualの**cross-race** date-level Spearman平均は0.221、0.156、0.181で、date-block 95%区間は[0.209, 0.233]、[0.136, 0.176]、[0.151, 0.212]だった。頭数の多いraceでfield meanが反復され、race内horse順位付け効果は識別しない。strong-fieldとgood-performanceの同時割合は12.63% [12.17, 13.10]、12.44% [11.71, 13.23]、13.14% [12.00, 14.38]である。
 
 ### Interpretation
 

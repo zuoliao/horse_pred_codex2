@@ -34,7 +34,7 @@ local aggregate sourceは`artifacts/eda_20260901/workstreams/g_context/`にあ�
 - **base-adjusted win:** runnerのwinner indicatorから`1/current starter field size`を引く。raw win rateのfield-size差を軽減する記述量で、因果効果ではない。
 - **surface transition:** `turf_same`、`dirt_same`、`turf_to_dirt`、`dirt_to_turf`。
 - **distance transition:** absolute change 200m以内、201--399m、400m以上延長、400m以上短縮。200m以内には同距離を含む。
-- **class tier:** 新馬/未勝利=0、1勝/旧500万=1、2勝/旧1000万=2、3勝/旧1600万=3、open/graded=4。current minus previousが正ならup、負ならdown。
+- **class tier:** 未勝利=0、1勝/旧500万=1、2勝/旧1000万=2、3勝/旧1600万=3、open/graded=4。新馬は同tierに潰さず、`new_to_maiden` / `new_related_other`として独立transitionにする。それ以外はcurrent minus previousが正ならup、負ならdown。
 - **rest:** 0--13、14--29、30--89、90--179、180日以上。prior startなしは`history0`として別扱い。
 - **field-size transition:** 前走との差が±1以内、2--4増減、5頭以上増減。
 - **OOT error:** co-winnerへ`1/m`を配ったwinner massで重み付けした負対数と、race内最大calibrated probabilityに対応するwinner massというTop-1。確率比較ではLog Lossを主に読み、Top-1はguardrailとする。
@@ -99,8 +99,9 @@ jockey formとrating spreadのcut pointは2014--2019の三分位で固定し、2
 | turf → dirt | 19,681 / 6,243 / 3,042 | -.0209 / -.0138 / -.0176 | .281 / .247 / .247 | 負方向は再現 |
 | extend ≥400m | 19,693 / 5,847 / 2,818 | -.0331 / -.0330 / -.0285 | .339 / .286 / .399 | winは一貫、persistence差は不安定 |
 | class down | 5,998 / 1,182 / 597 | +.0461 / +.0389 / +.0665 | .331 / .234 / .412 | confirmation 597 runners / 44 persistence racesでwide |
-| class same | 217,497 / 71,174 / 34,906 | -.0010 / -.0010 / -.0023 | .433 / .406 / .424 | 大support、stable |
-| class up | 21,337 / 7,277 / 3,643 | +.0071 / +.0145 / +.0220 | .397 / .298 / .353 | promotion selectionを含む |
+| new → maiden | 20,085 / 6,942 / 3,341 | -.0078 / -.0038 / -.0045 | .441 / .447 / .432 | 新馬を未勝利と同一tierにせず独立 |
+| class same | 197,412 / 64,232 / 31,565 | -.0004 / -.0009 / -.0023 | .432 / .402 / .423 | 大support、stable |
+| class up | 19,633 / 6,663 / 3,332 | +.0039 / +.0122 / +.0220 | .399 / .313 / .332 | promotion selectionを含む |
 | rest 0--13d | 17,348 / 5,780 / 2,749 | -.0132 / -.0150 / -.0227 | .399 / .404 / .368 | negativeは全期間、因果的疲労ではない |
 | rest 14--29d | 108,744 / 32,324 / 15,560 | +.0091 / +.0049 / +.0014 | .371 / .358 / .381 | magnitude drift |
 | rest 30--89d | 79,932 / 27,577 / 14,042 | -.0014 / +.0038 / +.0087 | .321 / .300 / .343 | outcome符号は非安定 |
@@ -116,13 +117,13 @@ jockey formとrating spreadのcut pointは2014--2019の三分位で固定し、2
 
 | Interaction cell | Centered win D / R / C | Runners D / R / C | Direction / limitation |
 |---|---:|---:|---|
-| rest 14--29d, starts30=1 | +.0153 / +.0082 / +.0048 | 102,982 / 30,555 / 14,747 | positive、magnitude縮小 |
-| rest 14--29d, starts30=2+ | -.0082 / -.0073 / -.0229 | 5,762 / 1,769 / 813 | negativeが再現、small C |
-| rest 0--13d, starts30=1 | -.0099 / -.0146 / -.0285 | 12,891 / 4,403 / 2,120 | negativeが再現 |
+| rest 14--29d, starts30=1 | +.0152 / +.0079 / +.0047 | 102,982 / 30,555 / 14,747 | positive、magnitude縮小 |
+| rest 14--29d, starts30=2+ | -.0084 / -.0077 / -.0229 | 5,762 / 1,769 / 813 | negativeが再現、small C |
+| rest 0--13d, starts30=1 | -.0101 / -.0148 / -.0285 | 12,891 / 4,403 / 2,120 | negativeが再現 |
 | rest 180d+, starts30=0 | -.0226 / -.0218 / -.0154 | 9,702 / 3,277 / 1,673 | negativeが再現 |
-| age 3, starts 4--9 | +.0224 / +.0364 / +.0553 | 55,290 / 18,504 / 9,069 | positive、career-stage selection |
-| age 6+, starts 10+ | -.0437 / -.0384 / -.0518 | 22,476 / 8,414 / 3,634 | negativeが再現、class/ability交絡 |
-| age 4--5, starts 10+ | +.0041 / -.0112 / -.0147 | 61,730 / 19,610 / 10,238 | discoveryから符号反転 |
+| age 3, starts 4--9 | +.0223 / +.0360 / +.0551 | 55,290 / 18,504 / 9,069 | positive、career-stage selection |
+| age 6+, starts 10+ | -.0438 / -.0384 / -.0518 | 22,476 / 8,414 / 3,634 | negativeが再現、class/ability交絡 |
+| age 4--5, starts 10+ | +.0039 / -.0114 / -.0147 | 61,730 / 19,610 / 10,238 | discoveryから符号反転 |
 
 **Observation.** 14--29日restで30日内2走以上のcellは、同restの1走cellより全期間低かった。age 3 / starts 4--9とage 6+ / starts 10+も方向が再現したが、age 4--5 / starts 10+は符号が反転した。
 
@@ -134,9 +135,9 @@ jockey formとrating spreadのcut pointは2014--2019の三分位で固定し、2
 
 | Jockey form × horse history | Centered win D / R / C | Runners D / R / C | Reading |
 |---|---:|---:|---|
-| high × history 0 | +.0375 / +.0505 / +.0453 | 9,281 / 2,906 / 1,752 | strong main effect、cold-history horseでもpositive |
-| high × starts 1--3 | +.0591 / +.0725 / +.0576 | 22,001 / 6,926 / 4,023 | high form内差は小さい |
-| high × starts 4+ | +.0489 / +.0557 / +.0579 | 59,161 / 18,437 / 10,725 | positive |
+| high × history 0 | +.0374 / +.0502 / +.0453 | 9,281 / 2,906 / 1,752 | strong main effect、cold-history horseでもpositive |
+| high × starts 1--3 | +.0590 / +.0723 / +.0576 | 22,001 / 6,926 / 4,023 | high form内差は小さい |
+| high × starts 4+ | +.0488 / +.0553 / +.0577 | 59,161 / 18,437 / 10,725 | positive |
 | low × history 0 | -.0495 / -.0516 / -.0528 | 9,102 / 3,039 / 1,556 | negative |
 | low × starts 4+ | -.0323 / -.0328 / -.0367 | 57,003 / 18,061 / 9,079 | negativeだが多少縮小 |
 
@@ -164,9 +165,9 @@ race全体を同じfield size / spread cellへ割り当てると、`sum(win - 1/
 
 **Hypothesis.** `large field × rating uncertainty/spread`はfeature追加より先に、calibration・winner characteristics・rating coverageを分解するresidual studyとして登録する。race-constant spread 1列を単独で試す場合も、旧15列を戻さない。
 
-### 5.6 Observation: frame/courseとpace/styleは追加探索の根拠が不足する
+### 5.6 Observation: normalized horse-number/courseとpace/styleは追加探索の根拠が不足する
 
-horse-numberをfield内位置へ正規化した限定監査は実施したが、venue×distance×surfaceへ分けたcell countとdate-block intervalをcanonical aggregateへ固定していない。したがって数値結果をevidenceとして採用せず、course-specific feature候補へ昇格させない。
+horse-numberをfield内位置へ正規化した限定監査は実施したが、これは枠番ではない。venue×distance×surfaceへ分けたcell countとdate-block intervalをcanonical aggregateへ固定していないため、数値結果をevidenceとして採用せず、horse-number/course feature候補へ昇格させない。
 
 PACEについては、own historical early positionのPACE-01は既存rollingで支持されたが、rival-only current-field pressure 1列のPACE-02はBinary NDCG `+.00017 [-.00193,+.00228]`、Rank NDCG `-.00081 [-.00294,+.00129]`で両family inconclusiveだった。PACE-02 train-only auditは2014--2021の329,978 finite rows、25,322 races中2,212 racesがall-missingである。ここからpressure × styleを追加探索すると同じ仮説への事後適合になるため、本EDAでは行っていない。
 
@@ -233,7 +234,7 @@ PACEについては、own historical early positionのPACE-01は既存rollingで
 | jockey form × experience | defer | connections main effectと冗長、interaction evidence弱い |
 | rating spread × field size | residual diagnosis first | large/high-spread OOT lossは再現したが原因未分解 |
 | old field-relative 15 columns | keep removed | 本EDAは単純復活を支持しない |
-| post × course | redesign / preregister | distance別方向はあるがcourse-level audit不足 |
+| normalized horse-number × course | redesign / preregister | 枠番とは別。course-level audit不足 |
 | pace pressure × style | defer | PACE-02単体がinconclusive、事後interaction risk |
 
 BinaryとLambdaRankはいずれもsame-conditionよりsurface switch、large distance change、history0でwinner lossが高かった。例としてdirt→turfのBinary winner lossはreplication / confirmationで2.679 / 2.891、LambdaRankは2.672 / 2.860、same dirtは2.118 / 2.074と2.120 / 2.058だった。これは両objective共通のinformation / representation gapを示唆し、model familyだけを替えれば解決する証拠ではない。
@@ -249,7 +250,7 @@ BinaryとLambdaRankはいずれもsame-conditionよりsurface switch、large dis
 3. **EDA-G-03: large-field high-spread error decomposition**  
    featureを直ちに追加せず、15頭以上×high rating spreadでwinner lossが高い理由を、rating coverage、class、history mix、winner rating rank、calibrationへ分解する。旧field-relative列を復活させない。PIT risk low、expected knowledge high。
 
-`class × opponent strength`、`jockey × experience`、`post × venue-distance`、`pace pressure × style`は、現証拠では`proposed/defer`でありtop-3に入れない。
+`class × opponent strength`、`jockey × experience`、`normalized horse-number × venue-distance`、`pace pressure × style`は、現証拠では`proposed/defer`でありtop-3に入れない。
 
 ## 12. What not to conclude
 
