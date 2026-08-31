@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "experiment_id": "pace_03_final_position",
+  "hypothesis": "A 90-day decayed history of the horse's own race-relative final recorded passing position adds running-content information beyond accepted PACE-01 early position.",
+  "candidate_column": "pace_final__decay_90d__mean_final_position_percentile",
+  "transformation_hash": "b0bb8efb6b696cabd52e7da2f9e72ce9d5bbbd6d3ca9b6a95180a643e66be52c",
+  "transformation": {
+    "feature_id": "PACE-03",
+    "source": "passing_order_raw",
+    "eligible_race": "JRA flat",
+    "eligible_runner": "started and numeric hyphen-separated passing order with at least two segments",
+    "structural_exception": "races with no two-or-more-segment starter supply no observation, including Niigata turf straight 1000m",
+    "within_race_transform": {
+      "checkpoint": "final recorded passing position",
+      "rank": "ascending average tie rank among eligible runners",
+      "value": "1-(rank-1)/(n_valid-1)",
+      "meaning": "1 frontmost, 0 rearmost",
+      "min_valid": 2
+    },
+    "history": {
+      "half_life_days": 90,
+      "same_date_batch": true,
+      "missing_history": "NaN"
+    },
+    "output_column": "pace_final__decay_90d__mean_final_position_percentile"
+  },
+  "source_scope": {
+    "raw_fingerprint": "270923ce73c4441e64173f242a8719de7d1e9b205508140463ca547ef7b1ca87",
+    "mapping_audit_years": [2014, 2021],
+    "state_warmup_starts": 2013,
+    "raw_cutoff_before_normalization": 2024,
+    "retrospective_2025_used": false
+  },
+  "evaluation_policy": {
+    "runner": "rolling-origin",
+    "evaluation_years": [2020, 2021, 2022, 2023],
+    "binary_control": "pace_01_binary_candidate",
+    "lambdarank_control": "pace_01_lambdarank_candidate",
+    "candidate_change": "add exactly the one registered final-position column; PACE-02 remains excluded",
+    "development_2024": "closed until the rolling decision authorizes a milestone",
+    "retrospective_2025": "never used for selection"
+  },
+  "multiple_testing": {
+    "hypotheses_in_this_experiment": 1,
+    "candidate_representations_screened": 1,
+    "same_rolling_evaluation_seen_before_this_experiment": 35
+  }
+}

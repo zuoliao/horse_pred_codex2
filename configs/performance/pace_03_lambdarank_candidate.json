@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "experiment_id": "pace_03_lambdarank_candidate",
+  "parent_experiment_id": "pace_01_lambdarank_candidate",
+  "hypothesis": "The frozen PACE-03 final-position history adds rolling-origin signal to lean plus SEC-3F plus PACE-01 LambdaRank.",
+  "seed": 42,
+  "model_configs": {
+    "binary": "configs/exp_001_binary.json",
+    "lambdarank": "configs/exp_002_lambdarank.json"
+  },
+  "feature_selection": {
+    "include": [
+      "current_context",
+      "horse_performance",
+      "form_workload",
+      "suitability",
+      "connections",
+      "rating_value",
+      "sectional",
+      "pace",
+      "pace_final"
+    ]
+  }
+}
