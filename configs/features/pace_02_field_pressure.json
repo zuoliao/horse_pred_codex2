@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "experiment_id": "pace_02_field_pressure",
+  "hypothesis": "The current field's rival-only continuous front-running pressure adds inter-horse information beyond each horse's frozen PACE-01 history.",
+  "candidate_column": "pace_pressure__current_field__rival_front_excess_sum",
+  "transformation_hash": "59c5d5a818498561956b1101fc990944ad475d7c8645e59269c10c414c697285",
+  "transformation": {
+    "feature_id": "PACE-02",
+    "source": "pace__decay_90d__mean_early_position_percentile",
+    "eligible_runner": "current-field row with at least one other runner having finite PACE-01 history",
+    "within_race_transform": {
+      "runner_front_excess": "max(x-0.5,0)",
+      "meaning": "continuous excess above the frozen PACE-01 percentile midpoint",
+      "aggregate": "sum over finite other-runner front excess",
+      "exclude_target_runner": true,
+      "missing": "NaN when no finite opponent history exists"
+    },
+    "timestamp_semantics": "current field composed only from PIT PACE-01 histories already available at target date",
+    "output_column": "pace_pressure__current_field__rival_front_excess_sum"
+  },
+  "source_scope": {
+    "input_cache": "data/model_frame_pace_01.pkl",
+    "input_cache_sha256": "8b4480da6d6396d9bac54b92d947948708e0bccc30cfe0ac24be40e427d5e732",
+    "mapping_audit_years": [2014, 2021],
+    "maximum_materialized_year": 2024,
+    "retrospective_2025_used": false
+  },
+  "evaluation_policy": {
+    "runner": "rolling-origin",
+    "evaluation_years": [2020, 2021, 2022, 2023],
+    "binary_control": "pace_01_binary_candidate",
+    "lambdarank_control": "pace_01_lambdarank_candidate",
+    "candidate_change": "add exactly the one registered pace-pressure column",
+    "development_2024": "closed until the rolling decision authorizes a milestone",
+    "retrospective_2025": "never used for selection"
+  },
+  "multiple_testing": {
+    "hypotheses_in_this_experiment": 1,
+    "candidate_representations_screened": 1,
+    "same_rolling_evaluation_seen_before_this_experiment": 33
+  }
+}
