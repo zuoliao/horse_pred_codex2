@@ -46,6 +46,7 @@ from horse_pred.margin_token_rating_study import (
     run_margin_token_rating_study,
 )
 from horse_pred.opponent_recent import build_opponent_recent_cache_from_raw
+from horse_pred.pace_recent import build_pace_recent_cache_from_raw
 from horse_pred.pipeline import run_mvp
 from horse_pred.race_content import (
     build_race_content_augmented_cache,
@@ -240,6 +241,19 @@ def parser() -> argparse.ArgumentParser:
         default=Path("configs/features/sec_3f_001.json"),
     )
     sectional_recent.add_argument("--repo-root", type=Path, default=Path.cwd())
+    pace_recent = commands.add_parser(
+        "build-pace-recent-cache",
+        help="build the preregistered one-column PACE-01 cache without 2025",
+    )
+    pace_recent.add_argument("--raw-path", type=Path, required=True)
+    pace_recent.add_argument("--baseline-cache", type=Path, required=True)
+    pace_recent.add_argument("--output", type=Path, required=True)
+    pace_recent.add_argument(
+        "--config",
+        type=Path,
+        default=Path("configs/features/pace_01_early_position.json"),
+    )
+    pace_recent.add_argument("--repo-root", type=Path, default=Path.cwd())
     margin_rating = commands.add_parser(
         "run-margin-rating-study",
         help="run the preregistered PV-02 time-margin standalone rating study",
@@ -581,6 +595,16 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 0
     if args.command == "build-sectional-recent-cache":
         result = build_sectional_recent_cache_from_raw(
+            repo_root=args.repo_root,
+            raw_path=args.raw_path,
+            baseline_cache_path=args.baseline_cache,
+            output_path=args.output,
+            config_path=args.config,
+        )
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0
+    if args.command == "build-pace-recent-cache":
+        result = build_pace_recent_cache_from_raw(
             repo_root=args.repo_root,
             raw_path=args.raw_path,
             baseline_cache_path=args.baseline_cache,
