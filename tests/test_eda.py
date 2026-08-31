@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import json
 from pathlib import Path
 
 import pandas as pd
@@ -14,7 +15,10 @@ from horse_pred.eda import (
     build_market_oracle,
     build_race_table,
     load_eda_population,
+    run_eda,
 )
+
+REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 
 
 def _row(race_id: str, horse_number: int, finish: str, race_date: str) -> dict[str, str]:
@@ -98,3 +102,20 @@ def test_market_is_separate_from_performance_and_race_views(tmp_path: Path) -> N
     assert not MARKET_COLUMNS.intersection(historical.columns)
     assert not MARKET_COLUMNS.intersection(race.columns)
     assert (historical["available_from"] > historical["race_date"]).all()
+
+
+def test_completed_eda_artifact_can_resume_without_reloading_raw(tmp_path: Path) -> None:
+    output = tmp_path / "eda"
+    output.mkdir()
+    expected = {"analysis_id": "fixture", "max_target_date": "2022-12-31"}
+    (output / "manifest.json").write_text(json.dumps(expected), encoding="utf-8")
+
+    result = run_eda(
+        repo_root=REPOSITORY_ROOT,
+        raw_path=tmp_path / "does-not-exist.csv",
+        output_dir=output,
+        max_date="2022-12-31",
+        resume=True,
+    )
+
+    assert result == expected

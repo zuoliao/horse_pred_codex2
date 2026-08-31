@@ -136,9 +136,19 @@ def build_race_table(normalized: pd.DataFrame) -> pd.DataFrame:
     ).reset_index()
     status_counts = pd.crosstab(work["race_id"], work["status"]).add_prefix("status__")
     race = race.merge(status_counts, left_on="race_id", right_index=True, how="left")
+    winners = (
+        work.loc[work["winner_label"].eq(1)]
+        .groupby("race_id", sort=True)["horse_id"]
+        .agg(lambda values: "|".join(sorted(map(str, values))))
+        .rename("winner_horse_ids")
+    )
+    race = race.merge(winners, left_on="race_id", right_index=True, how="left")
     race["scratch_exclusion_count"] = (~started).groupby(work["race_id"]).sum().to_numpy()
     race["completed_count"] = completed.groupby(work["race_id"]).sum().to_numpy()
     race["source_coverage_complete"] = race["declared_count"].eq(race["source_rows"])
+    class_text = race["race_class"].astype("string")
+    race["age_restriction"] = class_text.str.extract(r"(2歳|3歳以上|3歳|4歳以上)", expand=False)
+    race["sex_restriction"] = np.where(class_text.str.contains("牝", na=False), "female_only", "mixed")
     race["analysis_period"] = _period_label(race["date"])
     return race
 
@@ -171,6 +181,7 @@ def build_market_oracle(normalized: pd.DataFrame) -> pd.DataFrame:
 
 def build_historical_performance(normalized: pd.DataFrame) -> pd.DataFrame:
     work = normalized.loc[normalized["started"].fillna(False)].copy()
+    work = work.sort_values(["horse_id", "race_date", "race_id"], kind="stable")
     work["race_time_seconds"] = _time_seconds(work["time_raw"])
     winner_time = work.groupby("race_id", sort=False)["race_time_seconds"].transform("min")
     field_size = work.groupby("race_id", sort=False)["race_id"].transform("size")
@@ -179,13 +190,19 @@ def build_historical_performance(normalized: pd.DataFrame) -> pd.DataFrame:
     work["last_3f_percentile"] = work.groupby("race_id", sort=False)["last_3f_seconds"].rank(
         method="average", pct=True, ascending=True
     )
-    work["available_from"] = pd.to_datetime(work["race_date"]) + pd.Timedelta(days=1)
+    work["available_from"] = pd.to_datetime(work["race_date"]) + pd.offsets.Day(1)
+    work["next_target_date"] = work.groupby("horse_id", sort=False)["race_date"].shift(-1)
+    work["elapsed_days_to_next_target"] = (
+        pd.to_datetime(work["next_target_date"]) - pd.to_datetime(work["race_date"])
+    ).dt.days
     work["analysis_period"] = _period_label(work["race_date"])
     columns = [
         "horse_id",
         "race_id",
         "race_date",
         "available_from",
+        "next_target_date",
+        "elapsed_days_to_next_target",
         "venue",
         "surface",
         "distance_m",
@@ -251,11 +268,40 @@ def build_private_views(
     connection = runner.loc[
         :, ["race_id", "race_date", "horse_id", "jockey_id", "trainer"] + connection_columns
     ].copy()
+    for entity in ("jockey", "trainer"):
+        starts_column = f"{entity}_history__career__starts"
+        rate_column = f"{entity}_history__career__win_rate"
+        starts = pd.to_numeric(connection[starts_column], errors="coerce").fillna(0)
+        wins = pd.to_numeric(connection[rate_column], errors="coerce").fillna(0) * starts
+        alpha = wins + 1
+        beta = starts - wins + 1
+        connection[f"{entity}__effective_sample_size"] = starts
+        connection[f"{entity}__posterior_win_rate_sd"] = np.sqrt(
+            alpha * beta / ((alpha + beta) ** 2 * (alpha + beta + 1))
+        )
+    historical = build_historical_performance(normalized)
+    rating_columns = [
+        "rating__horse_elo_pre",
+        "rating__field_mean_elo_pre",
+        "rating__field_max_elo_pre",
+        "rating__field_std_elo_pre",
+    ]
+    historical = historical.merge(
+        runner[["race_id", "horse_id"] + rating_columns],
+        on=["race_id", "horse_id"],
+        how="left",
+        validate="one_to_one",
+    )
+    starter_count = historical.groupby("race_id", sort=False)["horse_id"].transform("size")
+    historical["opponent_only_mean_elo_pre"] = (
+        historical["rating__field_mean_elo_pre"] * starter_count
+        - historical["rating__horse_elo_pre"]
+    ) / (starter_count - 1).replace(0, np.nan)
     return {
         "race_table": build_race_table(normalized),
         "runner_pre_race": runner,
         "outcomes": outcomes,
-        "historical_performance": build_historical_performance(normalized),
+        "historical_performance": historical,
         "connection_state": connection,
         "market_oracle": build_market_oracle(normalized),
         "raw_status_population": build_raw_status_population(normalized),
@@ -469,6 +515,19 @@ def run_eda(
     output.mkdir(parents=True, exist_ok=True)
     for name in ("views", "tables", "plots", "workstreams", "logs"):
         (output / name).mkdir(exist_ok=True)
+    existing_manifest = output / "manifest.json"
+    if resume and existing_manifest.is_file():
+        with existing_manifest.open(encoding="utf-8") as handle:
+            completed = json.load(handle)
+        if completed.get("max_target_date") != str(EDA_MAX_DATE.date()):
+            raise ValueError("existing EDA artifact has an incompatible cutoff")
+        return completed
+
+    _json_dump(output / "analysis_config.json", config)
+    (output / "logs" / "run.log").write_text(
+        "Phase 5A run started; target-aware data capped at 2022-12-31.\n",
+        encoding="utf-8",
+    )
 
     manifest = load_manifest(manifest_file)
     raw_sha256 = sha256_file(raw_path)
@@ -508,6 +567,10 @@ def run_eda(
         encoding="utf-8",
     )
     _write_report(output, summaries, tables)
+    (output / "logs" / "run.log").write_text(
+        "Phase 5A common views and aggregates completed; cutoff checks passed.\n",
+        encoding="utf-8",
+    )
 
     git_commit = _git_value(root, "rev-parse", "HEAD")
     git_status = _git_value(root, "status", "--short")
