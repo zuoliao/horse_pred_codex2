@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "experiment_id": "gr_001_graded_field_half_lambdarank",
+  "run_commit": "9d3eeabe49c3755d6b15d7bd5075e1af0a6306d4",
+  "run_dirty": false,
+  "data_fingerprint": "270923ce73c4441e64173f242a8719de7d1e9b205508140463ca547ef7b1ca87",
+  "scope": {
+    "model_fit": "2014-2019",
+    "early_stopping": 2020,
+    "temperature_calibration": 2021,
+    "validation_year": 2022,
+    "validation_races": 3176,
+    "validation_runners": 43537,
+    "outcome_rows_used_2023_2025": 0,
+    "odds_used": false
+  },
+  "feature_scope": {
+    "config": "abl_006_drop_field_relative",
+    "count": 253,
+    "ordered_columns_sha256": "fd8735cf6f8472a5c7322e3622c83fde1ff7720b022b75637745c96a1bc1062f"
+  },
+  "labels": {
+    "control": "1st=3, 2nd=2, 3rd=1, other=0",
+    "candidate": "1st=3, 2nd/3rd=2, 4th-through-ceil(field_size/2)=1, lower-half-or-DNF=0",
+    "label_gain": [0, 1, 3, 7],
+    "train_only_audit_2014_2021": {
+      "races": 25322,
+      "runners": 360318,
+      "changed_rows": 133439,
+      "changed_row_fraction": 0.3703367581,
+      "control_differently_labelled_pairs": 929632,
+      "candidate_differently_labelled_pairs": 1700035,
+      "pair_increase_fraction": 0.8287182455
+    }
+  },
+  "model": {
+    "control_best_iteration": 174,
+    "candidate_best_iteration": 89,
+    "control_temperature_2021": 0.8917951259,
+    "candidate_temperature_2021": 0.8508478537
+  },
+  "calibrated_metrics_2022": {
+    "control": {
+      "race_log_loss": 2.1256278784,
+      "race_brier": 0.8417830523,
+      "ndcg_at_3": 0.4744598090,
+      "top_1": 0.2611775819
+    },
+    "candidate": {
+      "race_log_loss": 2.1410193062,
+      "race_brier": 0.8437898672,
+      "ndcg_at_3": 0.4704738675,
+      "top_1": 0.2573992443
+    }
+  },
+  "paired_improvement_2022": {
+    "race_log_loss": {
+      "point": -0.0153914278,
+      "lower": -0.0206774288,
+      "upper": -0.0102266800
+    },
+    "race_brier": {
+      "point": -0.0020068149,
+      "lower": -0.0034862445,
+      "upper": -0.0005797116
+    },
+    "ndcg_at_3": {
+      "point": -0.0039859416,
+      "lower": -0.0083134370,
+      "upper": 0.0003011607
+    },
+    "top_1": {
+      "point": -0.0037783375,
+      "lower": -0.0104138735,
+      "upper": 0.0029007240
+    }
+  },
+  "descriptive_field_size_improvement": {
+    "small_le_9": {
+      "races": 318,
+      "race_log_loss": -0.0121827844,
+      "race_brier": -0.0006003269,
+      "ndcg_at_3": 0.0006419546,
+      "top_1": 0.0062893082
+    },
+    "medium_10_13": {
+      "races": 958,
+      "race_log_loss": -0.0121982479,
+      "race_brier": -0.0012261763,
+      "ndcg_at_3": -0.0036722183,
+      "top_1": 0.0
+    },
+    "large_14_16": {
+      "races": 1665,
+      "race_log_loss": -0.0178984948,
+      "race_brier": -0.0030913919,
+      "ndcg_at_3": -0.0070518768,
+      "top_1": -0.0096096096
+    },
+    "very_large_ge_17": {
+      "races": 235,
+      "race_log_loss": -0.0149878043,
+      "race_brier": 0.0005919325,
+      "ndcg_at_3": 0.0101951834,
+      "top_1": 0.0085106383
+    }
+  },
+  "decision": "reject_probability_and_ranking_paths_failed_retain_top3_labels",
+  "local_artifacts": "artifacts/gr_001_graded_lambdarank_20260831/"
+}

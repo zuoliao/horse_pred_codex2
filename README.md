@@ -2,7 +2,7 @@
 
 JRA中央競馬を主対象とする、競馬予測・馬券購入判断支援システムの研究開発リポジトリです。
 
-> **現在の段階:** 時計・着差路線のPV-01～PV-05を完了。PV-01 Binary 254特徴が現best。校正済みmargin-aware Eloはstandaloneでordinal Eloを上回ったが、LightGBMへのabsolute score/delta各1列追加はPV-01比inconclusiveで未採用。
+> **現在の段階:** 時計・着差路線のPV-01～PV-06とgraded LambdaRank GR-001を完了。PV-06のraw着差token補間は2022でinconclusive、GR-001のupper-half教師はreject。PV-01 Binary 254特徴と従来top-three LambdaRank教師を維持する。
 > **最終更新:** 2026-08-31 (JST)
 
 ## 1. プロジェクトの目的
@@ -462,7 +462,7 @@ README.md
 | `pv_005_margin_rating_delta` | LGBM Binary + T | 255 | 2.0781 | .82724 | .4963 | .2924 | probability point改善もprimary区間跨ぎ、未採用 |
 | `pv_005_margin_rating_delta` | LGBM LambdaRank + T | 255 | **2.0761** | **.82641** | .4931 | .2879 | probability point bestだがPV-01比区間跨ぎ、未採用 |
 
-[baseline機械可読summary](experiments/baseline_validation_20260830/improvement_summary.json)、[rating/race-value追加実験](experiments/rating_race_value_20260830/)、[PV-01～PV-05 summaries](experiments/race_content_20260831/)、[統合結論](docs/experiments/baseline_validation_conclusions_20260830.md)を参照してください。旧Task 16 reportは障害混入修正前のためsupersededである。final oddsは事後oracle専用で、実行可能ROIは評価していません。
+[baseline機械可読summary](experiments/baseline_validation_20260830/improvement_summary.json)、[rating/race-value追加実験](experiments/rating_race_value_20260830/)、[PV-01～PV-06 summaries](experiments/race_content_20260831/)、[GR-001 summary](experiments/graded_rank_20260831/summary.json)、[統合結論](docs/experiments/baseline_validation_conclusions_20260830.md)を参照してください。GR-001は2014～2019 fit、2020 early stopping、2021 calibration、2022 gateのため、上表の2024実験とは直接比較しません。旧Task 16 reportは障害混入修正前のためsupersededである。final oddsは事後oracle専用で、実行可能ROIは評価していません。
 
 詳細な実験レポートを毎回作ることは必須としません。混合した結果を単純に「改善」と要約せず、改善・悪化した指標を事実として記録します。
 
@@ -585,7 +585,7 @@ Phase 1: データソース・既存手法の調査           完了
 Phase 2: 既存rawのcoverage/PIT gateと仕様確定    完了
 Phase 3: point-in-time特徴量基盤                 実装・検証済み
 Phase 4: LightGBM Binary / LambdaRank baseline   完了
-Phase 5: 特徴量・rating・calibration改善         進行中（PV-01～PV-05完了）
+Phase 5: 特徴量・rating・calibration改善         進行中（PV-01～PV-06、GR-001完了）
 Phase 6: 確率的ランキングおよび高度なモデル
 Phase 7: 購入戦略・リスク管理の改善
 Phase 8: 自動予測処理・Web UI
@@ -615,10 +615,11 @@ Phase 8: 自動予測処理・Web UI
 | split期間 | MVP決定 | 2014～21 train、2022 validation、2023 calibration、2024 development、2025 opt-in retrospective、2026+ prospective final |
 | rating方式 | 開発更新 | K48/scale200のmargin-aware actual (`tau=.125`) は前年温度校正で2019～22全改善、2024校正LL 2.3957（ordinal 2.4015）。standaloneは置換候補。LightGBMへのabsolute/delta 1列追加はPV-01比inconclusiveで未採用 |
 | 過去走race-content | 開発採用候補 | 90日減衰signed時計差1列はBinaryで採用基準通過、LambdaRankはinconclusive。2026+ prospective確認が必要 |
+| LambdaRank教師 | 開発維持 | 従来の`1着=3, 2着=2, 3着=1, その他=0`を維持。2・3着を統合して上位半数へ教師を広げたGR-001は2022でLog Loss/Brierを有意に悪化させreject |
 | probabilistic ranking | 調査推奨・延期 | Plackett–Luceを最初の高度baseline候補とするが、順位別biasを検証してから採否判断 |
 | artifact管理 | MVP決定 | config、git/data fingerprint、aggregate metricsを追跡し、raw・model・runner予測はGit対象外 |
 | Web技術 | 未決 | 後続フェーズで決定 |
 
 ## 15. 次の作業
 
-PV-01～PV-05を完了しました。連続time-margin actualはraw softmax固定のPV-02ではranking改善・Log Loss悪化でしたが、前年温度を持ち越すPV-03では2019～2022の4年すべてと2024でLog Loss/Brierを改善し、standalone ratingとして支持されました。一方、PV-01 LightGBMへabsolute score 1列（PV-04）またはsame-spec ordinalとの差1列（PV-05）を足してもprimary区間は0を跨ぎ、現bestはBinary PV-01 254特徴、保守的LambdaRankはlean 253特徴のままです。同じ2024でrating算術変形を続けず、次は2014～2021だけで生の着差tokenを監査し、0.1秒同時計を補う写像を固定して2022で検証します。上がり3F、通過順位、graded LambdaRankは混ぜず別仮説にします。
+PV-06とGR-001まで完了しました。PV-06は2014～2021のraw着差tokenから0.1秒同時計だけを決定的に補間し、2022で全point指標が改善しましたが、primary Log Loss差 `+.00003 [-.00022,+.00028]` のためinconclusiveで、2024は開いていません。GR-001は2着と3着を統合し、4着から上位半数へcoarse教師を加えましたが、2022 Log Loss差 `-.01539 [-.02068,-.01023]`、Brier差 `-.00201 [-.00349,-.00058]` でrejectです。現bestはBinary PV-01 254特徴、保守的LambdaRankはlean 253特徴・従来top-three教師のままです。次の独立仮説は、PV-00でcoverage確認済みの上がり3Fをrace-relativeかつPIT-safeな履歴1群としてtrain-only監査・preregisterし、2022を最初のgateにします。着差tokenや教師変更と混ぜません。

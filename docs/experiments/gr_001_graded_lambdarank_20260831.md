@@ -70,3 +70,35 @@ Uncertainty uses a four-date moving-block bootstrap, 10,000 resamples, seed
 primary interval wholly below zero rejects; otherwise the outcome is
 inconclusive. Field-size slices are descriptive only. The experiment always
 stops after 2022.
+
+## Frozen-run result
+
+The clean run used commit `9d3eeabe49c3755d6b15d7bd5075e1af0a6306d4`
+with `dirty=false`. Both arms used the fixed 253-feature scope. The control
+stopped at iteration 174 and used 2021 temperature `.8917951`; the candidate
+stopped at iteration 89 and used temperature `.8508479`. The common 2022
+population was 3,176 races / 43,537 runners.
+
+| 2022 calibrated metric | Control | Candidate | Improvement |
+|---|---:|---:|---:|
+| Log Loss | 2.1256279 | 2.1410193 | -.0153914 |
+| Brier | .8417831 | .8437899 | -.0020068 |
+| NDCG@3 | .4744598 | .4704739 | -.0039859 |
+| Top-1 | .2611776 | .2573992 | -.0037783 |
+
+Paired 95% intervals were Log Loss `[-.0206774,-.0102267]`, Brier
+`[-.0034862,-.0005797]`, NDCG@3 `[-.0083134,+.0003012]`, and Top-1
+`[-.0104139,+.0029007]`. Thus the candidate significantly worsened both
+proper probability scores, failed both acceptance paths, and is **rejected**.
+
+The preregistered descriptive field-size check does not identify a defensible
+rescue. Log Loss worsened in all four bands. NDCG@3 improved slightly in small
+fields (`+.00064`, 318 races) and more in fields of at least 17 (`+.01020`, 235
+races), but worsened in medium (`-.00367`) and large (`-.00705`) fields. These
+post-run slices are neither uncertainty-qualified nor eligible for label
+retuning.
+
+Retain the existing top-three relevance labels. The useful conclusion is not
+that all finer labels are impossible, but that this particular exchange--lose
+second-versus-third order and add an upper-half bucket--diluted the current
+win/top-three objective. No 2023--2025 outcome was opened for GR-001.

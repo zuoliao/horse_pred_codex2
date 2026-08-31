@@ -517,3 +517,31 @@ model、calibrator、thresholdを同じ実験で同時変更しない。
 次フェーズで行うべきことは、大規模モデル実装ではなく、承認済みrawのcoverage・例外・欠損監査、`local_raw_pit_c`とprospective trackの**data contract・PIT・dataset・experiment specificationの確定**である。JRA公式結果は不足raceと不足fieldの照合・補完に使う。その後に初めて、最小の共通datasetでBinaryとLambdaRankの二つのbaselineを作る。
 
 利益可能性について現時点で肯定も否定もできない。承認済み無料履歴には締切前odds系列がなく、有料JRA-VANでも時系列oddsの公式保証は1年である。長期の実行可能収益性は、今後蓄積するPIT-A snapshotによるshadow/prospective評価が不可欠である。承認済みrawのPIT-Cで予測性能を先に検証し、市場後収益の証拠を別trackで積み上げる方針が、今回の一次情報、利用承認、無料優先条件に最も整合する。
+
+## 21. 2026-08-31 実験研究の追補
+
+初期実装後のPV-01～PV-06およびGR-001は、上記の「一仮説ずつ、
+時間分離、確率とrankingを別評価」という方針を維持して実行した。
+この追補時点の具体的な実装判断は次のとおりである。
+
+- Binaryは、過去90日減衰signed時計差を1列追加したPV-01を現開発
+  baselineとして維持する。2026年以降のprospective確認前に確定的な
+  final改善とは扱わない。
+- raw `着差` tokenで0.1秒同時計を補うPV-06は、2014～2021 auditでは
+  写像可能だったが、2022 primary Log Lossの区間が0を跨いだため
+  inconclusiveである。写像を2022/2024に合わせて再調整しない。
+- LambdaRankは従来の`1着=3, 2着=2, 3着=1, その他=0`を維持する。
+  2・3着を同値にして上位半数へbucket教師を広げたGR-001は、2022の
+  Log LossとBrierを有意に悪化させたためrejectする。
+- GR-001は「4着以下の情報に価値がない」とは示していない。今回の
+  結果が否定したのは、2着対3着の教師を捨てる代わりに上位半数の
+  coarse orderを加える特定の交換である。別設計を行う場合も独立仮説
+  とし、この2022結果の頭数別sliceへ適合させない。
+- 次は、raw coverage確認済みの上がり3Fをrace-relativeかつPIT-safeな
+  履歴feature groupとしてtrain-onlyで定義し、2022を最初のgateにする。
+  margin token、通過順位、graded label、rating変更とは混ぜない。
+
+機械可読な根拠は`experiments/race_content_20260831/pv_006_summary.json`
+および`experiments/graded_rank_20260831/summary.json`、詳細protocol/resultは
+`docs/experiments/pv_006_margin_token_refinement_20260831.md`と
+`docs/experiments/gr_001_graded_lambdarank_20260831.md`をsource of truthとする。
