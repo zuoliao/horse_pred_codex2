@@ -27,6 +27,10 @@ from horse_pred.data_health import (
 from horse_pred.diagnostics import run_baseline_diagnostics
 from horse_pred.features import FeatureConfig
 from horse_pred.graded_rank_study import run_graded_rank_study
+from horse_pred.live_data_archive import (
+    archive_jvlink_batch,
+    load_live_data_archive_config,
+)
 from horse_pred.margin_rating_cache import (
     build_margin_rating_cache_from_raw,
     build_margin_rating_delta_cache,
@@ -67,6 +71,19 @@ def parser() -> argparse.ArgumentParser:
         "--manifest", type=Path, default=Path("configs/data_manifest.json")
     )
     population.add_argument("--output", type=Path, required=True)
+
+    live_archive = commands.add_parser(
+        "archive-jvlink-batch",
+        help="validate and append a private normalized JV-Link batch without network access",
+    )
+    live_archive.add_argument("--input", type=Path, required=True)
+    live_archive.add_argument("--archive-root", type=Path, required=True)
+    live_archive.add_argument(
+        "--config",
+        type=Path,
+        default=Path("configs/live_data/jvlink_archive.json"),
+    )
+    live_archive.add_argument("--repo-root", type=Path, default=Path.cwd())
 
     run = commands.add_parser(
         "run-mvp", help="run PIT features, both LightGBM models, calibration, and evaluation"
@@ -287,6 +304,20 @@ def main(argv: Sequence[str] | None = None) -> int:
         report["fingerprint"] = fingerprint
         write_json(args.output, report)
         print(json.dumps(report, ensure_ascii=False, indent=2))
+        return 0
+    if args.command == "archive-jvlink-batch":
+        repo_root = args.repo_root.resolve()
+        config_path = args.config if args.config.is_absolute() else repo_root / args.config
+        config = load_live_data_archive_config(config_path)
+        with args.input.open(encoding="utf-8") as handle:
+            envelope = json.load(handle)
+        result = archive_jvlink_batch(
+            envelope,
+            archive_root=args.archive_root,
+            repo_root=repo_root,
+            config=config,
+        )
+        print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0
     if args.command == "run-mvp":
         manifest_path = args.manifest

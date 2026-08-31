@@ -1,0 +1,196 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.horse-pred.invalid/schemas/live_data/jvlink_batch_envelope.schema.json",
+  "title": "Normalized private JRA-VAN JV-Link batch envelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "source",
+    "batch",
+    "records"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider",
+        "transport",
+        "service_data_id",
+        "jv_link_version",
+        "jvdata_spec_version"
+      ],
+      "properties": {
+        "provider": {
+          "const": "jra_van_data_lab"
+        },
+        "transport": {
+          "const": "jv_link"
+        },
+        "service_data_id": {
+          "enum": [
+            "0B11",
+            "0B14",
+            "0B15",
+            "0B16",
+            "0B41",
+            "0B42"
+          ]
+        },
+        "jv_link_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "jvdata_spec_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        }
+      }
+    },
+    "batch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "batch_id",
+        "collector_id",
+        "requested_at",
+        "observed_at",
+        "source_cursor"
+      ],
+      "properties": {
+        "batch_id": {
+          "$ref": "#/$defs/safeId"
+        },
+        "collector_id": {
+          "$ref": "#/$defs/safeId"
+        },
+        "requested_at": {
+          "$ref": "#/$defs/awareTimestamp"
+        },
+        "observed_at": {
+          "$ref": "#/$defs/awareTimestamp"
+        },
+        "source_cursor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 512
+        }
+      }
+    },
+    "records": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10000,
+      "items": {
+        "$ref": "#/$defs/record"
+      }
+    }
+  },
+  "$defs": {
+    "safeId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._:-]+$",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "awareTimestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "record_type",
+        "source_key",
+        "data_division",
+        "source_created_date",
+        "published_at",
+        "published_at_precision",
+        "payload_encoding",
+        "payload_base64",
+        "source_flags"
+      ],
+      "properties": {
+        "record_type": {
+          "enum": [
+            "AV",
+            "CC",
+            "JC",
+            "O1",
+            "O2",
+            "RA",
+            "SE",
+            "TC",
+            "WE",
+            "WH"
+          ]
+        },
+        "source_key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "data_division": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 16
+        },
+        "source_created_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "published_at": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/awareTimestamp"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "published_at_precision": {
+          "enum": [
+            "minute",
+            "date",
+            "unavailable"
+          ]
+        },
+        "observed_at": {
+          "$ref": "#/$defs/awareTimestamp"
+        },
+        "payload_encoding": {
+          "const": "base64"
+        },
+        "payload_base64": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_flags": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "source_correction",
+              "source_created_date_only",
+              "source_initial_state",
+              "source_intermediate_odds",
+              "source_record_retraction_observed",
+              "source_timestamp_minute_precision",
+              "source_timestamp_unavailable"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

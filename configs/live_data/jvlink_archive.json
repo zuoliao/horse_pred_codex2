@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "status": "groundwork_only",
+  "operational_collection_started": false,
+  "source_policy": {
+    "provider": "jra_van_data_lab",
+    "transport": "jv_link",
+    "service_data_records": {
+      "0B11": [
+        "WH"
+      ],
+      "0B14": [
+        "AV",
+        "CC",
+        "JC",
+        "TC",
+        "WE"
+      ],
+      "0B15": [
+        "RA",
+        "SE"
+      ],
+      "0B16": [
+        "AV",
+        "CC",
+        "JC",
+        "TC",
+        "WE"
+      ],
+      "0B41": [
+        "O1"
+      ],
+      "0B42": [
+        "O2"
+      ]
+    },
+    "allowed_source_flags": [
+      "source_correction",
+      "source_created_date_only",
+      "source_initial_state",
+      "source_intermediate_odds",
+      "source_record_retraction_observed",
+      "source_timestamp_minute_precision",
+      "source_timestamp_unavailable"
+    ]
+  },
+  "archive_policy": {
+    "allowed_in_repo_prefix": "data/live_data_private",
+    "maximum_payload_bytes_per_record": 1048576,
+    "maximum_records_per_batch": 10000,
+    "storage": "append_only_content_addressed_local_files",
+    "raw_payload_git_policy": "ignored_private_never_commit"
+  },
+  "clock_policy": {
+    "source_timezone": "Asia/Tokyo",
+    "source_timezone_offset_minutes": 540,
+    "future_tolerance_seconds": 120,
+    "published_at_rule": "nullable_source_announcement_time_never_inferred_from_schedule",
+    "observed_at_rule": "adapter_clock_when_record_was_observed",
+    "ingested_at_rule": "archive_boundary_utc_clock_not_accepted_from_envelope"
+  },
+  "activation_gate": {
+    "requires_private_individual_contract": true,
+    "requires_official_jv_link": true,
+    "requires_windows_10_or_11_host": true,
+    "requires_japan_local_operation": true,
+    "requires_raw_data_excluded_from_external_ai": true,
+    "requires_live_coverage_receipt_before_started_status": true
+  }
+}

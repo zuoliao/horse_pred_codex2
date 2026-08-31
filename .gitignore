@@ -2,6 +2,9 @@
 /data/
 /datasets/
 
+# Private prospective JV-Link envelopes and append-only raw archive
+/data/live_data_private/
+
 # Generated experiment outputs and local environments
 /artifacts/
 /.venv/
