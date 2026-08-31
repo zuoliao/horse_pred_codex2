@@ -46,6 +46,7 @@ from horse_pred.margin_token_rating_study import (
     run_margin_token_rating_study,
 )
 from horse_pred.opponent_recent import build_opponent_recent_cache_from_raw
+from horse_pred.pace_final import build_pace_final_cache_from_raw
 from horse_pred.pace_pressure import build_pace_pressure_cache_from_config
 from horse_pred.pace_recent import build_pace_recent_cache_from_raw
 from horse_pred.pipeline import run_mvp
@@ -267,6 +268,19 @@ def parser() -> argparse.ArgumentParser:
         default=Path("configs/features/pace_02_field_pressure.json"),
     )
     pace_pressure.add_argument("--repo-root", type=Path, default=Path.cwd())
+    pace_final = commands.add_parser(
+        "build-pace-final-cache",
+        help="build the preregistered one-column PACE-03 final-position cache",
+    )
+    pace_final.add_argument("--raw-path", type=Path, required=True)
+    pace_final.add_argument("--baseline-cache", type=Path, required=True)
+    pace_final.add_argument("--output", type=Path, required=True)
+    pace_final.add_argument(
+        "--config",
+        type=Path,
+        default=Path("configs/features/pace_03_final_position.json"),
+    )
+    pace_final.add_argument("--repo-root", type=Path, default=Path.cwd())
     margin_rating = commands.add_parser(
         "run-margin-rating-study",
         help="run the preregistered PV-02 time-margin standalone rating study",
@@ -630,6 +644,16 @@ def main(argv: Sequence[str] | None = None) -> int:
         result = build_pace_pressure_cache_from_config(
             repo_root=args.repo_root,
             input_cache_path=args.input_cache,
+            output_path=args.output,
+            config_path=args.config,
+        )
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0
+    if args.command == "build-pace-final-cache":
+        result = build_pace_final_cache_from_raw(
+            repo_root=args.repo_root,
+            raw_path=args.raw_path,
+            baseline_cache_path=args.baseline_cache,
             output_path=args.output,
             config_path=args.config,
         )
