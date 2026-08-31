@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "experiment_id": "pace_02_field_pressure_rolling",
+  "run_commit": "c1bf4f0d798a90897ebf4bab9266b936f146e840",
+  "run_dirty": false,
+  "data_fingerprint": "270923ce73c4441e64173f242a8719de7d1e9b205508140463ca547ef7b1ca87",
+  "cache_sha256": "db024db29090ceb5f0901a2793cf254e024f5100832160d87930d960e102b459",
+  "transformation_hash": "59c5d5a818498561956b1101fc990944ad475d7c8645e59269c10c414c697285",
+  "scope": {
+    "evaluation_years": [2020, 2021, 2022, 2023],
+    "rows_used_2024": 0,
+    "rows_used_2025": 0,
+    "odds_used": false,
+    "candidate_representations_screened": 1
+  },
+  "cache_control": {
+    "row_count": 533853,
+    "baseline_feature_count": 271,
+    "candidate_feature_count": 272,
+    "old_feature_mismatch_count": 0,
+    "pre2025_feature_nonmissing": 448558,
+    "retrospective_2025_feature_nonmissing": 0
+  },
+  "binary": {
+    "improvement": {
+      "ndcg_at_3": {"point": 0.0001706999, "lower": -0.0019300544, "upper": 0.0022838920, "improved_years": 2},
+      "top_1_winner_mass": {"point": -0.0022878163, "lower": -0.0061107209, "upper": 0.0015821909, "improved_years": 0},
+      "race_log_loss": {"point": 0.0003840160, "lower": -0.0022104930, "upper": 0.0030781100, "improved_years": 2},
+      "race_brier": {"point": -0.0000833154, "lower": -0.0008788697, "upper": 0.0007317764, "improved_years": 1}
+    },
+    "decision": "inconclusive"
+  },
+  "lambdarank": {
+    "improvement": {
+      "ndcg_at_3": {"point": -0.0008092522, "lower": -0.0029420937, "upper": 0.0012854294, "improved_years": 1},
+      "top_1_winner_mass": {"point": -0.0024821280, "lower": -0.0065242078, "upper": 0.0015474953, "improved_years": 1},
+      "race_log_loss": {"point": 0.0007865924, "lower": -0.0014695953, "upper": 0.0030203273, "improved_years": 2},
+      "race_brier": {"point": 0.0000405196, "lower": -0.0006858706, "upper": 0.0007597221, "improved_years": 2}
+    },
+    "decision": "inconclusive"
+  },
+  "adopted": false,
+  "development_2024_opened": false,
+  "next_task": "PACE-03"
+}

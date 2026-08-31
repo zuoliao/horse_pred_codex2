@@ -1,7 +1,7 @@
 # PACE-02 rival front-running pressure
 
 Date: 2026-08-31 JST  
-Status: preregistered; model outcomes unopened
+Status: complete; inconclusive for both families, not adopted
 
 ## Hypothesis
 
@@ -88,3 +88,29 @@ Use the same family-specific paths as PACE-01. Positive differences improve.
 Pass either path to accept. A failed guardrail or wholly adverse primary
 interval is reject; otherwise inconclusive. This does not automatically open
 2024, and 2025 remains prohibited.
+
+## Rolling result
+
+The frozen run used clean commit
+`c1bf4f0d798a90897ebf4bab9266b936f146e840`, no odds, and zero 2024/2025
+rows. The cache preserved all 271 existing features exactly, added one column,
+and generated no 2025 value.
+
+| Family | NDCG improvement | Top-1 improvement | Log Loss improvement | Brier improvement | Decision |
+|---|---:|---:|---:|---:|---|
+| Binary | +.00017 `[-.00193,+.00228]` | -.00229 `[-.00611,+.00158]` | +.00038 `[-.00221,+.00308]` | -.00008 `[-.00088,+.00073]` | inconclusive |
+| LambdaRank | -.00081 `[-.00294,+.00129]` | -.00248 `[-.00652,+.00155]` | +.00079 `[-.00147,+.00302]` | +.00004 `[-.00069,+.00076]` | inconclusive |
+
+Binary improved NDCG and Log Loss in only two of four years; Brier improved in
+one and Top-1 in zero. LambdaRank improved NDCG in one year and Log Loss/Brier
+in two. No primary interval excluded zero, while point guardrails did not force
+a reject. Both results are therefore inconclusive under the frozen rule.
+
+PACE-02 is not added to either rolling incumbent and is not tuned with another
+threshold, mean, or field-size normalization. The strong own-history PACE-01
+result remains intact. The next independent horse-level hypothesis is PACE-03
+final-position history, compared against the PACE-01 incumbents without
+PACE-02. No 2024 milestone was opened.
+
+Tracked evidence is `experiments/pace_02_20260831/summary.json`; full local
+artifacts are under `artifacts/pace_02_rolling_20260831/`.
