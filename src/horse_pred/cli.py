@@ -25,6 +25,7 @@ from horse_pred.data_health import (
     population_selection_audit,
 )
 from horse_pred.diagnostics import run_baseline_diagnostics
+from horse_pred.eda import run_eda
 from horse_pred.ensemble_study import run_ensemble_study
 from horse_pred.features import FeatureConfig
 from horse_pred.graded_rank_study import run_graded_rank_study
@@ -72,6 +73,18 @@ def parser() -> argparse.ArgumentParser:
     audit.add_argument("--raw-path", type=Path)
     audit.add_argument("--manifest", type=Path, default=Path("configs/data_manifest.json"))
     audit.add_argument("--skip-sha256", action="store_true")
+
+    eda = commands.add_parser(
+        "run-eda", help="build the cutoff-enforced Phase 5A EDA views and aggregates"
+    )
+    eda.add_argument("--raw-path", type=Path, required=True)
+    eda.add_argument("--output", type=Path, required=True)
+    eda.add_argument("--max-date", default="2022-12-31")
+    eda.add_argument("--repo-root", type=Path, default=Path.cwd())
+    eda.add_argument("--config", type=Path, default=Path("configs/eda/phase_5a.json"))
+    eda.add_argument("--manifest", type=Path, default=Path("configs/data_manifest.json"))
+    eda.add_argument("--splits", type=Path, default=Path("configs/splits.json"))
+    eda.add_argument("--resume", action="store_true")
 
     population = commands.add_parser(
         "audit-population", help="audit flat/jump and non-starter race selection"
@@ -410,6 +423,36 @@ def parser() -> argparse.ArgumentParser:
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = parser().parse_args(argv)
+    if args.command == "run-eda":
+        result = run_eda(
+            repo_root=args.repo_root,
+            raw_path=args.raw_path,
+            output_dir=args.output,
+            max_date=args.max_date,
+            config_path=args.config,
+            manifest_path=args.manifest,
+            split_path=args.splits,
+            resume=args.resume,
+        )
+        print(
+            json.dumps(
+                {
+                    "analysis_id": result["analysis_id"],
+                    "output": str(args.output.resolve()),
+                    "max_target_date": result["max_target_date"],
+                    "views": {
+                        name: {
+                            "rows": payload["row_count"],
+                            "races": payload["race_count"],
+                        }
+                        for name, payload in result["views"].items()
+                    },
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
+        return 0
     if args.command == "audit":
         manifest = load_manifest(args.manifest)
         raw_path = resolve_raw_path(args.raw_path, environment_variable=manifest["path_policy"]["environment_variable"])
