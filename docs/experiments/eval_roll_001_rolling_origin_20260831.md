@@ -1,7 +1,7 @@
 # EVAL-ROLL-001 rolling-origin evaluation preregistration
 
 Date: 2026-08-31 JST  
-Status: implementation complete; full real-data run not yet opened
+Status: implementation and frozen real-data baseline run complete
 
 ## Purpose
 
@@ -111,7 +111,7 @@ write the commit hash, config/cache hashes, effective LightGBM parameters,
 feature hashes, software versions, and 2024/2025 zero-use assertions.  This
 document does not authorize opening 2024 or 2025 after the rolling result.
 
-Planned command after the clean commit:
+Reproduction command:
 
 ```bash
 uv run horse-pred run-rolling-evaluation \
@@ -119,3 +119,27 @@ uv run horse-pred run-rolling-evaluation \
   --config configs/evaluation/eval_roll_001_current_best.json \
   --output artifacts/eval_roll_001_current_best_20260831
 ```
+
+## Frozen-run result
+
+The run used clean commit `0cdf659a934157ff0494986646f47b7ce22191c0`,
+raw fingerprint `270923ce...c4db`, and cache SHA-256 `85e92160...4eb9`.
+It used zero 2024/2025 rows and no odds. All four folds completed in 90.18
+seconds.
+
+| Method | Year-macro NDCG@3 | Top-1 | Log Loss | Brier |
+|---|---:|---:|---:|---:|
+| Binary PV-01, 254 features | .47045 | .26903 | 2.14231 | .84152 |
+| LambdaRank lean, 253 features | .46746 | .26407 | 2.15388 | .84373 |
+
+Descriptively, Binary minus LambdaRank was NDCG `+.00299`
+`[+.00009,+.00583]`, Top-1 `+.00497` `[-.00057,+.01061]`, Log Loss
+improvement `+.01157` `[+.00749,+.01560]`, and Brier improvement `+.00221`
+`[+.00100,+.00340]`. Binary had lower Log Loss and Brier in all four years;
+NDCG improved in three of four.
+
+This is not a causal model-family comparison because Binary also has the
+accepted PV-01 feature while the Ranker uses the lean feature scope. It selects
+no new model. The result accepts EVAL-ROLL as the required screening
+infrastructure and establishes the frozen rolling baseline for subsequent
+within-family OPP-RECENT, SEC-3F, HPO-01, and ENS-01 comparisons.

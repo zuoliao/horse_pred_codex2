@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "experiment_id": "eval_roll_001_current_best",
+  "run_commit": "0cdf659a934157ff0494986646f47b7ce22191c0",
+  "run_dirty": false,
+  "data_fingerprint": "270923ce73c4441e64173f242a8719de7d1e9b205508140463ca547ef7b1ca87",
+  "cache_sha256": "85e92160f0a79f7286409bd4c006a0f0a1310ff67ff845e6fdc75d1894834eb9",
+  "scope": {
+    "evaluation_years": [2020, 2021, 2022, 2023],
+    "rows_used_2024": 0,
+    "rows_used_2025": 0,
+    "odds_used": false,
+    "selection_role": "rolling-origin screening; not a sealed final holdout"
+  },
+  "methods": {
+    "binary_current": {
+      "feature_count": 254,
+      "feature_columns_sha256": "e5228bb4ffd605888b7266030d5e1e9f0931e8468b6fbbf124f3cea60905e51d",
+      "year_macro": {
+        "ndcg_at_3": 0.4704466069,
+        "top_1_winner_mass": 0.2690322034,
+        "race_log_loss": 2.1423083080,
+        "race_brier": 0.8415191951
+      }
+    },
+    "lambdarank_current": {
+      "feature_count": 253,
+      "feature_columns_sha256": "fd8735cf6f8472a5c7322e3622c83fde1ff7720b022b75637745c96a1bc1062f",
+      "year_macro": {
+        "ndcg_at_3": 0.4674580279,
+        "top_1_winner_mass": 0.2640658234,
+        "race_log_loss": 2.1538799870,
+        "race_brier": 0.8437281917
+      }
+    }
+  },
+  "binary_minus_lambdarank_descriptive": {
+    "ndcg_at_3": {
+      "point": 0.0029885790,
+      "lower": 0.0000919421,
+      "upper": 0.0058309125,
+      "improved_years": 3
+    },
+    "top_1_winner_mass": {
+      "point": 0.0049663800,
+      "lower": -0.0005682351,
+      "upper": 0.0106075239,
+      "improved_years": 4
+    },
+    "race_log_loss": {
+      "point": 0.0115716790,
+      "lower": 0.0074857777,
+      "upper": 0.0156039294,
+      "improved_years": 4
+    },
+    "race_brier": {
+      "point": 0.0022089967,
+      "lower": 0.0009989926,
+      "upper": 0.0033989941,
+      "improved_years": 4
+    },
+    "interpretation": "descriptive only because model family and feature scope both differ"
+  },
+  "decision": "evaluation_infrastructure_accepted_no_model_selection",
+  "local_artifacts": "artifacts/eval_roll_001_current_best_20260831/"
+}
