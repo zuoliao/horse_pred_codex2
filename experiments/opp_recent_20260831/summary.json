@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "experiment_id": "opp_recent_001_rolling",
+  "run_commit": "ebda4432dfdb99be834140adf96770efeaede8b4",
+  "run_dirty": false,
+  "data_fingerprint": "270923ce73c4441e64173f242a8719de7d1e9b205508140463ca547ef7b1ca87",
+  "cache_sha256": "19d4af8191364d654adcc747d400d92b7e7f3e142fc841afeda77da4ba77bf38",
+  "scope": {"evaluation_years": [2020, 2021, 2022, 2023], "rows_used_2024": 0, "rows_used_2025": 0, "odds_used": false},
+  "cache_control": {
+    "row_count": 533853,
+    "baseline_feature_count": 269,
+    "candidate_feature_count": 270,
+    "old_feature_exact": true,
+    "pre2025_nonmissing": 440543,
+    "pre2025_missing": 49131,
+    "retrospective_2025_feature_nonmissing": 0,
+    "transformation_hash": "801e2a282629d4951af5d4c770a78f56f6e10c1311b76f1e5d6ba68cbdf7d940"
+  },
+  "decisions": {
+    "binary": {
+      "decision": "inconclusive",
+      "ndcg_at_3_improvement": {"point": -0.0002541734, "lower": -0.0023440602, "upper": 0.0018532525, "improved_years": 2},
+      "top_1_winner_mass_improvement": {"point": 0.0001963361, "lower": -0.0040332990, "upper": 0.0042819783, "improved_years": 1},
+      "race_log_loss_improvement": {"point": -0.0002597101, "lower": -0.0029025948, "upper": 0.0023006278, "improved_years": 2},
+      "race_brier_improvement": {"point": 0.0002534062, "lower": -0.0005503904, "upper": 0.0010285518, "improved_years": 2}
+    },
+    "lambdarank": {
+      "decision": "reject",
+      "ndcg_at_3_improvement": {"point": -0.0008549863, "lower": -0.0028063316, "upper": 0.0010524008, "improved_years": 1},
+      "top_1_winner_mass_improvement": {"point": -0.0010604352, "lower": -0.0049267210, "upper": 0.0028642384, "improved_years": 2},
+      "race_log_loss_improvement": {"point": -0.0039300538, "lower": -0.0059007543, "upper": -0.0019450310, "improved_years": 2},
+      "race_brier_improvement": {"point": -0.0007190077, "lower": -0.0013443994, "upper": -0.0000853083, "improved_years": 2}
+    }
+  },
+  "adopted": false,
+  "development_2024_opened": false,
+  "local_artifacts": "artifacts/opp_recent_001_rolling_20260831"
+}
