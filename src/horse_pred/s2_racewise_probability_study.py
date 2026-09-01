@@ -374,7 +374,7 @@ def _classify_with_native_guard(
 ) -> str:
     label = classify_s1_comparison(payload, interval, path=path)
     if path == "probability" and native_improvement < -0.002:
-        return "rejected" if label == "supported" else label
+        return "rejected" if label in {"supported", "weakly_supported"} else label
     return label
 
 
@@ -727,6 +727,13 @@ def run_s2_racewise_probability_study(
                 "improved_years": int(sum(value > 0 for value in values)),
             }
         decision = _decision(summary, bootstrap, native_summary, comparisons, gate)
+        model_unit_count = fit_count
+        linear_model_unit_count = 12
+        optimizer_candidate_fit_count = linear_model_unit_count * len(
+            config["linear_stage"]["l2_grid"]
+        )
+        lightgbm_fit_count = model_unit_count - linear_model_unit_count
+        total_fit_operations = lightgbm_fit_count + optimizer_candidate_fit_count
         scope = {
             "evaluation_years": [2020, 2021, 2022],
             "maximum_outcome_year": 2022,
@@ -736,7 +743,10 @@ def run_s2_racewise_probability_study(
             "odds_used": False,
             "final_market_used_for_selection": False,
             "direct_entity_id_feature_count": 0,
-            "fit_count": fit_count,
+            "fit_count": total_fit_operations,
+            "model_unit_count": model_unit_count,
+            "lightgbm_fit_count": lightgbm_fit_count,
+            "linear_optimizer_candidate_fit_count": optimizer_candidate_fit_count,
             "primary_racewise_stage": primary,
         }
         metrics_payload = {
