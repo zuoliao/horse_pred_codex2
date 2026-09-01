@@ -1,0 +1,72 @@
+{
+  "experiment_id": "s2_supervised_racewise_probability_20260901",
+  "registered_at": "2026-09-01T00:00:00+09:00",
+  "phase": "Phase 5B: EDA-guided representation / objective research",
+  "hypothesis_id": "EDA-S02-RACEWISE-CHOICE",
+  "source_sha256": "270923ce73c4441e64173f242a8719de7d1e9b205508140463ca547ef7b1ca87",
+  "max_source_date": "2022-12-31",
+  "forbidden_years": [2023, 2024, 2025],
+  "market_used": false,
+  "final_odds_used": false,
+  "arms": {
+    "B0": {"model": "lightgbm_binary", "feature_scope": "pv01_254"},
+    "B1": {"model": "lightgbm_binary", "feature_scope": "pv01_254_plus_s1_performance"},
+    "R0": {"model": "linear_conditional_logit", "feature_scope": "pv01_254"},
+    "R1": {"model": "linear_conditional_logit", "feature_scope": "pv01_254_plus_s1_performance"}
+  },
+  "folds": [
+    {"fold_id": "roll_2020", "train_years": [2014, 2015, 2016, 2017], "model_validation_year": 2018, "calibration_year": 2019, "evaluation_year": 2020},
+    {"fold_id": "roll_2021", "train_years": [2014, 2015, 2016, 2017, 2018], "model_validation_year": 2019, "calibration_year": 2020, "evaluation_year": 2021},
+    {"fold_id": "roll_2022", "train_years": [2014, 2015, 2016, 2017, 2018, 2019], "model_validation_year": 2020, "calibration_year": 2021, "evaluation_year": 2022}
+  ],
+  "winner_target": "race_normalized_official_winner_mass",
+  "linear_stage": {
+    "utility": "x_beta_no_intercept",
+    "preprocessing_fit_role": "train_only",
+    "imputation": "train_median",
+    "scaling": "train_mean_std",
+    "z_clip": 10.0,
+    "missing_indicators": false,
+    "optimizer": "scipy_lbfgsb",
+    "max_iterations": 250,
+    "ftol": 1e-10,
+    "gtol": 1e-6,
+    "l2_grid": [0.0001, 0.001, 0.01],
+    "selection_role": "model_validation_native_race_log_loss",
+    "capacity_matched_linear_binary_diagnostic": true
+  },
+  "capacity_gate": {
+    "uses_evaluation": false,
+    "role": "model_validation_only",
+    "recovery_formula": "(uniform_ll-r0_native_ll)/(uniform_ll-b0_native_ll)",
+    "threshold": 0.75,
+    "trigger_folds": 2,
+    "nonpositive_denominator": "under_capacity",
+    "solver_failure": "stop_and_fix"
+  },
+  "conditional_nonlinear_stage": {
+    "triggered_only_by_capacity_gate": true,
+    "model": "lightgbm_nonlinear_utility",
+    "objective": "grouped_softmax_cross_entropy",
+    "gradient": "p-y",
+    "hessian": "max(p*(1-p),1e-6)_diagonal_approximation",
+    "arms": ["N0", "N1"],
+    "feature_scopes": ["pv01_254", "pv01_254_plus_s1_performance"],
+    "runner_weights": false
+  },
+  "probability": {
+    "native_t1_required": true,
+    "primary": "calibration_year_temperature_race_softmax",
+    "temperature_fit_role": "calibration_only"
+  },
+  "metrics": ["ndcg_at_3", "top1", "winner_mrr", "race_log_loss", "race_brier", "calibration"],
+  "bootstrap": {"unit": "year_stratified_four_date_moving_block", "resamples": 10000, "seed": 20240830},
+  "acceptance": {
+    "probability_path": {"log_loss_min": 0.002, "positive_years_min": 2, "ci_lower_gt": 0.0, "brier_min": 0.0, "ndcg_min": -0.002, "top1_min": -0.005, "native_log_loss_min": -0.002},
+    "ranking_path": {"ndcg_min_exclusive": 0.0, "positive_years_min": 2, "ci_lower_gt": 0.0, "log_loss_min": -0.002, "brier_min": -0.001, "top1_min": -0.005},
+    "ranking_only_does_not_support_s2": true
+  },
+  "slices": ["history_0_winner", "new_race", "open_or_graded", "large_field_15_plus", "winner_surface_switch", "winner_distance_change_400_plus"],
+  "seed": 42,
+  "stop_after_s2": true
+}
