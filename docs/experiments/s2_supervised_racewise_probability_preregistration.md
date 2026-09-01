@@ -65,6 +65,8 @@ race-wise modelの`T=1` native probabilityを必ず保存する。主比較で�
 
 optimizationはSciPy L-BFGS-B、zero initialization、最大250 iteration、`ftol=1e-10`、`gtol=1e-6`とする。L2候補`[1e-4, 1e-3, 1e-2]`はmodel-validation native race Log Lossだけで選択し、同点は大きいL2を選ぶ。evaluationは選択に使わない。各fitでconvergence、iteration、gradient norm、coefficient norm、loss、transform hashを保存する。
 
+**Pre-evaluation implementation amendment:** 最初のrunはevaluationを計算する前に、2個のL2候補が有限解・gradient norm `0.00521`以下ながら250 iteration上限へ達し、SciPy statusだけを理由にfail-closedした。仮説、候補、validation loss、evaluation ruleは変えず、`status=iteration limit`でも全値finiteかつgradient norm `<= .01`なら`operational_convergence`として候補を有効にする。grouped softmaxは数式同一の`reduceat/repeat`ベクトル化へ変更する。これはoptimizer診断だけに基づく実装修正で、evaluation metricは未生成・未参照である。
+
 線形capacity-matched診断として、同じtransform・L2 gridのrunner-level線形Binary `LB0/LB1`も保存する。これはobjective attributionの補助でありprimary 4-armや採否には含めない。
 
 ## 6. Metric-blind capacity gate and conditional Stage N

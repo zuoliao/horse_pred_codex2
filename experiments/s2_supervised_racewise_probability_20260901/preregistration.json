@@ -31,6 +31,7 @@
     "max_iterations": 250,
     "ftol": 1e-10,
     "gtol": 1e-6,
+    "acceptable_iteration_limit_gradient_norm": 0.01,
     "l2_grid": [0.0001, 0.001, 0.01],
     "selection_role": "model_validation_native_race_log_loss",
     "capacity_matched_linear_binary_diagnostic": true

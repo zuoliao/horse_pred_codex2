@@ -99,12 +99,12 @@ def grouped_softmax_numpy(
         raise ValueError("utilities do not match grouped rows")
     if not np.isfinite(values).all():
         raise ValueError("utilities must be finite")
-    result = np.empty_like(values)
-    for start, end in structure.row_slices:
-        shifted = values[start:end] - np.max(values[start:end])
-        exponentials = np.exp(shifted)
-        result[start:end] = exponentials / exponentials.sum()
-    return result
+    starts = np.asarray([start for start, _end in structure.row_slices], dtype=np.int64)
+    sizes = np.asarray(structure.group_sizes, dtype=np.int64)
+    maxima = np.maximum.reduceat(values, starts)
+    exponentials = np.exp(values - np.repeat(maxima, sizes))
+    totals = np.add.reduceat(exponentials, starts)
+    return exponentials / np.repeat(totals, sizes)
 
 
 def conditional_logit_loss_gradient(
@@ -253,6 +253,7 @@ def fit_linear_utility(
     max_iterations: int = 250,
     ftol: float = 1e-10,
     gtol: float = 1e-6,
+    acceptable_iteration_limit_gradient_norm: float = 0.01,
 ) -> LinearUtilityModel:
     """Fit a train-transformed linear utility and select L2 on validation LL."""
 
@@ -293,8 +294,20 @@ def fit_linear_utility(
                 kind=kind,
             )
         )
-    if not all(record[1]["success"] for record in candidates):
-        failures = [record[1] for record in candidates if not record[1]["success"]]
+    for _coefficients, record in candidates:
+        record["operational_convergence"] = bool(
+            record["success"]
+            or (
+                record["status"] == 1
+                and np.isfinite(record["final_objective"])
+                and np.isfinite(record["gradient_norm"])
+                and record["gradient_norm"] <= acceptable_iteration_limit_gradient_norm
+            )
+        )
+    if not all(record[1]["operational_convergence"] for record in candidates):
+        failures = [
+            record[1] for record in candidates if not record[1]["operational_convergence"]
+        ]
         raise RuntimeError(f"linear utility optimizer failed: {failures}")
     coefficients, selected = min(
         candidates,

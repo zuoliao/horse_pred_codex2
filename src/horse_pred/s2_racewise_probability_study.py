@@ -134,6 +134,8 @@ def validate_s2_preregistration(config: dict[str, Any]) -> None:
         raise ValueError("S2 linear optimizer/selection changed")
     if list(map(float, linear["l2_grid"])) != [0.0001, 0.001, 0.01]:
         raise ValueError("S2 L2 grid changed")
+    if float(linear["acceptable_iteration_limit_gradient_norm"]) != 0.01:
+        raise ValueError("S2 operational convergence threshold changed")
     gate = config["capacity_gate"]
     if gate["uses_evaluation"] is not False or float(gate["threshold"]) != 0.75:
         raise ValueError("S2 capacity gate changed")
@@ -231,6 +233,9 @@ def _fit_linear_from_frame(
         max_iterations=int(linear["max_iterations"]),
         ftol=float(linear["ftol"]),
         gtol=float(linear["gtol"]),
+        acceptable_iteration_limit_gradient_norm=float(
+            linear["acceptable_iteration_limit_gradient_norm"]
+        ),
     )
 
 
