@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "S3": "rejected",
+  "comparisons": {
+    "huber_binary_scope_vs_binary_control": {"probability_path": "rejected", "ranking_path": "rejected"},
+    "huber_lambdarank_scope_vs_lambdarank_control": {"probability_path": "rejected", "ranking_path": "rejected"}
+  },
+  "production_control_change": false,
+  "next_recommendation": "S2_supervised_race_wise_probability",
+  "S2_executed": false,
+  "additional_feature_experiment_executed": false,
+  "human_review_required": true
+}

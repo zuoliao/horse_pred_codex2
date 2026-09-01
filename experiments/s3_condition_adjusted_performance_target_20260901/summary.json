@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "experiment_id": "s3_condition_adjusted_performance_target_20260901",
+  "status": "completed",
+  "decision": "rejected",
+  "code_commit_at_run": "56f142c2b26d15550ed7fac4224cd39b58c6a582",
+  "raw_sha256": "270923ce73c4441e64173f242a8719de7d1e9b205508140463ca547ef7b1ca87",
+  "scope": {
+    "evaluation_years": [2020, 2021, 2022],
+    "fit_count": 12,
+    "rows_used_2023": 0,
+    "rows_used_2024": 0,
+    "rows_used_2025": 0,
+    "odds_used": false,
+    "final_market_used_for_selection": false,
+    "direct_entity_id_feature_count": 0,
+    "S1_performance_feature_added": false,
+    "artifact_hashes_verified": true,
+    "artifact_file_count": 23
+  },
+  "controls": {
+    "binary": "PV-01 254-feature accepted control",
+    "lambdarank": "lean 253-feature conservative control"
+  },
+  "target": {
+    "definition": "expected_winner_seconds_per_1000m_minus_runner_seconds_per_1000m",
+    "higher_is_better": true,
+    "clip": [-5.0, 5.0],
+    "normalizer": "pooled_fold_train_2014_to_train_end_then_frozen",
+    "normalizer_fit_races": [13261, 16588, 19909],
+    "normalizer_max_fit_dates": ["2017-12-28", "2018-12-28", "2019-12-28"],
+    "evaluation_coverage_range": [0.9950159400116744, 0.9973885003179217],
+    "missing_imputed_to_zero": false
+  },
+  "method_macro_metrics": {
+    "binary_control": {"ndcg_at_3": 0.4687914710321969, "top_1": 0.2653151671037846, "race_log_loss": 2.1497632210194454, "race_brier": 0.8429444752734319, "winner_reciprocal_rank": 0.4696838483588637},
+    "huber_binary_scope": {"ndcg_at_3": 0.446445331473117, "top_1": 0.24067202395972672, "race_log_loss": 2.2427569888647238, "race_brier": 0.8621481263872026, "winner_reciprocal_rank": 0.44474731183020776},
+    "lambdarank_control": {"ndcg_at_3": 0.4657534507194487, "top_1": 0.26080036460403965, "race_log_loss": 2.163729270975285, "race_brier": 0.8456764659335359, "winner_reciprocal_rank": 0.4658540009717412},
+    "huber_lambdarank_scope": {"ndcg_at_3": 0.44350514761549426, "top_1": 0.24397418691226502, "race_log_loss": 2.248542227151087, "race_brier": 0.8629578771458318, "winner_reciprocal_rank": 0.44595965301009187}
+  },
+  "paired_comparisons": {
+    "huber_binary_scope_vs_binary_control": {
+      "probability_path": "rejected",
+      "ranking_path": "rejected",
+      "race_log_loss_improvement": -0.09299376784527835,
+      "race_log_loss_improved_years": 0,
+      "race_log_loss_ci95": [-0.10285328839606818, -0.08316896869777415],
+      "race_brier_improvement": -0.019203651113770648,
+      "ndcg_at_3_improvement": -0.022346139559079936,
+      "ndcg_at_3_improved_years": 0,
+      "ndcg_at_3_ci95": [-0.027489081517007498, -0.0173180353077527],
+      "top_1_improvement": -0.024643143144057883
+    },
+    "huber_lambdarank_scope_vs_lambdarank_control": {
+      "probability_path": "rejected",
+      "ranking_path": "rejected",
+      "race_log_loss_improvement": -0.08481295617580227,
+      "race_log_loss_improved_years": 0,
+      "race_log_loss_ci95": [-0.09338178927258517, -0.0762716836546917],
+      "race_brier_improvement": -0.017281411212295945,
+      "ndcg_at_3_improvement": -0.022248303103954387,
+      "ndcg_at_3_improved_years": 0,
+      "ndcg_at_3_ci95": [-0.02725635481906641, -0.017382159080001954],
+      "top_1_improvement": -0.016826177691774625
+    }
+  },
+  "slice_summary": {
+    "ndcg_worse_slices_binary_scope": 6,
+    "ndcg_worse_slices_lambdarank_scope": 6,
+    "slice_count": 6,
+    "limited_exception": "Binary-scope Huber had a +0.00261 Log Loss point delta in new races, while its new-race NDCG still worsened by 0.00757."
+  },
+  "interpretation": {
+    "continuous_target_better_than_controls": false,
+    "coherent_probability_better_than_controls": false,
+    "temporal_replication": "worse_on_all_primary_metrics_in_all_3_years",
+    "S1_relation": "Historical performance residual remains supported as an input feature; replacing winner/ranking supervision with this realized performance target is rejected.",
+    "production_control_change": false,
+    "recommended_next": "S2_supervised_race_wise_probability",
+    "S2_executed": false
+  },
+  "protocol_deviations": [
+    {
+      "item": "aggregate_huber_loss_diagnostic",
+      "severity": "non_selection_diagnostic_only",
+      "detail": "The preregistration listed Huber loss, but the local artifact saved coverage, clipping, MAE, and race-wise Spearman without a separate Huber-loss field.",
+      "decision_impact": "none; Huber loss was not an acceptance metric"
+    }
+  ],
+  "independent_review": {
+    "pit_leakage": "pass_with_non_selection_diagnostic_omission",
+    "statistics_validation": "pass",
+    "domain_semantics": "pass",
+    "decision_valid": true
+  },
+  "limitations": [
+    "This rejects the preregistered single-target Huber formulation, not all latent-performance or multi-task models.",
+    "The target retains pace and track/day variation and is race-constant-adjusted rather than a fully identified latent ability.",
+    "2020-2022 are rolling research years, not untouched final holdouts.",
+    "Several Huber fits ended near the fixed 500-tree ceiling, so this is not a fully tuned model-family ceiling.",
+    "Binary/LambdaRank utilities have arbitrary scales; their target MAE values are not comparable to Huber target-scale MAE.",
+    "No claim is made about 2024, 2025, market performance, ROI, or profitability."
+  ]
+}
