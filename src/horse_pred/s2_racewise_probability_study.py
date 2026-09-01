@@ -486,9 +486,12 @@ def run_s2_racewise_probability_study(
         gate_models: dict[str, dict[str, Any]] = {}
         gate_records: dict[str, Any] = {}
         feature_audits: dict[str, Any] = {}
+        feature_table_dir = temporary / "feature_tables"
+        feature_table_dir.mkdir()
         for fold in folds:
             fold_frame, audit = _fold_frame(normalized, base_frame, fold)
             feature_audits[fold["id"]] = audit
+            fold_frame.to_pickle(feature_table_dir / f"{fold['id']}.pkl")
             binary = train_binary(
                 fold_frame,
                 feature_columns=feature_scopes["C0"],
@@ -544,7 +547,7 @@ def run_s2_racewise_probability_study(
         diagnostic_records: dict[str, Any] = {}
         fit_count = 9
         for fold in folds:
-            fold_frame, _audit = _fold_frame(normalized, base_frame, fold)
+            fold_frame = pd.read_pickle(feature_table_dir / f"{fold['id']}.pkl")
             models = gate_models[fold["id"]]
             models["binary_B1"] = train_binary(
                 fold_frame,
