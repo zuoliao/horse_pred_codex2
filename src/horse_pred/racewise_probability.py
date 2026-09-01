@@ -304,13 +304,14 @@ def fit_linear_utility(
                 and record["gradient_norm"] <= acceptable_iteration_limit_gradient_norm
             )
         )
-    if not all(record[1]["operational_convergence"] for record in candidates):
-        failures = [
-            record[1] for record in candidates if not record[1]["operational_convergence"]
-        ]
+    valid_candidates = [
+        item for item in candidates if item[1]["operational_convergence"]
+    ]
+    if not valid_candidates:
+        failures = [record[1] for record in candidates]
         raise RuntimeError(f"linear utility optimizer failed: {failures}")
     coefficients, selected = min(
-        candidates,
+        valid_candidates,
         key=lambda item: (
             item[1]["validation_native_race_log_loss"],
             -item[1]["l2"],
@@ -325,6 +326,7 @@ def fit_linear_utility(
         optimization={
             "selected": selected,
             "candidates": [record for _, record in candidates],
+            "invalid_candidate_count": len(candidates) - len(valid_candidates),
             "transform": transform.audit(),
         },
     )

@@ -67,6 +67,8 @@ optimizationはSciPy L-BFGS-B、zero initialization、最大250 iteration、`fto
 
 **Pre-evaluation implementation amendment:** 最初のrunはevaluationを計算する前に、2個のL2候補が有限解・gradient norm `0.00521`以下ながら250 iteration上限へ達し、SciPy statusだけを理由にfail-closedした。仮説、候補、validation loss、evaluation ruleは変えず、`status=iteration limit`でも全値finiteかつgradient norm `<= .01`なら`operational_convergence`として候補を有効にする。grouped softmaxは数式同一の`reduceat/repeat`ベクトル化へ変更する。これはoptimizer診断だけに基づく実装修正で、evaluation metricは未生成・未参照である。
 
+二回目のrunもevaluation集計前に、補助`linear_binary_LB1`のL2=`1e-4`だけがgradient norm `.01991`でoperational convergenceを満たさず停止した。gridの他候補とprimary Conditional Logitは有効だったため、全候補の診断を保存しつつ、少なくとも1候補がoperational convergenceを満たせば有効候補内だけでvalidation LLを選ぶ。全候補失敗時だけ停止する。これはcapacity-matched補助診断のfail handlingであり、L2 grid、primary arm、capacity gate、evaluation、採否を変更しない。
+
 線形capacity-matched診断として、同じtransform・L2 gridのrunner-level線形Binary `LB0/LB1`も保存する。これはobjective attributionの補助でありprimary 4-armや採否には含めない。
 
 ## 6. Metric-blind capacity gate and conditional Stage N

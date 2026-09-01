@@ -486,12 +486,21 @@ def run_s2_racewise_probability_study(
         gate_models: dict[str, dict[str, Any]] = {}
         gate_records: dict[str, Any] = {}
         feature_audits: dict[str, Any] = {}
-        feature_table_dir = temporary / "feature_tables"
-        feature_table_dir.mkdir()
+        feature_table_dir = output.parent / f".{output.name}.resume-cache"
+        feature_table_dir.mkdir(exist_ok=True)
         for fold in folds:
-            fold_frame, audit = _fold_frame(normalized, base_frame, fold)
+            cache_path = feature_table_dir / f"{fold['id']}.pkl"
+            if cache_path.exists():
+                fold_frame = pd.read_pickle(cache_path)
+                audit = {"resumed_from_local_cache": True}
+            else:
+                fold_frame, audit = _fold_frame(normalized, base_frame, fold)
+                fold_frame.to_pickle(cache_path)
             feature_audits[fold["id"]] = audit
-            fold_frame.to_pickle(feature_table_dir / f"{fold['id']}.pkl")
+            if pd.to_datetime(fold_frame["race_date"]).dt.year.max() > 2022:
+                raise AssertionError("S2 resume cache opened a post-2022 row")
+            if PERFORMANCE_COLUMN not in fold_frame.columns:
+                raise ValueError("S2 resume cache lacks the registered performance feature")
             binary = train_binary(
                 fold_frame,
                 feature_columns=feature_scopes["C0"],
@@ -787,6 +796,7 @@ def run_s2_racewise_probability_study(
         tables_dir.mkdir()
         race_metrics.to_csv(tables_dir / "race_metrics.csv.gz", index=False, compression="gzip")
         pd.DataFrame(slice_records).to_csv(tables_dir / "slice_metrics.csv", index=False)
+        shutil.move(str(feature_table_dir), str(temporary / "feature_tables"))
         write_artifact_manifest(temporary)
         temporary.replace(output)
         verification = verify_artifact_manifest(output)
