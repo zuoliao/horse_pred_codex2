@@ -2,13 +2,13 @@
 
 ## Operating Rule
 
-The active phase is `Phase 5B: EDA-guided representation / objective research`. Phase 5A and S1 Two-axis past-race value are complete. The human selected S3 Condition-adjusted performance target; S3 is the only current experiment. Do not run S2 or feature follow-ups automatically after it.
+The active phase is `Phase 5B: EDA-guided representation / objective research`. Phase 5A, S1, and S3 Condition-adjusted performance target are complete. S3 was rejected. Stop for human review; do not run S2 or any feature/target follow-up automatically.
 
-S1 used no 2023/2024/2025 rows or market information. Preserve this firewall for any follow-up selection work. Never commit raw data, cache, models, runner predictions, or recoverable runner-level views.
+S1 and S3 used no 2023/2024/2025 rows or market information. Preserve this firewall for any follow-up selection work. Never commit raw data, cache, models, runner predictions, or recoverable runner-level views.
 
 ## Current Goal
 
-Preregister and execute S3 condition-adjusted performance target because S1 supported performance residual. Keep S2 race-wise probability queued and stop for human review after S3.
+Wait for the human to select the next hypothesis. Recommend S2 supervised race-wise probability. Do not tune S3 variants on the same rolling evidence.
 
 ## Current State
 
@@ -21,9 +21,12 @@ Preregister and execute S3 condition-adjusted performance target because S1 supp
 - New-horse race exclusion is not supported. Race-class debut and `0_observed_history` are distinct.
 - The EDA does not establish production metric, ROI, or profit improvement.
 - S1 performance is `supported`; standalone field quality is `inconclusive`; joint C3 is `supported`. Field quality conditional on performance is Binary weak but LambdaRank rejected, so two independent axes are not established.
-- S3 is `current / authorized`; S2 remains `queued`. They must not be combined.
+- S3 is `completed / rejected`; S2 is `recommended_next / queued` and was not executed.
 - S1 controls: Binary PV-01 254 features; LambdaRank lean 253 features. LambdaRank PV-01 254 is point-improved but interval-inconclusive and prospective-only.
 - Formal controls remain unchanged pending human review. Binary C1/C3 and LambdaRank C1/C3 are rolling candidates, not final-holdout winners.
+- S3 matched Huber to the Binary 254- and LambdaRank 253-feature scopes. Both probability and ranking paths were rejected; all five primary metrics worsened in 2020, 2021, and 2022.
+- S3 macro deltas were Binary-scope `LL -.09299 / NDCG -.02235 / Top-1 -.02464` and Rank-scope `LL -.08481 / NDCG -.02225 / Top-1 -.01683`; paired intervals were entirely adverse.
+- S3 target coverage was 99.5–99.7% on evaluation years. This is not a broad missing-target failure.
 
 ## Implemented Artifacts
 
@@ -41,6 +44,10 @@ Preregister and execute S3 condition-adjusted performance target because S1 supp
 - S1 machine summaries: `experiments/s1_two_axis_race_value_20260901/`.
 - S1 implementation: `src/horse_pred/two_axis_race_value.py`, `src/horse_pred/s1_two_axis_study.py`, and CLI `horse-pred run-s1-two-axis-study`.
 - Full ignored S1 artifact: `artifacts/s1_two_axis_race_value_20260901/` with models, scoring predictions, diagnostics, aggregate tables, and 38-file manifest.
+- S3 preregistration and conclusion: `docs/experiments/s3_condition_adjusted_performance_target_preregistration.md` and `docs/experiments/s3_condition_adjusted_performance_target_20260901.md`.
+- S3 machine summary: `experiments/s3_condition_adjusted_performance_target_20260901/`.
+- S3 implementation/CLI: `src/horse_pred/performance_target.py`, `src/horse_pred/s3_performance_target_study.py`, and `horse-pred run-s3-performance-target-study`.
+- Full ignored S3 artifact: `artifacts/s3_condition_adjusted_performance_target_20260901/` with 12 models, runner predictions, bootstrap, slices, target/normalizer audits, and a verified 23-file manifest.
 
 ## Data State
 
@@ -52,10 +59,11 @@ Preregister and execute S3 condition-adjusted performance target because S1 supp
 - `market_oracle` is separate from `runner_pre_race`; final odds are joined only in named oracle diagnostics.
 - S1 source isolation retained 488,715 rows / 34,504 races through 2022-12-28 and excluded 47,672/45,696/47,884 rows from 2023/2024/2025 before normalization.
 - S1 model frame contained 403,855 eligible runners / 28,498 races. Market columns were removed before feature resolution.
+- S3 used the same 403,855-runner / 28,498-race base frame. Its raw source isolation excluded 47,672/45,696/47,884 rows from 2023/2024/2025 before normalization.
 
 ## Verification
 
-S1 completed 24 fits over evaluation years 2020–2022. Its artifact manifest verified all 38 files. Field quality had zero race-constant violations; condition fits used zero early-stopping/calibration/evaluation rows; 2023/2024/2025 and odds usage were zero. Before the final documentation commit, 259 repository tests passed; rerun the final gates after this commit because S1 added further tests.
+S3 completed 12 fits over evaluation years 2020–2022. Its manifest verified all 23 files. Normalizers used 13,261 / 16,588 / 19,909 train races and zero later-role rows. Every method retained identical calibration/evaluation choice-set counts; coherent probabilities summed to one within `1.33e-15`. Final verification passed: 283 repository tests, Ruff, compileall, and `git diff --check`.
 
 ## Known Gaps
 
@@ -65,16 +73,19 @@ S1 completed 24 fits over evaluation years 2020–2022. Its artifact manifest ve
 - Local JRA history omits some external/overseas history and lacks bloodline, training, exact weight/handicap conditions, and reliable T-close snapshots.
 - 2022 is confirmation evidence already exposed to research, not an untouched final holdout.
 - S1 intervals condition on fitted models and do not include model-refit uncertainty.
+- S3 intervals also condition on fitted models. The target retains pace and track/day variation and does not identify latent ability causally.
+- Condition adjustment is race-constant, so within-race target order remains clock order. The negative S3 result does not reject all latent-performance, auxiliary-task, or multi-task designs.
+- The S3 artifact omitted the preregistered non-selection Huber-loss diagnostic while retaining coverage, clip, MAE, and Spearman. This is recorded as a protocol deviation and does not affect the acceptance decision.
 - Field quality is highly redundant with existing historical field-strength features and did not work standalone.
 - C3's advantage over C1 is family-dependent; it does not establish two independently useful axes.
 - Final market gaps cannot identify the causal contribution of missing data versus model, target, calibration, or selection effects.
 
 ## Next Tasks
 
-1. Preregister S3 before reading its model metrics; freeze target, folds, controls, probability mapping, and acceptance logic.
-2. Implement and run Huber regression on the paired Binary-254 and LambdaRank-253 feature scopes without adding S1 feature columns.
-3. Record rolling evidence through 2022 only, update all project state, and stop for human review.
-4. Keep S2 queued and A1 transition reliability, A2 connection compression, and A3 last3F relative deferred.
+1. Human reviews the completed S3 negative result and selects the next hypothesis.
+2. Recommended if selected: preregister S2 supervised race-wise probability on the same controls/folds; do not combine it with S3 or feature changes.
+3. Keep S3 target variants, Top3 multi-task, A1 transition reliability, A2 connection compression, and A3 last3F relative deferred.
+4. Preserve the 2024/2025 and market firewall for selection work.
 
 ## Useful Commands
 
@@ -88,6 +99,10 @@ UV_CACHE_DIR=/tmp/horse-pred-uv-cache uv run horse-pred run-s1-two-axis-study \
   --raw-path /path/to/race_results_merged.csv \
   --output artifacts/s1_two_axis_race_value_YYYYMMDD \
   --preregistration experiments/s1_two_axis_race_value_20260901/preregistration.json
+UV_CACHE_DIR=/tmp/horse-pred-uv-cache uv run horse-pred run-s3-performance-target-study \
+  --raw-path /path/to/race_results_merged.csv \
+  --output artifacts/s3_condition_adjusted_performance_target_YYYYMMDD \
+  --preregistration experiments/s3_condition_adjusted_performance_target_20260901/preregistration.json
 UV_CACHE_DIR=/tmp/horse-pred-uv-cache uv run pytest -q
 UV_CACHE_DIR=/tmp/horse-pred-uv-cache uv run ruff check .
 UV_CACHE_DIR=/tmp/horse-pred-uv-cache uv run python -m compileall -q src tests tools
@@ -96,4 +111,4 @@ git status --short --branch
 
 ## Handoff Notes
 
-S1 found that condition-adjusted historical performance is the stable incremental signal. Field quality alone failed and its conditional increment conflicted by family. Do not promote C3 as proof of a two-axis encoder, tune S1 windows, or add interactions from this result. S3 is now authorized; S2 remains unauthorized until the post-S3 human decision.
+S1 found that condition-adjusted historical performance is useful as prior-race input context. S3 found that replacing winner/ranking supervision with a single Huber performance target is materially worse across both feature scopes. Keep those conclusions separate: do not undo S1, and do not tune S3 variants post hoc. S2 is the recommended next hypothesis but remains unauthorized until the human selects it.

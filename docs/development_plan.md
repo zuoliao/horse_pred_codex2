@@ -2,7 +2,7 @@
 
 **作成日:** 2026-08-30 (JST)  
 **更新日:** 2026-09-01 (JST)
-**前提:** Phase 5A EDAとS1 Two-axis past-race valueまで完了。人間選択によりS3 Condition-adjusted performance targetをcurrentとし、S2はqueuedのまま維持する。
+**前提:** Phase 5A EDA、S1、S3 Condition-adjusted performance targetまで完了。S3はrejected、S2をrecommended_next / queuedとして人間レビュー待ち。
 **対象:** JRA平地競走、no-odds予測を先行し、購入判断を別層にする。
 
 ## 進行原則
@@ -59,8 +59,8 @@
 | 39 | COND-01 | condition-transition suitability | SPEED-01 | `superseded_by_eda`。広い旧案を閉じ、狭いA1 transition reliabilityへ再定義 |
 | 40 | EDA-5A | systematic EDA and problem reformulation | 既存実験の安全なcheckpoint | **完了**。2014～2022の時間再現、共通view、全workstream、三者PASS、仮説registry、最大3候補のroadmapを1 commandで再現。production変更なし |
 | 41 | S1-RACE-VALUE-2AXIS | horse performanceとrace-constant field qualityの二軸履歴 | EDA-5A | **completed**。performance supported、field-quality単独 inconclusive、joint supported。production controlは自動変更せず停止 |
-| 42 | S2-RACEWISE-CHOICE | supervised race-wise probability objective | S1 decision | `priority_S2 / queued`。S1後も有効だが、S3より後を推奨。人間選択まで実行しない |
-| 43 | S3-PERFORMANCE-TARGET | condition-adjusted continuous performance target | S1 decision | `priority_S3 / current`。target formulationだけを変更し、2020～2022 rollingで実行 |
+| 42 | S2-RACEWISE-CHOICE | supervised race-wise probability objective | S3 decision | `priority_S2 / recommended_next / queued`。人間選択まで実行しない |
+| 43 | S3-PERFORMANCE-TARGET | condition-adjusted continuous performance target | S1 decision | **completed / rejected**。両matched scope、全3年でranking/probability悪化。control変更なし |
 | 44 | A1-TRANSITION-RELIABILITY | condition switch時のstate reliability | S1～S3 review | `still_valid_future_candidate / deferred_by_eda` |
 | 45 | A2-CONNECTION-COMPRESSION | 130 connection列の階層的縮約 | S1～S3 review | `still_valid_future_candidate / deferred_by_eda` |
 | 46 | A3-LAST3F-RELATIVE | race-relative last3F履歴 | SEC-3F重複監査、S1～S3 review | `still_valid_future_candidate / deferred_by_eda` |
@@ -95,8 +95,8 @@
 | COND-01 | superseded_by_eda | broad interaction案を閉じ、A1 transition reliabilityへ狭く再定義 |
 | EDA-5A | completed | 全workstream、共通contract、再現CLI、三者review、registry、synthesis、roadmapを完了 |
 | S1-RACE-VALUE-2AXIS | completed | 24 fit完了。performance supported、field-quality単独 inconclusive、joint supported。2023～2025/market未使用 |
-| S2-RACEWISE-CHOICE | queued / priority_S2 | objective mismatchを調べる独立候補。S3後を推奨し、今回未実行 |
-| S3-PERFORMANCE-TARGET | current / priority_S3 | S1で安定したperformance residualを教師へ拡張。preregister後に実行し、S2へ自動移行しない |
+| S2-RACEWISE-CHOICE | recommended_next / queued / priority_S2 | S3のsingle-target Huber失敗後も残るrace-wise objective仮説。人間選択まで未実行 |
+| S3-PERFORMANCE-TARGET | completed / rejected | Binary-scope ΔLL `-.09299`, ΔNDCG `-.02235`; Rank-scope `-.08481`, `-.02225`。全metric 0/3改善 |
 | A1 / A2 / A3 | deferred_by_eda | valid future candidates。S1～S3より後 |
 
 ## Phase 5B decision tree
@@ -104,8 +104,8 @@
 | ID | Hypothesis | Status | Dependency | Result | Next action |
 |---|---|---|---|---|---|
 | S1 | Past-race valueをhorse performanceとrace-constant field qualityへ分離する | `completed` | Phase 5A | Performance `supported`; field quality `inconclusive`; joint `supported`; C3−C1はBinary weak / LambdaRank reject | production controlを自動変更せず、人間レビュー |
-| S3 | condition-adjusted performanceをcontinuous targetとして直接教師にする | `current` | S1 performance support | 人間が選択。target-only比較をpreregisterして2020～2022で評価 | 完了後にS2またはperformance深掘りを人間判断 |
-| S2 | supervised race-wise probability objectiveを直接最適化する | `queued` | S3 review | 未実行。S1とは異なるobjective仮説 | S3完了後も自動実行せず人間判断 |
+| S3 | condition-adjusted performanceをcontinuous targetとして直接教師にする | `completed / rejected` | S1 performance support | 両feature scopeでLL/Brier/NDCG/Top1/MRRが3/3年悪化。target coverageは高く、control変更なし | target variantを同期間で追わず停止 |
+| S2 | supervised race-wise probability objectiveを直接最適化する | `recommended_next / queued` | S3 review | 未実行。one-winner choice structureへ直接対応 | 人間が選択した場合だけpreregister |
 | A1 | condition transition時のstate reliabilityを表す | `deferred_by_eda` | S1～S3 review | 未実行 | S1～S3後 |
 | A2 | connection 130列を階層的に縮約する | `deferred_by_eda` | S1～S3 review | 未実行 | S1～S3後 |
 | A3 | race-relative last3F履歴を非冗長化する | `deferred_by_eda` | SEC-3F重複監査 | 未実行 | S1～S3後 |
