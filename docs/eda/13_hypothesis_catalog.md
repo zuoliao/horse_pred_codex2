@@ -12,6 +12,10 @@
 | `EDA-S02-RACEWISE-CHOICE` | race-wise probability objectiveは現Binary/Rankよりcoherent probabilityを改善するか | choice-set構造が安定、family top-choice不一致約24%、objective差はmarket gapより小さい | 同一features/splitsの線形conditional logitまたはtop-choice PL baseline | 線形baselineのunderfitをobjective否定と誤読しない |
 | `EDA-S03-PERFORMANCE-TARGET` | continuous performance targetはwinner/top3 labelより走行内容を保持するか | 3着/4着境界は連続、rankとtime gapは約`.995`、residual coverage >99.6% | fold内condition residualをHuber回帰しrace内順位化・確率化 | track/day/condition補正のleakageとdrift |
 
+## Post-S1 update (2026-09-01)
+
+`EDA-S01-RACE-VALUE-2AXIS`は完了した。performance axisはsupported、field-quality単独はinconclusive、joint armはsupportedだが二軸の独立支持ではない。これを受け、`EDA-S03-PERFORMANCE-TARGET`をrecommended next、`EDA-S02-RACEWISE-CHOICE`をqueued alternativeへ更新した。どちらも人間レビューまで未実行である。
+
 3件は互いに混ぜない。最初の実験を人間が選び、その一仮説だけを固定設計で実施する。
 
 ## Priority A

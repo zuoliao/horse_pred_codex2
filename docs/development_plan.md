@@ -2,7 +2,7 @@
 
 **作成日:** 2026-08-30 (JST)  
 **更新日:** 2026-09-01 (JST)
-**前提:** Phase 5A EDAまで完了。Phase 5BではEDA-guided仮説を一件ずつ検証し、S1 Two-axis past-race valueを現在taskとする。
+**前提:** Phase 5A EDAとS1 Two-axis past-race valueまで完了。S3を次候補として推奨するが、人間レビューまで新実験を開始しない。
 **対象:** JRA平地競走、no-odds予測を先行し、購入判断を別層にする。
 
 ## 進行原則
@@ -58,9 +58,9 @@
 | 38 | SPEED-01 | condition-adjusted speed figure | PACE-01～04 | 期待時計を過去情報だけで推定し、条件補正済み残差の履歴1列をrolling評価 |
 | 39 | COND-01 | condition-transition suitability | SPEED-01 | `superseded_by_eda`。広い旧案を閉じ、狭いA1 transition reliabilityへ再定義 |
 | 40 | EDA-5A | systematic EDA and problem reformulation | 既存実験の安全なcheckpoint | **完了**。2014～2022の時間再現、共通view、全workstream、三者PASS、仮説registry、最大3候補のroadmapを1 commandで再現。production変更なし |
-| 41 | S1-RACE-VALUE-2AXIS | horse performanceとrace-constant field qualityの二軸履歴 | EDA-5A | **current**。定義監査後、90日減衰2列をC0/C1/C2/C3でBinary/Rank rolling比較し停止 |
-| 42 | S2-RACEWISE-CHOICE | supervised race-wise probability objective | S1 decision | `priority_S2 / queued`。S1後の人間選択まで実行しない |
-| 43 | S3-PERFORMANCE-TARGET | condition-adjusted continuous performance target | S1 decision | `priority_S3 / queued`。S1後の人間選択まで実行しない |
+| 41 | S1-RACE-VALUE-2AXIS | horse performanceとrace-constant field qualityの二軸履歴 | EDA-5A | **completed**。performance supported、field-quality単独 inconclusive、joint supported。production controlは自動変更せず停止 |
+| 42 | S2-RACEWISE-CHOICE | supervised race-wise probability objective | S1 decision | `priority_S2 / queued`。S1後も有効だが、S3より後を推奨。人間選択まで実行しない |
+| 43 | S3-PERFORMANCE-TARGET | condition-adjusted continuous performance target | S1 decision | `priority_S3 / recommended_next`。performance axis支持を受け実装準備可能。人間選択まで実行しない |
 | 44 | A1-TRANSITION-RELIABILITY | condition switch時のstate reliability | S1～S3 review | `still_valid_future_candidate / deferred_by_eda` |
 | 45 | A2-CONNECTION-COMPRESSION | 130 connection列の階層的縮約 | S1～S3 review | `still_valid_future_candidate / deferred_by_eda` |
 | 46 | A3-LAST3F-RELATIVE | race-relative last3F履歴 | SEC-3F重複監査、S1～S3 review | `still_valid_future_candidate / deferred_by_eda` |
@@ -94,10 +94,21 @@
 | SPEED-01 | 完了・両family rolling採択 | prequential条件補正speed履歴1列。2024 Binary supported、Rank directionally consistent |
 | COND-01 | superseded_by_eda | broad interaction案を閉じ、A1 transition reliabilityへ狭く再定義 |
 | EDA-5A | completed | 全workstream、共通contract、再現CLI、三者review、registry、synthesis、roadmapを完了 |
-| S1-RACE-VALUE-2AXIS | current / priority_S1 | definition auditとpreregistrationを先行し、4-arm rolling comparisonを実行 |
-| S2-RACEWISE-CHOICE | queued / priority_S2 | S1 decision後にpriorityを再確認。今回実行しない |
-| S3-PERFORMANCE-TARGET | queued / priority_S3 | S1 decision後にpriorityを再確認。今回実行しない |
+| S1-RACE-VALUE-2AXIS | completed | 24 fit完了。performance supported、field-quality単独 inconclusive、joint supported。2023～2025/market未使用 |
+| S2-RACEWISE-CHOICE | queued / priority_S2 | objective mismatchを調べる独立候補。S3後を推奨し、今回未実行 |
+| S3-PERFORMANCE-TARGET | recommended_next / priority_S3 | S1で安定したperformance residualを教師へ拡張する候補。人間承認まで未実行 |
 | A1 / A2 / A3 | deferred_by_eda | valid future candidates。S1～S3より後 |
+
+## Phase 5B decision tree
+
+| ID | Hypothesis | Status | Dependency | Result | Next action |
+|---|---|---|---|---|---|
+| S1 | Past-race valueをhorse performanceとrace-constant field qualityへ分離する | `completed` | Phase 5A | Performance `supported`; field quality `inconclusive`; joint `supported`; C3−C1はBinary weak / LambdaRank reject | production controlを自動変更せず、人間レビュー |
+| S3 | condition-adjusted performanceをcontinuous targetとして直接教師にする | `recommended_next` | S1 performance support | 未実行。S1の安定signalと直接対応 | 人間が選択した場合だけpreregister |
+| S2 | supervised race-wise probability objectiveを直接最適化する | `queued` | S1 review | 未実行。S1とは異なるobjective仮説 | S3との優先順位を人間が決定 |
+| A1 | condition transition時のstate reliabilityを表す | `deferred_by_eda` | S1～S3 review | 未実行 | S1～S3後 |
+| A2 | connection 130列を階層的に縮約する | `deferred_by_eda` | S1～S3 review | 未実行 | S1～S3後 |
+| A3 | race-relative last3F履歴を非冗長化する | `deferred_by_eda` | SEC-3F重複監査 | 未実行 | S1～S3後 |
 
 ## EDA後のlegacy queue再分類
 

@@ -2,17 +2,17 @@
 
 ## Operating Rule
 
-The active phase is `Phase 5B: EDA-guided representation / objective research`. Phase 5A is complete, and the human user selected S1 Two-axis past-race value. Preregister and execute only S1 as a four-arm rolling experiment, then stop for human review. Do not run S2 or S3 automatically.
+The active phase is `Phase 5B: EDA-guided representation / objective research`. Phase 5A and S1 Two-axis past-race value are complete. Stop for human review. Do not run S2 or S3 automatically.
 
-S1 may not use 2024/2025 outcomes or any market information for definition, parameter selection, or acceptance. Keep 2023 in its prior calibration role and outside S1 evaluation. Never commit raw data, cache, models, runner predictions, or recoverable runner-level views.
+S1 used no 2023/2024/2025 rows or market information. Preserve this firewall for any follow-up selection work. Never commit raw data, cache, models, runner predictions, or recoverable runner-level views.
 
 ## Current Goal
 
-Complete S1 definition audit, preregistration, PIT-safe two-axis feature implementation, leakage tests, and C0/C1/C2/C3 rolling comparison. Classify the performance axis, field-quality axis, and joint representation separately, update S2/S3 readiness, and stop.
+Wait for the human to choose the next hypothesis. Recommend S3 condition-adjusted performance target because S1 supported performance residual. S2 race-wise probability remains a valid queued alternative.
 
 ## Current State
 
-- Phase 5A EDA and all three reviews are complete. Phase 5B S1 is current.
+- Phase 5A EDA, all three reviews, and Phase 5B S1 are complete.
 - Frozen controls remain Binary `pv_001_candidate_signed_time_gap` with 254 features and conservative LambdaRank `abl_006_drop_field_relative` with 253 features.
 - PV-00 through PV-05 are complete. PV-06's 2022 token gate was inconclusive and is `deferred_by_eda`.
 - Margin-aware rating improved standalone calibrated predictions, but PV-04/PV-05/R6 did not establish incremental LightGBM value.
@@ -20,8 +20,10 @@ Complete S1 definition audit, preregistration, PIT-safe two-axis feature impleme
 - Phase 5A used 2013 only for warm-up/quality, 2014–2019 for discovery, 2020–2021 for replication, and 2022 for confirmation. It newly accessed neither 2023/2024 targets nor 2025.
 - New-horse race exclusion is not supported. Race-class debut and `0_observed_history` are distinct.
 - The EDA does not establish production metric, ROI, or profit improvement.
-- Priority order is S1 current, S2 queued, S3 queued. They must not be combined.
+- S1 performance is `supported`; standalone field quality is `inconclusive`; joint C3 is `supported`. Field quality conditional on performance is Binary weak but LambdaRank rejected, so two independent axes are not established.
+- S3 is `recommended_next`; S2 remains `queued`. Neither was executed, and they must not be combined.
 - S1 controls: Binary PV-01 254 features; LambdaRank lean 253 features. LambdaRank PV-01 254 is point-improved but interval-inconclusive and prospective-only.
+- Formal controls remain unchanged pending human review. Binary C1/C3 and LambdaRank C1/C3 are rolling candidates, not final-holdout winners.
 
 ## Implemented Artifacts
 
@@ -34,6 +36,11 @@ Complete S1 definition audit, preregistration, PIT-safe two-axis feature impleme
 - Common loader/CLI: `src/horse_pred/eda.py` and `horse-pred run-eda`.
 - Full ignored artifact: `artifacts/eda_20260901/report.html`, aggregate tables, plots, logs, scripts, manifest, and hashes.
 - Superseded pre-fix artifact is retained non-destructively at `artifacts/eda_20260901_pre_contract_fix/` and is not canonical.
+- S1 preregistration: `docs/experiments/s1_two_axis_race_value_preregistration.md`.
+- S1 conclusion: `docs/experiments/s1_two_axis_race_value_20260901.md`.
+- S1 machine summaries: `experiments/s1_two_axis_race_value_20260901/`.
+- S1 implementation: `src/horse_pred/two_axis_race_value.py`, `src/horse_pred/s1_two_axis_study.py`, and CLI `horse-pred run-s1-two-axis-study`.
+- Full ignored S1 artifact: `artifacts/s1_two_axis_race_value_20260901/` with models, scoring predictions, diagnostics, aggregate tables, and 38-file manifest.
 
 ## Data State
 
@@ -43,10 +50,12 @@ Complete S1 definition audit, preregistration, PIT-safe two-axis feature impleme
 - Flat historical performance: 471,557 rows / 33,240 races. Strict predictive/outcome view: 450,340 rows / 31,689 races.
 - Predictive views contain zero obstacle rows and zero target dates after 2022-12-31.
 - `market_oracle` is separate from `runner_pre_race`; final odds are joined only in named oracle diagnostics.
+- S1 source isolation retained 488,715 rows / 34,504 races through 2022-12-28 and excluded 47,672/45,696/47,884 rows from 2023/2024/2025 before normalization.
+- S1 model frame contained 403,855 eligible runners / 28,498 races. Market columns were removed before feature resolution.
 
 ## Verification
 
-Independent review checked common/workstream hashes and concluded PASS for PIT/leakage, statistics/validation, and domain semantics. Final repository verification on 2026-09-01: 239 tests passed, Ruff passed, and `compileall` passed. The final ignored artifact manifest/hash, report XML, and tracked-private-file audits are release checks run after the last documentation commit.
+S1 completed 24 fits over evaluation years 2020–2022. Its artifact manifest verified all 38 files. Field quality had zero race-constant violations; condition fits used zero early-stopping/calibration/evaluation rows; 2023/2024/2025 and odds usage were zero. Before the final documentation commit, 259 repository tests passed; rerun the final gates after this commit because S1 added further tests.
 
 ## Known Gaps
 
@@ -55,16 +64,17 @@ Independent review checked common/workstream hashes and concluded PASS for PIT/l
 - Historical `published_at` is unavailable, so this is retrospective PIT-C rather than snapshot-proven PIT-A.
 - Local JRA history omits some external/overseas history and lacks bloodline, training, exact weight/handicap conditions, and reliable T-close snapshots.
 - 2022 is confirmation evidence already exposed to research, not an untouched final holdout.
-- EDA associations do not prove S1 incremental value after retraining the current model.
+- S1 intervals condition on fitted models and do not include model-refit uncertainty.
+- Field quality is highly redundant with existing historical field-strength features and did not work standalone.
+- C3's advantage over C1 is family-dependent; it does not establish two independently useful axes.
 - Final market gaps cannot identify the causal contribution of missing data versus model, target, calibration, or selection effects.
 
 ## Next Tasks
 
-1. Reconcile the post-EDA queue and commit the Phase 5B state.
-2. Audit/fix one performance residual and one race-constant pre-race field-quality definition using discovery data only; preregister fixed folds and gates.
-3. Implement the two 90-day historical state columns and the ten required PIT/invariance tests.
-4. Run C0/C1/C2/C3 for both frozen families through 2022 only; save aggregate evidence and ignored full artifacts.
-5. Update S2/S3 priority/readiness from the S1 result, stop, and request human selection.
+1. Human chooses S3 (recommended) or S2. Do not start either automatically.
+2. If S3 is chosen, preregister a condition-adjusted continuous performance target without changing S1 features or opening 2024/2025.
+3. If S2 is chosen, preregister the transparent supervised race-wise probability baseline on the same PIT scope.
+4. Keep A1 transition reliability, A2 connection compression, and A3 last3F relative deferred until the S1–S3 review is resolved.
 
 ## Useful Commands
 
@@ -74,6 +84,10 @@ UV_CACHE_DIR=/tmp/horse-pred-uv-cache uv run python tools/eda/run_phase5a.py \
   --output artifacts/eda_YYYYMMDD \
   --max-date 2022-12-31 \
   --rolling-predictions artifacts/eval_roll_001_current_best_20260831/predictions_scoring.csv.gz
+UV_CACHE_DIR=/tmp/horse-pred-uv-cache uv run horse-pred run-s1-two-axis-study \
+  --raw-path /path/to/race_results_merged.csv \
+  --output artifacts/s1_two_axis_race_value_YYYYMMDD \
+  --preregistration experiments/s1_two_axis_race_value_20260901/preregistration.json
 UV_CACHE_DIR=/tmp/horse-pred-uv-cache uv run pytest -q
 UV_CACHE_DIR=/tmp/horse-pred-uv-cache uv run ruff check .
 UV_CACHE_DIR=/tmp/horse-pred-uv-cache uv run python -m compileall -q src tests tools
@@ -82,4 +96,4 @@ git status --short --branch
 
 ## Handoff Notes
 
-S1 asks whether past-race value should be split into horse performance and race-constant field quality. The latter must be identical for every runner in a race and use only frozen pre-race strength; a leave-one-out opponent mean is not field quality. Do not add interactions, alternate windows, uncertainty, or condition-specific variants. S2/S3 remain unauthorized until S1 is reported.
+S1 found that condition-adjusted historical performance is the stable incremental signal. Field quality alone failed and its conditional increment conflicted by family. Do not promote C3 as proof of a two-axis encoder, tune S1 windows, or add interactions from this result. S2/S3 remain unauthorized until the human selects one; S3 is recommended.

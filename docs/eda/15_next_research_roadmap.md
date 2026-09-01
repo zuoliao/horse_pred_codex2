@@ -43,4 +43,6 @@ Phase 5Aは候補の優先順位付けで停止する。以下の最優先3件�
 
 ## Human decision requested
 
-次の実行候補はS1、S2、S3の3件だけである。EDAはどれが勝つかを決めていない。情報表現を先に問うならS1、確率objectiveを先に問うならS2、教師情報の捨て方を先に問うならS3となる。選択されるまでproduction modelと局所feature queueは停止状態を維持する。
+S1は2026-09-01に完了した。performance residualは両familyのprobability pathでsupported、field quality単独はinconclusive、joint armはsupportedだった。field qualityのC3−C1増分はBinary weak・LambdaRank rejectであり、二軸の独立支持とはしない。
+
+Post-S1の推奨順は **S3 → S2** とする。S3はS1で再現したperformance情報を教師へ拡張する直接的な次仮説で、実装準備可能である。S2はobjective mismatchを切り分ける有効な独立候補としてqueuedを維持する。いずれも人間の選択まで実行せず、production controlと局所feature queueは停止状態を維持する。
