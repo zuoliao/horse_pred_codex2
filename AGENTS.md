@@ -12,22 +12,26 @@ Before making architecture or modeling decisions, read `README.md` and all relev
 
 ## Current phase
 
-The project is in **Phase 5B: EDA-guided representation / objective research**. Phase 5A, S1 Two-axis past-race value, S3 Condition-adjusted performance target, and S2 Supervised race-wise probability are complete. S1 supported the historical performance residual as an input feature; S3's target-only Huber replacement was rejected; S2's registered Linear Conditional Logit was rejected as a replacement for the current nonlinear Binary control. Stop for human review before running another model or feature experiment.
+The project is in **Phase 5C: program audit and prospective validation pivot**. New feature, target, and model experiments are frozen. Phase 5A and Phase 5B S1/S3/S2 remain completed historical research; do not resume A1/A2, nonlinear race-wise, Inter-horse, DNN, or additional feature work until prospective readiness has been reviewed by the human user.
 
-Use the S1, S3, and S2 conclusion documents, their machine-readable summaries, and `docs/handoff.md` as the current decision state. Frozen controls remain Binary PV-01 signed-time-gap with 254 features and conservative field-relative-drop LambdaRank with 253 features. The LambdaRank PV-01 254-feature variant remains prospective-only. In S2, S1 performance improved both Binary and Conditional Logit in all three years, but Conditional Logit remained worse than matched Binary with or without it. This does not reject nonlinear race-wise or true Inter-horse models; those were not executed. Do not tune S2/S3 variants on the same 2020–2022 evidence, and do not run a post-S2 model without a new human phase decision.
+Use `docs/audit/model_registry.md`, `docs/audit/evidence_ledger.md`, `docs/audit/revised_system_objective.md`, `docs/audit/prospective_activation_plan.md`, `docs/audit/prospective_evaluation_protocol.md`, `experiments/program_audit_20260901/summary.json`, and `docs/handoff.md` as the current decision state.
 
-S1/S3/S2 preserved the Phase 5A firewall: 2013 warm-up and evaluation targets no later than 2022-12-31, with zero 2023/2024/2025 rows used. Evaluation years 2020–2022 are now repeatedly exposed research evidence, not fresh confirmation for a follow-up. Future experiments must retain race choice sets, race/date-aware uncertainty, strict same-date PIT emission-before-update, and physical market isolation. Never commit raw, cache, model, or recoverable runner-level artifacts.
+The canonical frozen fundamental candidate is LightGBM Binary `PV-01 + PACE-01 + SPEED-01`, 256 features, ordered-feature SHA-256 `3b6104ec33f6bf2b02b64685bf3ebf6bb828f14683c262e922e696da43bb4940`. Binary PV-01 254 is the formal **historical comparison control**, not the accumulated incumbent. LambdaRank lean 253 remains the conservative formal control. S1 performance is a supported but overlapping 254/255 branch and was never evaluated in union with the 256-feature incumbent, so do not compose it after the fact.
 
-The pre-EDA feature queue is no longer generically paused. PV-06 seconds mapping is `deferred_by_eda`; margin-rating arithmetic, old runner-relative recent-opponent work, and the old broad COND-01 are `superseded_by_eda`; old field-relative restoration and new-horse exclusion are `rejected`. After S2, the recommended human-review candidates are A1 transition reliability and A2 connection compression; A3 last-3F relative and true Inter-horse set interaction remain deferred.
+Every year from 2013 through 2025 is a `development_archive`; none is an untouched final holdout. Specific experiments may still report zero rows from a year as a leakage check, but that does not restore program-level holdout status. Final validation begins only with timestamped 2026-or-later prospective snapshots and pre-outcome prediction receipts.
+
+The one preregistered 2024 final-odds oracle found the fixed 50:50 log-pool worse than final-market-only. This is negative descriptive evidence for that exact mapping on an exposed year. It is not a cutoff-market test and cannot support adoption, executable EV, ROI, or profit claims. Do not run another historical combination, recalibration, weight search, or model comparison during Phase 5C.
+
+Operational collection is not active: official JV-Link archive groundwork exists, but real receipts are zero and the contract/key, supported private Windows host, official adapter, scheduler/monitoring, as-of materializer, deployment bundle, and shadow runner are missing. Do not implement unofficial Mac/Wine workarounds or unlicensed scraping. Never commit raw data, cache, model binaries, credentials, runner predictions, or reconstructable runner-level views.
 
 ## Core design decisions already agreed
 
 Treat these as current project decisions unless research produces strong contrary evidence:
 
 1. Initial scope is JRA central racing.
-2. Prediction and betting-decision logic are separate layers.
-3. Odds are excluded from the primary prediction model at first and are used downstream for market comparison and betting decisions.
-4. Odds-aware prediction models may later be tested as explicit comparison experiments.
+2. Fundamental prediction, cutoff-market prediction, their frozen combination, and betting decision are separate layers.
+3. Odds remain excluded from the fundamental model; the market-only and combined layers use only timestamp-valid cutoff snapshots.
+4. The primary prospective test is whether the frozen combined model improves Log Loss, Brier, and calibration over market-only on identical races.
 5. The initial modeling phase is non-DNN and LightGBM-centered.
 6. Build and compare at least:
    - LightGBM binary classification for `P(win)`
@@ -37,10 +41,10 @@ Treat these as current project decisions unless research produces strong contrar
 9. Entity history may be summarized into point-in-time statistics and state features.
 10. Do not arbitrarily restrict horse history to only a few recent races; preserve history and expose multiple time windows / conditional aggregates where feasible.
 11. Strict point-in-time correctness and leakage prevention are mandatory.
-12. Initial betting evaluation should remain intentionally simple: primarily win bets, fixed stake, fixed expected-value thresholds.
-13. The early phase optimizes prediction quality first. ROI > 100% is not a requirement for accepting early model improvements.
+12. Prospective betting evaluation is shadow-only, win-only, fixed-stake, and governed by a frozen policy; automated or real wagering is out of scope.
+13. Profit is evaluated after proper scores and calibration, and a short profitable window must never be called stable profit.
 14. Evaluation must be multidimensional: ranking, probability quality, calibration, subgroup behavior, market comparison, and backtest metrics.
-15. Time-based train/development/final-holdout separation is preferred over random splitting.
+15. Historical time splits remain useful development evidence, but only receipt-backed 2026+ prospective data can provide final validation.
 16. One experiment should correspond, as a rule of thumb, to one interpretable hypothesis and one reproducible repository state.
 
 ## Long-term model hypothesis

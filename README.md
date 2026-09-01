@@ -2,10 +2,10 @@
 
 JRA中央競馬を主対象とする、競馬予測・馬券購入判断支援システムの研究開発リポジトリです。
 
-> **現在の段階:** `Phase 5B: EDA-guided representation / objective research`。Phase 5A、S1、S3、S2 Supervised race-wise probabilityは完了した。S2の線形Conditional Logitは現Binary controlの置換としてrejected、S1 historical performance residualは両objectiveでsupportedとなった。正式controlはBinary PV-01 254特徴、LambdaRank lean 253特徴のまま維持し、人間レビュー待ちで停止している。
+> **現在の段階:** `Phase 5C: program audit and prospective validation pivot`。新しい特徴量・target・model研究を停止し、2013～2025をdevelopment archiveとして閉じた。canonical frozen fundamental candidateはPV-01＋PACE-01＋SPEED-01のBinary 256特徴。実収集は未開始で、prospective activationのユーザー判断待ちである。
 > **最終更新:** 2026-09-01 (JST)
 
-S2では線形Conditional LogitがBinaryよりLog Lossで従来feature時`-.01816`、S1 feature時`-.01822`悪化し、いずれも3/3年で負方向でした。一方、S1 performance追加はBinaryで`+.00742`、Conditional Logitで`+.00736`改善し、両方3/3年で再現しました。これはrace-wise objective一般の否定ではなく、登録した線形utility版が現在の非線形Binaryを置き換えないという結論です。2023～2025、final odds、市場情報は使用していません。
+Phase 5Cの一度限りの2024 final-odds oracleでは、market-only Log Loss `1.88276`に対し、frozen fundamental `2.06821`、固定50:50 log-pool `1.93364`でした。combinedはmarketより`.05088`悪化し、この固定mappingで市場非重複価値は確認できませんでした。final oddsによるdescriptive oracleであり、cutoff市場、モデル採択、実行可能EV、ROI、利益を意味しません。
 
 ## 1. プロジェクトの目的
 
@@ -22,17 +22,13 @@ S2では線形Conditional LogitがBinaryよりLog Lossで従来feature時`-.0181
 システムを次の層に分離します。
 
 ```text
-競馬データ収集
+prospective snapshot収集
     ↓
-Point-in-time特徴量生成
+frozen fundamental model ─┐
+                          ├→ frozen combined model
+cutoff market model ──────┘
     ↓
-競走結果予測モデル
-    ↓
-勝率・順位スコア等の推定
-    ↓
-当該時点のオッズとの比較
-    ↓
-馬券購入判断
+frozen shadow betting decision
     ↓
 予測・根拠・期待値等をWeb UIで提示
     ↓
@@ -57,11 +53,13 @@ Point-in-time特徴量生成
 
 ## 3. オッズの扱い
 
-### 初期方針
+### Phase 5C方針
 
-- **オッズは予測モデルの入力に使用しない。**
-- オッズは、予測後の市場比較、購入判断、バックテストに使用する。
-- これにより、モデルが人気情報を模倣しているだけなのか、競走情報から独立した予測能力を得ているのかを切り分ける。
+- fundamental modelは引き続きオッズを入力に使用しない。
+- cutoff market modelは同時点の観測可能オッズだけから確率を作る。
+- combined modelは凍結したfundamentalとmarketを統合する。
+- 最重要評価はmarket-onlyにfundamentalを加えたときのprospective Log Loss、Brier、calibration改善である。
+- betting decisionとROI評価はその後の固定shadow policyとして分離する。
 
 ### 将来の比較実験
 
@@ -306,9 +304,9 @@ value / latent features
 - ランダム分割ではなく、原則として時系列分割を使用する。
 - 同一レースが複数splitに混在しないようrace単位で分割する。
 - 特徴量は各予測時点で利用可能だった情報のみから生成する。
-- `train → development backtest → untouched final backtest` を分ける。
-- 2025年をhold-outにする案は例示であり、実際の期間は取得可能なデータ範囲を確認後に決定する。
-- final期間の結果を見て特徴量、モデル、購入閾値を調整しない。
+- historical train/developmentとreceipt-backed prospective finalを分ける。
+- 2013～2025は全てdevelopment archiveとし、historical untouched finalは存在しない。
+- 2026+ prospective期間の結果を見て特徴量、モデル、cutoff、統合rule、購入ruleを期間中に調整しない。
 
 ### 7.2 モデル単体評価
 
@@ -593,7 +591,8 @@ Phase 3: point-in-time特徴量基盤                 実装・検証済み
 Phase 4: LightGBM Binary / LambdaRank baseline   完了
 Phase 5: 特徴量・rating・calibration改善         Phase 5Bへ再編
 Phase 5A: systematic EDA / problem reformulation 完了
-Phase 5B: EDA-guided representation/objective    S1/S3/S2完了、人間レビュー待ち
+Phase 5B: EDA-guided representation/objective    S1/S3/S2完了、archive
+Phase 5C: program audit/prospective pivot         監査完了、activation判断待ち
 Phase 6: 確率的ランキングおよび高度なモデル
 Phase 7: 購入戦略・リスク管理の改善
 Phase 8: 自動予測処理・Web UI
@@ -620,7 +619,7 @@ Phase 8: 自動予測処理・Web UI
 | 実験台帳 | 決定 | 機械可読結果からREADME表を自動更新 |
 | データソース | 決定 | 承認済み既存raw 2013～2025を主系統とし、JRA公式結果でcoverage・不足項目を照合・補完。新規取得は別gate |
 | 具体的な予測時点 | MVP決定 | 過去結果rawによる保守的PIT-C前日相当。同日の全raceは一括emit後に更新。当日締切前版は別track |
-| split期間 | 開発更新 | 既存baselineは2014～21 train、2022 validation、2023 calibration、2024 development。新仮説はrolling-origin複数年でscreenし、2024はmilestoneのみ、2025は反復選択に使わず、2026+ prospective finalを維持 |
+| split期間 | Phase 5C更新 | 既存baselineは2014～21 train、2022 validation、2023 calibration、2024 development。2025もretrospective結果を閲覧済み。2013～2025をdevelopment archiveとし、2026+ receipt-backed prospectiveだけをfinal validationに使う |
 | rating方式 | 開発更新 | K48/scale200のmargin-aware actual (`tau=.125`) は前年温度校正で2019～22全改善、2024校正LL 2.3957（ordinal 2.4015）。standaloneは置換候補。LightGBMへのabsolute/delta 1列追加はPV-01比inconclusiveで未採用 |
 | 過去走race-content | 開発採用候補 | 90日減衰signed時計差1列はBinaryで採用基準通過、LambdaRankはinconclusive。2026+ prospective確認が必要 |
 | rolling-origin | 実装・固定 | 2020～2023の4 expanding foldでfit/early stop/calibration/evaluationを年内完結。以後の新仮説screenに使用 |
@@ -634,22 +633,22 @@ Phase 8: 自動予測処理・Web UI
 | PACE-04 | 完了・未採用 | 遷移数補正した前進・後退履歴を1列追加。Binary/Rankともinconclusive。PACE派生探索を終了 |
 | SPEED-01 | rolling両family採択・2024 Binary支持 | 過去日だけの条件別期待勝ち時計と各馬時計の差を90日履歴1列化。rolling LLはBinary `+.00769 [+.00457,+.01078]`、Rank `+.00823 [+.00523,+.01128]`。2024はBinary支持、Rank方向一致 |
 | Phase 5A EDA | 完了 | pre-2023の全workstreamとPIT/statistics/domain reviewを完了。production変更なし |
-| Phase 5B | S2完了・人間レビュー待ち | 線形Conditional LogitはBinary置換としてrejected。S1 performanceはBinary/Conditional Logit双方でsupported。非線形Inter-horseモデルは未検証 |
-| Phase 5B controls | 固定 | BinaryはPV-01 254列、LambdaRankはlean 253列。LambdaRank PV-01 254列版は全point改善だがinterval inconclusiveのprospective candidateに限定 |
-| LIVE-DATA | 基盤完了・ユーザー保留 | 公式JV-Link限定のschema/append-only archiveを実装。公式transportがWindowsのみで現環境がMacのため、実収集は後日に延期 |
+| Phase 5B | 完了・archive | 線形Conditional LogitはBinary置換としてrejected。S1 performanceはBinary/Conditional Logit双方でsupported。非線形Inter-horseモデルは未検証 |
+| Phase 5C model registry | 固定 | Binary PV-01 254列はformal historical comparison control。canonical fundamentalは既存SPEED-01 evidenceに基づくPV-01＋PACE-01＋SPEED-01 256列。LambdaRank lean 253列はconservative control |
+| Historical evidence | archive化 | 2013～2025は全てdevelopment archive。2025もsuperseded Task16でretrospective結果を閲覧済み。final validationは2026+ prospectiveのみ |
+| Historical oracle | 完了・negative | final-market-onlyが固定50:50 log-poolをLL `.05088`上回った。descriptive only、採択/ROI利用なし |
+| LIVE-DATA | groundworkのみ・activation待ち | 公式JV-Link限定のschema/append-only archiveは実装済み。Windows adapter、契約/key、scheduler、monitoring、as-of materializer、shadow runnerは未実装で、実receiptは0 |
 | LambdaRank教師 | 開発維持 | 従来の`1着=3, 2着=2, 3着=1, その他=0`を維持。2・3着を統合して上位半数へ教師を広げたGR-001は2022でLog Loss/Brierを有意に悪化させreject |
-| probabilistic ranking | 調査推奨・延期 | Plackett–Luceを最初の高度baseline候補とするが、順位別biasを検証してから採否判断 |
+| probabilistic ranking | Phase 5C凍結 | Plackett–Luce/非線形race-wise/Inter-horseは未検証。prospective準備後に再評価し、現在は実行しない |
 | artifact管理 | MVP決定 | config、git/data fingerprint、aggregate metricsを追跡し、raw・model・runner予測はGit対象外 |
 | Web技術 | 未決 | 後続フェーズで決定 |
 
 ## 15. 次の作業
 
-Phase 5A、S1、S3、S2は完了しました。次モデルは自動実行せず、人間レビュー待ちです。
+Phase 5C監査は完了し、新しいモデル研究は凍結しました。
 
-1. `EDA-S03-PERFORMANCE-TARGET`（completed / rejected）: continuous targetはmatched Binary/LambdaRank controlを明確に下回った。
-2. `EDA-S02-RACEWISE-CHOICE`（completed / linear replacement rejected）: choice-set likelihoodはcapacity-matched線形Binaryより有効だったが、現LightGBM Binaryを下回った。validation-only capacity gateを通過したため非線形Stage Nは実行しなかった。
-3. 次候補は人間判断とする。現時点の推奨順はA1 transition reliability、A2 connection compression。true Inter-horse set interactionは独立仮説としてdeferする。
+1. 現在すぐ可能: Windows adapter契約fixture、health/error ledger、fixture-only as-of materializer、deployment/shadow schema。ただし着手は人間承認後。
+2. ユーザー判断: JRA-VAN契約/key、日本国内のWindows 10/11 host、公式JV-Link/SDK、private storage/backup/topology、監視担当。
+3. prospective data後: cutoff固定、marketへのincremental value、shadow ROI/drawdown/month別安定性。A1/A2、非線形race-wise、Inter-horse、追加featureはそれまでdefer。
 
-S1の詳細は[実験結論](docs/experiments/s1_two_axis_race_value_20260901.md)、S3は[実験結論](docs/experiments/s3_condition_adjusted_performance_target_20260901.md)、S2は[実験結論](docs/experiments/s2_supervised_racewise_probability_20260901.md)と[machine-readable summary](experiments/s2_supervised_racewise_probability_20260901/summary.json)を参照してください。
-
-旧queueの扱いは次のとおりです。PV-06秒mappingは`deferred_by_eda`、margin-rating追加算術branchと旧recent opponent runner-relative案および旧COND-01は`superseded_by_eda`、旧field-relative復活と新馬fit除外は`rejected`です。S2後はA1 transition reliabilityを第一、A2 connection compressionを第二候補として人間へ提示し、A3 last3F relativeは引き続きdeferします。negative/inconclusive artifactは改変しません。
+監査成果は[model registry](docs/audit/model_registry.md)、[evidence ledger](docs/audit/evidence_ledger.md)、[revised objective](docs/audit/revised_system_objective.md)、[historical oracle](docs/audit/historical_oracle_diagnostic.md)、[activation plan](docs/audit/prospective_activation_plan.md)、[prospective protocol](docs/audit/prospective_evaluation_protocol.md)を参照してください。

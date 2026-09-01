@@ -2,17 +2,18 @@
 
 **作成日:** 2026-08-30 (JST)  
 **更新日:** 2026-09-01 (JST)
-**前提:** Phase 5A EDA、S1、S3、S2 Supervised race-wise probabilityまで完了。S2の線形Conditional Logitは現Binary置換としてrejected、S1 performanceは両objectiveでsupported。次研究は人間レビュー待ち。
-**対象:** JRA平地競走、no-odds予測を先行し、購入判断を別層にする。
+**前提:** `Phase 5C: program audit and prospective validation pivot`。Phase 5A/5Bはdevelopment archiveとして完了し、新しいfeature・target・model研究を凍結。canonical fundamentalは既存証拠だけでBinary PV-01＋PACE-01＋SPEED-01 256特徴へ固定した。
+**対象:** JRA平地競走。fundamental、cutoff market、combined、shadow betting decisionを分離し、2026+ prospective評価を最終検証とする。
 
 ## 進行原則
 
 - raw・中間・加工済みdatasetはGit管理せず、manifest、fingerprint、schema、設定、品質集計、コード、テストを管理する。
 - canonical sourceは承認済みの`race_results_merged.csv`とし、既存`features.csv`は学習入力に使わない。
 - 特徴量はrace単位で履歴stateを更新し、target raceおよびfuture dataを参照しない。
-- オッズ、人気、当該レース結果はprimary prediction modelから分離する。
-- 時間分割をmetric確認前に固定し、final holdoutで反復調整しない。
+- オッズ、人気、当該レース結果はfundamental modelから分離する。cutoff marketとcombinedはtimestamp-valid snapshotだけを使う。
+- 2013～2025は全てdevelopment archiveであり、未使用finalとは呼ばない。2026+のreceipt-backed prospective dataだけをfinal validationに使う。
 - モデル実験は原則として、1 experiment = 1 hypothesis = 1 reproducible commitとする。
+- Phase 5C中は新しいfeature、target、model、historical blend探索を行わない。
 
 ## タスクリスト
 
@@ -61,13 +62,17 @@
 | 41 | S1-RACE-VALUE-2AXIS | horse performanceとrace-constant field qualityの二軸履歴 | EDA-5A | **completed**。performance supported、field-quality単独 inconclusive、joint supported。production controlは自動変更せず停止 |
 | 42 | S2-RACEWISE-CHOICE | supervised race-wise probability objective | S3 decision | **completed / linear replacement rejected**。Conditional Logitはmatched BinaryよりLL約`.0182`悪化。S1 performanceは両objectiveでsupported。非線形Stage N未実行 |
 | 43 | S3-PERFORMANCE-TARGET | condition-adjusted continuous performance target | S1 decision | **completed / rejected**。両matched scope、全3年でranking/probability悪化。control変更なし |
-| 44 | A1-TRANSITION-RELIABILITY | condition switch時のstate reliability | S1～S3/S2 review | `recommended_next / human_selection_required` |
-| 45 | A2-CONNECTION-COMPRESSION | 130 connection列の階層的縮約 | S1～S3/S2 review | `recommended_second / human_selection_required` |
-| 46 | A3-LAST3F-RELATIVE | race-relative last3F履歴 | SEC-3F重複監査、S1～S3/S2 review | `still_valid_future_candidate / deferred_by_eda` |
+| 44 | A1-TRANSITION-RELIABILITY | condition switch時のstate reliability | prospective readiness review | `deferred_until_prospective_readiness_review` |
+| 45 | A2-CONNECTION-COMPRESSION | 130 connection列の階層的縮約 | prospective readiness review | `deferred_until_prospective_readiness_review` |
+| 46 | A3-LAST3F-RELATIVE | race-relative last3F履歴 | SEC-3F重複監査、prospective readiness review | `deferred_until_prospective_readiness_review` |
+| 47 | AUDIT-5C | model registry・evidence ledger・system objective監査 | S1/S3/S2完了 | **completed**。canonical fundamentalをBinary PV-01＋PACE-01＋SPEED-01 256特徴へ固定し、2013～2025をdevelopment archive化 |
+| 48 | ORACLE-5C | 一度限りのfixed historical final-market oracle | AUDIT-5C preregistration | **completed / negative descriptive evidence**。固定50:50 log-poolはfinal-market-onlyよりLL `.05088`悪化。採択・ROI利用なし |
+| 49 | LIVE-ACTIVATE | official JV-Link prospective collection activation | user provisioning | **blocked_by_missing_prerequisites**。contract/key、Windows host、official adapter、scheduler/monitoring、as-of materializerが必要 |
+| 50 | SHADOW-5C | frozen prospective evaluation | LIVE-ACTIVATE、2 meetings completeness/latency audit | **preregistered / not started**。2026+でmarket-onlyに対するcombined proper-score増分と固定shadow policyを評価 |
 
-## 2026-08-31実行状態
+## 2026-09-01実行状態
 
-> 2026-09-01 phase decision: Phase 5A、S1、S3、S2まで完了。比較基準はBinary PV-01 254特徴、LambdaRank lean 253特徴のまま維持する。LambdaRank PV-01 254特徴版はpoint改善・interval inconclusiveのprospective候補に限定する。2023～2025とmarketはS2判断に未使用で、次研究は人間レビュー待ち。
+> Phase 5C decision: Binary PV-01 254特徴はformal historical comparison control、LambdaRank lean 253はconservative control。既存SPEED-01証拠に基づくBinary PV-01＋PACE-01＋SPEED-01 256特徴をcanonical frozen fundamentalとする。2013～2025はdevelopment archiveであり、2026+ prospectiveだけをfinal validationとする。
 
 | 範囲 | 状態 | 証拠 |
 |---|---|---|
@@ -84,7 +89,7 @@
 | SEC-3F | 完了・Rank rolling採択 | Binary inconclusive。LambdaRank NDCG `+.00256 [+.00045,+.00465]` |
 | HPO-01 | 完了・変更なし | Binary no-change、Ranker候補は2023 reject |
 | ENS-01 | 完了・reject | 固定50:50はBinary比minimum未達、2023 confirmation未開封 |
-| LIVE-DATA | groundwork完了・ユーザー保留 | 公式JV-Link source gate、schema、append-only archive実装。JV-LinkはWindowsのみで現環境がMacのため後日に延期 |
+| LIVE-DATA | groundwork完了・activation未開始 | 公式JV-Link source gate、schema、append-only archive実装。実receipt 0、Windows adapter/scheduler/monitoring/as-of/shadow runnerは未実装 |
 | S0/S1 goal | 完了 | 統合判断は`docs/experiments/s_rank_model_research_conclusions_20260831.md` |
 | SHIMBA-FILTER-001 | 完了・reject | 新馬戦fit除外はLL/NDCG悪化。新馬戦を学習に維持 |
 | PACE-01 | 完了・両family採択 | 序盤位置percentile 90日履歴1列。Binary probability pathとRank ranking/probability pathが通過。2024未開封 |
@@ -97,18 +102,22 @@
 | S1-RACE-VALUE-2AXIS | completed | 24 fit完了。performance supported、field-quality単独 inconclusive、joint supported。2023～2025/market未使用 |
 | S2-RACEWISE-CHOICE | completed / linear replacement rejected | R0−B0 LL `-.01816`、R1−B1 `-.01822`、いずれも0/3年。S1 performanceはBinary/Conditional Logit双方で3/3年改善。control変更なし |
 | S3-PERFORMANCE-TARGET | completed / rejected | Binary-scope ΔLL `-.09299`, ΔNDCG `-.02235`; Rank-scope `-.08481`, `-.02225`。全metric 0/3改善 |
-| A1 / A2 / A3 | human review / deferred | A1を第一、A2を第二候補として提案。A3は引き続きdefer |
+| Phase 5C audit | completed | model registry、evidence ledger、revised objective、historical oracle、activation plan、prospective protocolを固定 |
+| Historical oracle | completed / negative descriptive | frozen fundamental、final-market-only、固定50:50 log-poolを2024既露出データで一度だけ比較。combinedはmarketより悪化し、追試なし |
+| A1 / A2 / A3 / nonlinear race-wise / Inter-horse | deferred | prospective準備後に再評価。Phase 5Cでは実行しない |
 
-## Phase 5B decision tree
+## Phase 5C decision tree
 
 | ID | Hypothesis | Status | Dependency | Result | Next action |
 |---|---|---|---|---|---|
 | S1 | Past-race valueをhorse performanceとrace-constant field qualityへ分離する | `completed` | Phase 5A | Performance `supported`; field quality `inconclusive`; joint `supported`; C3−C1はBinary weak / LambdaRank reject | production controlを自動変更せず、人間レビュー |
 | S3 | condition-adjusted performanceをcontinuous targetとして直接教師にする | `completed / rejected` | S1 performance support | 両feature scopeでLL/Brier/NDCG/Top1/MRRが3/3年悪化。target coverageは高く、control変更なし | target variantを同期間で追わず停止 |
 | S2 | supervised race-wise probability objectiveを直接最適化する | `completed / linear replacement rejected` | S3 review | Linear Conditional LogitはBinaryよりLL約`.0182`悪化。S1 performance効果は両objectiveで再現。capacity gate非発火 | 非線形race-wise一般へ外挿せず停止 |
-| A1 | condition transition時のstate reliabilityを表す | `recommended_next / human review` | S1～S3/S2 review | 未実行。Binary+performanceのlarge distance-change LLだけ固定sliceで悪化 | 人間が選択した場合のみpreregister |
-| A2 | connection 130列を階層的に縮約する | `recommended_second / human review` | S1～S3/S2 review | 未実行。history-0/new raceの弱さとconnection冗長性が残る | 人間が選択した場合のみpreregister |
-| A3 | race-relative last3F履歴を非冗長化する | `deferred_by_eda` | SEC-3F重複監査 | 未実行 | S2後もdefer |
+| AUDIT-5C | model/evidence/objectiveをprospectiveへ接続する | `completed` | Phase 5B | canonical 256-feature fundamentalと2013～2025 archive境界を固定 | registryを変更せずactivation準備 |
+| ORACLE-5C | fixed combinationの非選択的descriptive診断 | `completed / negative` | AUDIT-5C | fixed log-poolはfinal-market-onlyよりLL/Brier悪化 | historical追試を行わない |
+| LIVE-ACTIVATE | official receipt-backed収集を稼働する | `blocked_by_user_provisioning` | AUDIT-5C | groundworkのみ、実receipt 0 | contract/Windows/SDK/topology/operationsを人間決定 |
+| SHADOW-5C | frozen prospective protocolを実行する | `preregistered / waiting` | LIVE-ACTIVATE | cutoff未固定、window未開始 | 2 meetingsのavailability監査後にcutoff固定 |
+| A1/A2/A3/advanced models | 新feature/model研究 | `deferred_until_prospective_readiness_review` | prospective準備 | 未実行 | Phase 5C中は実行しない |
 
 ## EDA後のlegacy queue再分類
 
@@ -141,6 +150,7 @@
 | M4.2: rolling selection | EVAL-ROLL、OPP-RECENT、SEC-3F、HPO-01、ENS-01 | 2024/2025をparameter選択に使わず、複数年rolling evidenceでS1を判断する |
 | M4.3: structured A-rank signals | PACE-01、支持時のみPACE-02、SPEED-01 | 一仮説ずつrollingでscreenし、重要候補だけ2024 milestoneへ送る |
 | M4.4: systematic EDA | EDA-5A | 2022末cutoff、全workstream、PIT/statistics/domain review、machine-readable registry、最大3候補を再現しproduction変更なしで停止 |
-| M5: 実行可能市場評価 | LIVE-01～LIVE-02 | 締切前snapshotを用いたprospective shadow期間が蓄積される |
+| M4.5: program audit / freeze | AUDIT-5C、ORACLE-5C | canonical model、year exposure、system objective、oracle限界、activation条件がmachine-readableに固定される |
+| M5: 実行可能市場評価 | LIVE-ACTIVATE～SHADOW-5C | 公式締切前snapshotとpre-outcome receiptを用いたprospective shadow期間が蓄積される |
 
 GOV-01～QA-01のdecision gateはmetric確認前に固定済みである。baseline結果を見てこれらを変更する場合は、新しいexperiment IDと将来評価期間を必要とする。
