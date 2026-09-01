@@ -52,6 +52,7 @@ from horse_pred.pace_gain import build_pace_gain_cache_from_raw
 from horse_pred.pace_pressure import build_pace_pressure_cache_from_config
 from horse_pred.pace_recent import build_pace_recent_cache_from_raw
 from horse_pred.pipeline import run_mvp
+from horse_pred.program_audit import run_historical_oracle_diagnostic
 from horse_pred.race_content import (
     build_race_content_augmented_cache,
     build_race_content_history,
@@ -157,6 +158,21 @@ def parser() -> argparse.ArgumentParser:
         default=Path("configs/live_data/jvlink_archive.json"),
     )
     live_archive.add_argument("--repo-root", type=Path, default=Path.cwd())
+
+    historical_oracle = commands.add_parser(
+        "run-historical-oracle-diagnostic",
+        help="run the preregistered Phase 5C final-market descriptive diagnostic",
+    )
+    historical_oracle.add_argument("--repo-root", type=Path, default=Path.cwd())
+    historical_oracle.add_argument(
+        "--preregistration",
+        type=Path,
+        default=Path(
+            "experiments/program_audit_20260901/"
+            "historical_oracle_preregistration.json"
+        ),
+    )
+    historical_oracle.add_argument("--output", type=Path, required=True)
 
     run = commands.add_parser(
         "run-mvp", help="run PIT features, both LightGBM models, calibration, and evaluation"
@@ -599,6 +615,14 @@ def main(argv: Sequence[str] | None = None) -> int:
             archive_root=args.archive_root,
             repo_root=repo_root,
             config=config,
+        )
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0
+    if args.command == "run-historical-oracle-diagnostic":
+        result = run_historical_oracle_diagnostic(
+            repo_root=args.repo_root,
+            preregistration_path=args.preregistration,
+            output_path=args.output,
         )
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0
