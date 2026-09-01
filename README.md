@@ -2,10 +2,10 @@
 
 JRA中央競馬を主対象とする、競馬予測・馬券購入判断支援システムの研究開発リポジトリです。
 
-> **現在の段階:** `Phase 5B: EDA-guided representation / objective research`。Phase 5AとS1 Two-axis past-race valueは完了した。performance axisはsupported、field-quality単独はinconclusive、joint armはsupported。次はS3を推奨するが、人間の選択まで実行しない。正式controlはBinaryがPV-01を含む254特徴、LambdaRankがfield-relativeを除いたlean 253特徴のまま維持する。
+> **現在の段階:** `Phase 5B: EDA-guided representation / objective research`。Phase 5AとS1 Two-axis past-race valueは完了し、人間の選択によりS3 Condition-adjusted performance targetを実行中。正式controlはBinaryがPV-01を含む254特徴、LambdaRankがfield-relativeを除いたlean 253特徴のまま維持する。
 > **最終更新:** 2026-09-01 (JST)
 
-S1は2020～2022の4-arm rolling-originで完了し、2024/2025、final odds、市場情報を使っていません。C1 performance residualは両familyの確率pathでsupported、C2 field qualityはBinary reject・LambdaRank probability reject/ranking inconclusiveでした。C3 jointは改善しましたが、fieldのC3−C1増分はBinaryだけweak、LambdaRank rejectであり、二軸の独立支持とはしません。S3 Condition-adjusted performance targetをS2より先に推奨し、人間判断まで両方queuedです。
+S1は2020～2022の4-arm rolling-originで完了し、2024/2025、final odds、市場情報を使っていません。C1 performance residualは両familyの確率pathでsupported、C2 field qualityはBinary reject・LambdaRank probability reject/ranking inconclusiveでした。C3 jointは改善しましたが、fieldのC3−C1増分はBinaryだけweak、LambdaRank rejectであり、二軸の独立支持とはしません。現在はS1で支持されたperformance概念をcontinuous targetへ移すS3を単独で検証し、S2はqueuedのまま維持します。
 
 ## 1. プロジェクトの目的
 
@@ -593,7 +593,7 @@ Phase 3: point-in-time特徴量基盤                 実装・検証済み
 Phase 4: LightGBM Binary / LambdaRank baseline   完了
 Phase 5: 特徴量・rating・calibration改善         Phase 5Bへ再編
 Phase 5A: systematic EDA / problem reformulation 完了
-Phase 5B: EDA-guided representation/objective    S1完了、人間レビュー待ち
+Phase 5B: EDA-guided representation/objective    S1完了、S3実行中
 Phase 6: 確率的ランキングおよび高度なモデル
 Phase 7: 購入戦略・リスク管理の改善
 Phase 8: 自動予測処理・Web UI
@@ -634,7 +634,7 @@ Phase 8: 自動予測処理・Web UI
 | PACE-04 | 完了・未採用 | 遷移数補正した前進・後退履歴を1列追加。Binary/Rankともinconclusive。PACE派生探索を終了 |
 | SPEED-01 | rolling両family採択・2024 Binary支持 | 過去日だけの条件別期待勝ち時計と各馬時計の差を90日履歴1列化。rolling LLはBinary `+.00769 [+.00457,+.01078]`、Rank `+.00823 [+.00523,+.01128]`。2024はBinary支持、Rank方向一致 |
 | Phase 5A EDA | 完了 | pre-2023の全workstreamとPIT/statistics/domain reviewを完了。production変更なし |
-| Phase 5B | S1完了・レビュー待ち | performance supported、field-quality単独 inconclusive、joint supported。S3を次に推奨し、S2/S3は未実行 |
+| Phase 5B | S3実行中 | S1はperformance supported、field-quality単独 inconclusive、joint supported。人間選択によりS3をpreregisterして検証し、S2はqueuedを維持 |
 | Phase 5B controls | 固定 | BinaryはPV-01 254列、LambdaRankはlean 253列。LambdaRank PV-01 254列版は全point改善だがinterval inconclusiveのprospective candidateに限定 |
 | LIVE-DATA | 基盤完了・ユーザー保留 | 公式JV-Link限定のschema/append-only archiveを実装。公式transportがWindowsのみで現環境がMacのため、実収集は後日に延期 |
 | LambdaRank教師 | 開発維持 | 従来の`1着=3, 2着=2, 3着=1, その他=0`を維持。2・3着を統合して上位半数へ教師を広げたGR-001は2022でLog Loss/Brierを有意に悪化させreject |
@@ -644,11 +644,11 @@ Phase 8: 自動予測処理・Web UI
 
 ## 15. 次の作業
 
-Phase 5AとS1は完了しました。S1結果を受け、次候補は以下です。実行は人間の選択後です。
+Phase 5AとS1は完了しました。人間の選択により、現在は次を一件だけ実行します。
 
-1. `EDA-S03-PERFORMANCE-TARGET`（推奨）: fold内で作るcondition residualをHuber回帰し、race内順位・勝率へ変換する。
-2. `EDA-S02-RACEWISE-CHOICE`: 同一PIT feature/splitで透明なconditional logit / top-choice Plackett–Luce baselineを比較する。
+1. `EDA-S03-PERFORMANCE-TARGET`（current）: fold-trainだけでfitしたcondition residualをHuber回帰し、race内順位・別calibration年の勝率へ変換する。
+2. `EDA-S02-RACEWISE-CHOICE`（queued）: S3完了後も自動実行せず、人間レビューを待つ。
 
-S1の詳細は[実験結論](docs/experiments/s1_two_axis_race_value_20260901.md)と[machine-readable summary](experiments/s1_two_axis_race_value_20260901/summary.json)を参照してください。S2/S3は未実行で、ここで停止しています。
+S1の詳細は[実験結論](docs/experiments/s1_two_axis_race_value_20260901.md)と[machine-readable summary](experiments/s1_two_axis_race_value_20260901/summary.json)を参照してください。S3では2024/2025、odds、人気、final marketを設計・選択・採否に使用しません。
 
 旧queueの扱いは次のとおりです。PV-06秒mappingは`deferred_by_eda`、margin-rating追加算術branchと旧recent opponent runner-relative案および旧COND-01は`superseded_by_eda`、旧field-relative復活と新馬fit除外は`rejected`です。A1 transition reliability、A2 connection compression、A3 last3F relativeは`still_valid_future_candidate`ですがS1～S3より後へ延期します。negative/inconclusive artifactは改変しません。

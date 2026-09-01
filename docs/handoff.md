@@ -2,13 +2,13 @@
 
 ## Operating Rule
 
-The active phase is `Phase 5B: EDA-guided representation / objective research`. Phase 5A and S1 Two-axis past-race value are complete. Stop for human review. Do not run S2 or S3 automatically.
+The active phase is `Phase 5B: EDA-guided representation / objective research`. Phase 5A and S1 Two-axis past-race value are complete. The human selected S3 Condition-adjusted performance target; S3 is the only current experiment. Do not run S2 or feature follow-ups automatically after it.
 
 S1 used no 2023/2024/2025 rows or market information. Preserve this firewall for any follow-up selection work. Never commit raw data, cache, models, runner predictions, or recoverable runner-level views.
 
 ## Current Goal
 
-Wait for the human to choose the next hypothesis. Recommend S3 condition-adjusted performance target because S1 supported performance residual. S2 race-wise probability remains a valid queued alternative.
+Preregister and execute S3 condition-adjusted performance target because S1 supported performance residual. Keep S2 race-wise probability queued and stop for human review after S3.
 
 ## Current State
 
@@ -21,7 +21,7 @@ Wait for the human to choose the next hypothesis. Recommend S3 condition-adjuste
 - New-horse race exclusion is not supported. Race-class debut and `0_observed_history` are distinct.
 - The EDA does not establish production metric, ROI, or profit improvement.
 - S1 performance is `supported`; standalone field quality is `inconclusive`; joint C3 is `supported`. Field quality conditional on performance is Binary weak but LambdaRank rejected, so two independent axes are not established.
-- S3 is `recommended_next`; S2 remains `queued`. Neither was executed, and they must not be combined.
+- S3 is `current / authorized`; S2 remains `queued`. They must not be combined.
 - S1 controls: Binary PV-01 254 features; LambdaRank lean 253 features. LambdaRank PV-01 254 is point-improved but interval-inconclusive and prospective-only.
 - Formal controls remain unchanged pending human review. Binary C1/C3 and LambdaRank C1/C3 are rolling candidates, not final-holdout winners.
 
@@ -71,10 +71,10 @@ S1 completed 24 fits over evaluation years 2020–2022. Its artifact manifest ve
 
 ## Next Tasks
 
-1. Human chooses S3 (recommended) or S2. Do not start either automatically.
-2. If S3 is chosen, preregister a condition-adjusted continuous performance target without changing S1 features or opening 2024/2025.
-3. If S2 is chosen, preregister the transparent supervised race-wise probability baseline on the same PIT scope.
-4. Keep A1 transition reliability, A2 connection compression, and A3 last3F relative deferred until the S1–S3 review is resolved.
+1. Preregister S3 before reading its model metrics; freeze target, folds, controls, probability mapping, and acceptance logic.
+2. Implement and run Huber regression on the paired Binary-254 and LambdaRank-253 feature scopes without adding S1 feature columns.
+3. Record rolling evidence through 2022 only, update all project state, and stop for human review.
+4. Keep S2 queued and A1 transition reliability, A2 connection compression, and A3 last3F relative deferred.
 
 ## Useful Commands
 
@@ -96,4 +96,4 @@ git status --short --branch
 
 ## Handoff Notes
 
-S1 found that condition-adjusted historical performance is the stable incremental signal. Field quality alone failed and its conditional increment conflicted by family. Do not promote C3 as proof of a two-axis encoder, tune S1 windows, or add interactions from this result. S2/S3 remain unauthorized until the human selects one; S3 is recommended.
+S1 found that condition-adjusted historical performance is the stable incremental signal. Field quality alone failed and its conditional increment conflicted by family. Do not promote C3 as proof of a two-axis encoder, tune S1 windows, or add interactions from this result. S3 is now authorized; S2 remains unauthorized until the post-S3 human decision.
