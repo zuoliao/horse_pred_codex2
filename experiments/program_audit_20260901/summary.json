@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "program_audit_id": "phase5c_program_audit_20260901",
+  "phase": "Phase 5C: program audit and prospective validation pivot",
+  "status": "completed_awaiting_user_activation_decisions",
+  "research_freeze": {
+    "new_features": true,
+    "new_targets": true,
+    "new_models": true,
+    "A1_A2": "deferred_until_prospective_readiness_review",
+    "nonlinear_racewise": "deferred_until_prospective_readiness_review",
+    "inter_horse": "deferred_until_prospective_readiness_review"
+  },
+  "model_registry": {
+    "canonical_fundamental_candidate": "binary_pv01_pace01_speed01_256",
+    "feature_count": 256,
+    "feature_columns_sha256": "3b6104ec33f6bf2b02b64685bf3ebf6bb828f14683c262e922e696da43bb4940",
+    "formal_historical_binary_control": "binary_pv01_254",
+    "conservative_lambdarank_control": "lean_253",
+    "production_or_live_model_claimed": false
+  },
+  "evidence_ledger": {
+    "historical_development_archive": "2013-2025",
+    "untouched_historical_final": false,
+    "prospective_final_start": 2026,
+    "pre_audit_machine_summaries_reviewed": 35
+  },
+  "historical_oracle": {
+    "status": "completed_descriptive_oracle_only",
+    "year": 2024,
+    "race_count": 3051,
+    "runner_count": 41946,
+    "fundamental_log_loss": 2.068205604543568,
+    "final_market_log_loss": 1.882758526135053,
+    "combined_fixed_log_pool_log_loss": 1.9336387275722478,
+    "combined_vs_market_log_loss_improvement": -0.050880201437194725,
+    "combined_vs_market_log_loss_interval_95": [-0.059403615419296125, -0.043021483729515586],
+    "combined_vs_market_brier_improvement": -0.01316757373864239,
+    "conclusion": "fixed_equal_log_pool_did_not_show_market_nonredundant_value",
+    "selection_or_adoption_use": false,
+    "profit_or_roi_use": false,
+    "followup_combination_executed": false
+  },
+  "prospective_activation": {
+    "archive_groundwork": "implemented",
+    "operational_collection": "not_started",
+    "real_receipts_demonstrated": 0,
+    "windows_adapter": "missing",
+    "scheduler_monitoring": "missing",
+    "asof_materializer": "missing",
+    "shadow_runner": "missing",
+    "user_prerequisites": [
+      "individual/private JRA-VAN Data Lab contract and key",
+      "private supported Windows 10/11 host in Japan",
+      "current official JV-Link/SDK installation",
+      "private storage/topology/backup decision",
+      "monitoring operator and alert channel"
+    ]
+  },
+  "objective": {
+    "primary_prospective_comparison": "combined versus cutoff-market-only Log Loss, Brier, and calibration",
+    "profit_evaluation": "subsequent frozen fixed-stake shadow policy",
+    "stable_profit_claim_from_short_window": false
+  },
+  "task_buckets": {
+    "immediately_executable_after_user_authorization": [
+      "Windows adapter interface and conformance fixtures",
+      "health/error/zero-record ledger",
+      "fixture-only as-of materializer and completeness audit",
+      "immutable deployment-bundle and shadow-ledger schemas"
+    ],
+    "requires_user_decision_or_provisioning": [
+      "contract/key",
+      "Windows host",
+      "official SDK/JV-Link setup",
+      "storage/topology/backup/security",
+      "monitoring ownership"
+    ],
+    "wait_for_prospective_data": [
+      "cutoff freeze after at least two meetings",
+      "incremental market-value evaluation",
+      "shadow ROI/drawdown/monthly stability",
+      "A1/A2/nonlinear race-wise/Inter-horse/additional features"
+    ]
+  },
+  "next_experiment_executed": false
+}

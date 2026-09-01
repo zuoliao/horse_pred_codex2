@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "ledger_id": "phase5c_historical_evidence_ledger_20260901",
+  "policy": {
+    "2013_2025": "development_archive",
+    "untouched_final_years": [],
+    "prospective_final_start_year": 2026,
+    "reason": "all historical years have had data, outcome, market, audit, calibration, selection, development, or retrospective exposure"
+  },
+  "summary_inventory": {
+    "machine_summary_file_count_reviewed": 35,
+    "roots": ["experiments/", "docs/experiments/"],
+    "reviewed_on": "2026-09-01"
+  },
+  "years": [
+    {
+      "year": 2013,
+      "roles": ["state_warmup", "coverage_quality_audit", "PV-01 M0 audit"],
+      "experiment_families": ["baseline pipeline", "PV-01", "Phase 5A EDA"],
+      "outcomes_accessed": true,
+      "market_accessed": false,
+      "selection_exposed": false,
+      "note": "left-truncated warm-up; not an evaluation year"
+    },
+    {
+      "year": 2014,
+      "roles": ["train", "EDA discovery", "rating and condition-normalizer fit", "S1 definition audit"],
+      "experiment_families": ["baseline/PV/rating", "rolling studies", "SPEED-01", "S1/S2/S3", "Phase 5A"],
+      "outcomes_accessed": true,
+      "market_accessed": false,
+      "selection_exposed": true
+    },
+    {
+      "year": 2015,
+      "roles": ["train", "EDA discovery", "missing-race audit", "definition fit"],
+      "experiment_families": ["baseline/PV/rating", "rolling studies", "SPEED-01", "S1/S2/S3", "Phase 5A"],
+      "outcomes_accessed": true,
+      "market_accessed": false,
+      "selection_exposed": true
+    },
+    {
+      "year": 2016,
+      "roles": ["train", "EDA discovery", "rating and feature-definition fit"],
+      "experiment_families": ["baseline/PV/rating", "rolling studies", "SPEED-01", "S1/S2/S3", "Phase 5A"],
+      "outcomes_accessed": true,
+      "market_accessed": false,
+      "selection_exposed": true
+    },
+    {
+      "year": 2017,
+      "roles": ["train", "EDA discovery", "missing-race audit", "early PV-03 tau definition"],
+      "experiment_families": ["baseline/PV/rating", "rolling studies", "SPEED-01", "S1/S2/S3", "Phase 5A"],
+      "outcomes_accessed": true,
+      "market_accessed": false,
+      "selection_exposed": true
+    },
+    {
+      "year": 2018,
+      "roles": ["train", "PV-01 representation selection", "rolling early stopping", "later-fold train", "EDA discovery"],
+      "experiment_families": ["PV-01/PV-03", "EVAL/OPP/SEC/PACE/SPEED/HPO", "S1/S2/S3", "Phase 5A"],
+      "outcomes_accessed": true,
+      "market_accessed": false,
+      "selection_exposed": true
+    },
+    {
+      "year": 2019,
+      "roles": ["train", "EDA discovery", "rolling evaluation", "rolling calibration", "rolling early stopping", "S1 definition audit"],
+      "experiment_families": ["PV-03", "EVAL/OPP/SEC/PACE/SPEED/HPO", "S1/S2/S3", "Phase 5A"],
+      "outcomes_accessed": true,
+      "market_accessed": false,
+      "selection_exposed": true
+    },
+    {
+      "year": 2020,
+      "roles": ["baseline train", "EDA replication", "rolling evaluation", "later-fold early stopping/calibration/train", "S1/S2/S3 evaluation"],
+      "experiment_families": ["EVAL/OPP/SEC/PACE/SPEED/HPO/ENS/SHIMBA", "S1/S2/S3", "Phase 5A"],
+      "outcomes_accessed": true,
+      "market_accessed": false,
+      "selection_exposed": true
+    },
+    {
+      "year": 2021,
+      "roles": ["baseline train", "EDA replication", "rolling evaluation", "later-fold early stopping/calibration", "S1/S2/S3 evaluation"],
+      "experiment_families": ["PV-02/PV-06/GR", "EVAL/OPP/SEC/PACE/SPEED/HPO/ENS/SHIMBA", "S1/S2/S3", "Phase 5A"],
+      "outcomes_accessed": true,
+      "market_accessed": false,
+      "selection_exposed": true
+    },
+    {
+      "year": 2022,
+      "roles": ["baseline early stopping", "model validation", "Phase 5A confirmation", "PV/GR gate", "rolling evaluation/calibration", "S1/S2/S3 evaluation"],
+      "experiment_families": ["baseline", "PV-01/PV-02/PV-06/GR", "EVAL/OPP/SEC/PACE/SPEED/HPO/ENS", "S1/S2/S3", "Phase 5A"],
+      "outcomes_accessed": true,
+      "market_accessed": false,
+      "selection_exposed": true
+    },
+    {
+      "year": 2023,
+      "roles": ["baseline temperature calibration", "rolling evaluation/confirmation", "PV-03 calibration", "PV-01 M0 audit"],
+      "experiment_families": ["baseline", "EVAL/OPP/SEC/PACE/SPEED/HPO/SHIMBA", "PV-01/PV-03"],
+      "outcomes_accessed": true,
+      "market_accessed": true,
+      "selection_exposed": true,
+      "note": "Phase 5A/S1/S2/S3 exclusion does not undo earlier exposure"
+    },
+    {
+      "year": 2024,
+      "roles": ["development", "ablation/SHAP/error analysis", "feature and rating milestones", "SPEED-01 milestone", "final-market oracle", "Phase 5C oracle"],
+      "experiment_families": ["corrected baseline", "IMP-001-005", "rating R0-R6", "PV-01-05", "SPEED-01", "Phase 5C"],
+      "outcomes_accessed": true,
+      "market_accessed": true,
+      "selection_exposed": true,
+      "note": "known coverage hole; repeatedly exposed development archive"
+    },
+    {
+      "year": 2025,
+      "roles": ["explicit retrospective test", "final-market oracle", "data audit"],
+      "experiment_families": ["superseded MVP Task16", "repository data audit"],
+      "outcomes_accessed": true,
+      "market_accessed": true,
+      "selection_exposed": true,
+      "note": "3,236 races/44,874 runners were viewed; later zero-row experiments cannot restore final-holdout status"
+    }
+  ]
+}

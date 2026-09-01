@@ -1,0 +1,652 @@
+{
+  "exclusion": "Phase 5C outputs are indexed separately",
+  "files": [
+    {
+      "identity": "semantic_feature_ablation_2024",
+      "path": "experiments/baseline_validation_20260830/ablation_summary.json",
+      "sha256": "9a4b488587db3732fce05ff2fa27c2626e38404ab4967f2a05cdc65bcc91de79",
+      "top_level_keys": [
+        "schema_version",
+        "analysis_id",
+        "baseline",
+        "scope",
+        "experiments",
+        "key_paired_intervals"
+      ]
+    },
+    {
+      "identity": "baseline_data_health_20260830",
+      "path": "experiments/baseline_validation_20260830/data_health_summary.json",
+      "sha256": "cd6062e163a89e5905a53e668504464c6e57750690b81ae6b2482180505096ea",
+      "top_level_keys": [
+        "schema_version",
+        "audit_id",
+        "raw_data_sha256",
+        "blocking_issue",
+        "known_missing",
+        "development_2024_population",
+        "nonstarter_selection",
+        "decisions"
+      ]
+    },
+    {
+      "identity": "corrected_baseline_diagnostics_2024",
+      "path": "experiments/baseline_validation_20260830/diagnostics_summary.json",
+      "sha256": "b4d0379e16f9fd7c2b944c586fe3b1cf90a75a840377913b78f173950a4f5031",
+      "top_level_keys": [
+        "schema_version",
+        "analysis_id",
+        "source_run_commit",
+        "diagnostics_run_commit",
+        "scope",
+        "qa",
+        "group_centered_shap_share",
+        "group_permutation_log_loss_degradation",
+        "top_centered_shap_features_shared",
+        "weak_conditions_binary",
+        "market_oracle",
+        "priority_hypotheses"
+      ]
+    },
+    {
+      "identity": "evidence_led_improvements_2024",
+      "path": "experiments/baseline_validation_20260830/improvement_summary.json",
+      "sha256": "999cce159fda7ff6d69cdcc5ad96629b9cb39fcac796857f0e31d0dcafe10f54",
+      "top_level_keys": [
+        "schema_version",
+        "analysis_id",
+        "run_commit",
+        "scope",
+        "experiments",
+        "best_current_feature_config",
+        "next_priority_hypothesis"
+      ]
+    },
+    {
+      "identity": "baseline_uncertainty_2024_corrected",
+      "path": "experiments/baseline_validation_20260830/uncertainty_summary.json",
+      "sha256": "f6d0372b83fdd7fb1e3d6a0c9fd902c3c560af98d5bc6f4b803f76b024bbe8c4",
+      "top_level_keys": [
+        "schema_version",
+        "analysis_id",
+        "source_artifact",
+        "source_run_commit",
+        "scope",
+        "bootstrap",
+        "point_and_primary_ci",
+        "paired_improvement_ci",
+        "decision"
+      ]
+    },
+    {
+      "identity": "eda_20260901",
+      "path": "experiments/eda_20260901/data_contract_summary.json",
+      "sha256": "11a0be01dfb101739d84a7aa2a26681bec4be6089d5bf1b8bc9a18e25d5c02ab",
+      "top_level_keys": [
+        "analysis_id",
+        "git_commit",
+        "max_target_date",
+        "raw_sha256",
+        "views"
+      ]
+    },
+    {
+      "identity": null,
+      "path": "experiments/eda_20260901/data_quality_summary.json",
+      "sha256": "233e9647db9d0f49990e989fa858db36e354e3ce80630badf9ca32bc3fae32b4",
+      "top_level_keys": [
+        "duplicate_keys",
+        "flat_races",
+        "flat_started_performances",
+        "main_risks",
+        "max_target_date",
+        "post_2022_retained",
+        "predictive_races",
+        "predictive_rows",
+        "raw_sha256",
+        "retained_raw_races",
+        "retained_raw_rows"
+      ]
+    },
+    {
+      "identity": "eda_20260901",
+      "path": "experiments/eda_20260901/summary.json",
+      "sha256": "2fc6fbec1924dcf4f6cf94363e3bc2c7882b86b2f39d9984686e635368b54549",
+      "top_level_keys": [
+        "analysis_id",
+        "local_artifact",
+        "periods",
+        "phase",
+        "production_model_changed",
+        "review_status",
+        "status",
+        "top_hypotheses"
+      ]
+    },
+    {
+      "identity": null,
+      "path": "experiments/eda_20260901/temporal_stability_summary.json",
+      "sha256": "22115db9dc79cc296249c2ac593d9af70a98a04ce38f5d613389474984747cfd",
+      "top_level_keys": [
+        "interpretation",
+        "signals"
+      ]
+    },
+    {
+      "identity": "ens_01_fixed_5050",
+      "path": "experiments/ensemble_20260831/summary.json",
+      "sha256": "ff2da7da839d90c0fefbea3b529eabd5d4daff2e371a73bdd3722bed352a281c",
+      "top_level_keys": [
+        "schema_version",
+        "experiment_id",
+        "run_commit",
+        "run_dirty",
+        "source_predictions_sha256",
+        "source_manifest_sha256",
+        "scope",
+        "blend",
+        "screen",
+        "decision",
+        "confirmation_decision",
+        "adopted",
+        "local_artifacts"
+      ]
+    },
+    {
+      "identity": "eval_roll_001_current_best",
+      "path": "experiments/evaluation_rolling_20260831/summary.json",
+      "sha256": "2663abe203c671a1c29d318877bd5b29b0cfe53b29127a358b821266c0841996",
+      "top_level_keys": [
+        "schema_version",
+        "experiment_id",
+        "run_commit",
+        "run_dirty",
+        "data_fingerprint",
+        "cache_sha256",
+        "scope",
+        "methods",
+        "binary_minus_lambdarank_descriptive",
+        "decision",
+        "local_artifacts"
+      ]
+    },
+    {
+      "identity": "gr_001_graded_field_half_lambdarank",
+      "path": "experiments/graded_rank_20260831/summary.json",
+      "sha256": "86e137f1f408db5cd70801ec5919384805c068f7701c03f3e3fba698a2127bae",
+      "top_level_keys": [
+        "schema_version",
+        "experiment_id",
+        "run_commit",
+        "run_dirty",
+        "data_fingerprint",
+        "scope",
+        "feature_scope",
+        "labels",
+        "model",
+        "calibrated_metrics_2022",
+        "paired_improvement_2022",
+        "descriptive_field_size_improvement",
+        "decision",
+        "local_artifacts"
+      ]
+    },
+    {
+      "identity": "hpo_01_lightgbm_rolling",
+      "path": "experiments/hpo_20260831/summary.json",
+      "sha256": "8a7937687ac0cc7a58bf6d407c8431a5c3c6f0e8ace8e892f507e5b26b76c967",
+      "top_level_keys": [
+        "schema_version",
+        "experiment_id",
+        "run_commit",
+        "run_dirty",
+        "data_fingerprint",
+        "cache_sha256",
+        "scope",
+        "binary",
+        "lambdarank",
+        "decision"
+      ]
+    },
+    {
+      "identity": "mvp_task16_20260830",
+      "path": "experiments/mvp_task16_20260830/metrics_summary.json",
+      "sha256": "99153843a14df302ce4c453f2e31d62aed68e52a129d5d9085596708abb8dfcc",
+      "top_level_keys": [
+        "schema_version",
+        "experiment_id",
+        "status",
+        "run_commit",
+        "run_git_dirty",
+        "data_fingerprint",
+        "local_artifact_directory",
+        "artifact_manifest_sha256",
+        "elapsed_seconds",
+        "population",
+        "models",
+        "development",
+        "retrospective_test",
+        "interpretation_flags"
+      ]
+    },
+    {
+      "identity": "opp_recent_001_rolling",
+      "path": "experiments/opp_recent_20260831/summary.json",
+      "sha256": "1be1e8db12b8479be0fd1cb6bad2cd4efdfcda9ef87c4adff8e93db46c3f25ed",
+      "top_level_keys": [
+        "schema_version",
+        "experiment_id",
+        "run_commit",
+        "run_dirty",
+        "data_fingerprint",
+        "cache_sha256",
+        "scope",
+        "cache_control",
+        "decisions",
+        "adopted",
+        "development_2024_opened",
+        "local_artifacts"
+      ]
+    },
+    {
+      "identity": "pace_01_early_position_rolling",
+      "path": "experiments/pace_01_20260831/summary.json",
+      "sha256": "037ccd6a8437041ca6942ea14ec5f8924e0c930ec531a42e7bbe9fc646e62b55",
+      "top_level_keys": [
+        "schema_version",
+        "experiment_id",
+        "run_commit",
+        "run_dirty",
+        "data_fingerprint",
+        "cache_sha256",
+        "transformation_hash",
+        "scope",
+        "cache_control",
+        "binary",
+        "lambdarank",
+        "development_2024_opened",
+        "lightgbm_parameters_changed",
+        "next_task"
+      ]
+    },
+    {
+      "identity": "pace_02_field_pressure_rolling",
+      "path": "experiments/pace_02_20260831/summary.json",
+      "sha256": "3c4ee7ee880331b0e7290a9aa31a7713e0782352eac897594a12534624448185",
+      "top_level_keys": [
+        "schema_version",
+        "experiment_id",
+        "run_commit",
+        "run_dirty",
+        "data_fingerprint",
+        "cache_sha256",
+        "transformation_hash",
+        "scope",
+        "cache_control",
+        "binary",
+        "lambdarank",
+        "adopted",
+        "development_2024_opened",
+        "next_task"
+      ]
+    },
+    {
+      "identity": "pace_03_final_position_rolling",
+      "path": "experiments/pace_03_20260831/summary.json",
+      "sha256": "11beb93e374d7c6bdde3bda89e3721686642e055ac4fe450e87d53959d9957e4",
+      "top_level_keys": [
+        "schema_version",
+        "experiment_id",
+        "run_commit",
+        "run_dirty",
+        "data_fingerprint",
+        "cache_sha256",
+        "transformation_hash",
+        "scope",
+        "cache_control",
+        "binary",
+        "lambdarank",
+        "adopted",
+        "development_2024_opened",
+        "next_task"
+      ]
+    },
+    {
+      "identity": "pace_04_position_gain_rolling",
+      "path": "experiments/pace_04_20260831/summary.json",
+      "sha256": "19990ccac32a465aed6820138be3e3a2cc843a9881f49883e511ac4c69a9af7d",
+      "top_level_keys": [
+        "schema_version",
+        "experiment_id",
+        "run_commit",
+        "run_dirty",
+        "data_fingerprint",
+        "cache_sha256",
+        "transformation_hash",
+        "scope",
+        "cache_control",
+        "binary",
+        "lambdarank",
+        "adopted",
+        "development_2024_opened",
+        "pace_route_complete",
+        "next_task"
+      ]
+    },
+    {
+      "identity": "pv_002_margin_aware_rating",
+      "path": "experiments/race_content_20260831/pv_002_summary.json",
+      "sha256": "eaee3b754d207066ce10f7d744b9b0174ab244417432fb6b2c541e329b68d690",
+      "top_level_keys": [
+        "schema_version",
+        "experiment_id",
+        "run_commit",
+        "run_dirty",
+        "data_fingerprint",
+        "scope",
+        "candidate",
+        "tau_derivation",
+        "metrics_2022",
+        "paired_improvement_2022",
+        "decision",
+        "posthoc_resubstitution_not_acceptance_evidence",
+        "local_artifact"
+      ]
+    },
+    {
+      "identity": "pv_003_margin_rating_temporal_calibration",
+      "path": "experiments/race_content_20260831/pv_003_summary.json",
+      "sha256": "e0c31610c9428059798ead9333084cd479fb32039fef693ecf2e6cc6d6d763d9",
+      "top_level_keys": [
+        "schema_version",
+        "experiment_id",
+        "run_commit",
+        "run_dirty",
+        "data_fingerprint",
+        "scope",
+        "tau_derivation",
+        "rolling_gate",
+        "development_2024",
+        "conclusion",
+        "next_experiment",
+        "local_artifact"
+      ]
+    },
+    {
+      "identity": "pv_004_margin_rating_score",
+      "path": "experiments/race_content_20260831/pv_004_summary.json",
+      "sha256": "cdcf0688bdc5a138ef538559d1857cbf85178770dbeaf0e820a2e0a5c5674b5c",
+      "top_level_keys": [
+        "schema_version",
+        "experiment_id",
+        "run_commit",
+        "run_dirty",
+        "data_fingerprint",
+        "cache_gate",
+        "development_2024",
+        "primary_improvement_vs_pv001",
+        "lambdarank_secondary_vs_lean253",
+        "feature_diagnostics",
+        "decision"
+      ]
+    },
+    {
+      "identity": "pv_005_margin_rating_delta",
+      "path": "experiments/race_content_20260831/pv_005_summary.json",
+      "sha256": "949f342c8e1491505ed9fc1b51ec2f44fb263205dfa15d76e0f3e09b2e5120f5",
+      "top_level_keys": [
+        "schema_version",
+        "experiment_id",
+        "run_commit",
+        "run_dirty",
+        "cache_gate",
+        "development_2024",
+        "primary_improvement_vs_pv001",
+        "lambdarank_secondary_vs_lean253",
+        "feature_diagnostics",
+        "decision"
+      ]
+    },
+    {
+      "identity": "pv_006_margin_token_refinement",
+      "path": "experiments/race_content_20260831/pv_006_summary.json",
+      "sha256": "97d89a43f5c3eadfdaa3b33cec3a6ba7587a9eba30fec97a64878e32c7e1beda",
+      "top_level_keys": [
+        "schema_version",
+        "experiment_id",
+        "run_commit",
+        "run_dirty",
+        "data_fingerprint",
+        "scope",
+        "train_token_audit",
+        "frozen_refinement",
+        "temperature_2021",
+        "calibrated_metrics_2022",
+        "paired_improvement_2022",
+        "decision",
+        "local_artifacts"
+      ]
+    },
+    {
+      "identity": "race_content_time_m0_m4_20260831",
+      "path": "experiments/race_content_20260831/summary.json",
+      "sha256": "2033cf6ed431376f56f0cc7a18114e1192b245cd3795dad4c7729e7b4a8ea56c",
+      "top_level_keys": [
+        "schema_version",
+        "study_id",
+        "completed_stage",
+        "run_commit",
+        "run_dirty",
+        "data_fingerprint",
+        "scope",
+        "m0",
+        "pv_001_feature",
+        "representation_screen",
+        "cache_gate",
+        "development_metrics",
+        "paired_improvement",
+        "decision",
+        "local_artifacts"
+      ]
+    },
+    {
+      "identity": "rating_module_r0_r6_20260830",
+      "path": "experiments/rating_module_20260830/summary.json",
+      "sha256": "7fccad2084f23bead159d66fdb1ff5a58ffa3b14675c1fc478b0bfe49fb5f493",
+      "top_level_keys": [
+        "schema_version",
+        "study_id",
+        "decision",
+        "scope",
+        "r0",
+        "r2",
+        "r3",
+        "r4",
+        "r5",
+        "r6",
+        "current_best"
+      ]
+    },
+    {
+      "identity": "imp_004_lean_surface_conditioned_rating",
+      "path": "experiments/rating_race_value_20260830/imp_004_summary.json",
+      "sha256": "343eab97432d0365e9ab2851eaf1df29c99d6d27fcc36226d74b28273ae6896a",
+      "top_level_keys": [
+        "schema_version",
+        "experiment_id",
+        "run_commit",
+        "decision",
+        "scope",
+        "arms",
+        "models",
+        "comparison_sha256",
+        "current_best"
+      ]
+    },
+    {
+      "identity": "imp_005_expected_actual_race_value",
+      "path": "experiments/rating_race_value_20260830/imp_005_summary.json",
+      "sha256": "82c9d0d5a928e5a3dbc0ca433536a394eb42457e4a27d468b94516128c0369c9",
+      "top_level_keys": [
+        "schema_version",
+        "experiment_id",
+        "run_commit",
+        "decision",
+        "scope",
+        "cache_control",
+        "arms",
+        "models",
+        "diagnostic",
+        "comparison_sha256",
+        "current_best"
+      ]
+    },
+    {
+      "identity": "s1_two_axis_race_value_20260901",
+      "path": "experiments/s1_two_axis_race_value_20260901/summary.json",
+      "sha256": "84f4cd9ad984edbc415f3d8e049e847e41db92a04c526dc8a6bc26448ae5f061",
+      "top_level_keys": [
+        "schema_version",
+        "experiment_id",
+        "phase",
+        "status",
+        "code_commit_at_run",
+        "raw_sha256",
+        "scope",
+        "controls",
+        "axis_decisions",
+        "primary_comparisons",
+        "interpretation",
+        "slice_summary",
+        "limitations"
+      ]
+    },
+    {
+      "identity": "s2_supervised_racewise_probability_20260901",
+      "path": "experiments/s2_supervised_racewise_probability_20260901/summary.json",
+      "sha256": "f5e89d7ea02954d155564815864834dfa4005e98e15adf1b2cb46632a15a5a0e",
+      "top_level_keys": [
+        "schema_version",
+        "experiment_id",
+        "status",
+        "decision",
+        "scope",
+        "capacity_gate",
+        "comparisons",
+        "fixed_slice_summary",
+        "difference_in_differences",
+        "quality",
+        "interpretation"
+      ]
+    },
+    {
+      "identity": "s3_condition_adjusted_performance_target_20260901",
+      "path": "experiments/s3_condition_adjusted_performance_target_20260901/summary.json",
+      "sha256": "9654e697a096ca8b3249adfe11733e718636c5982b954d5a3d5c1749a6303587",
+      "top_level_keys": [
+        "schema_version",
+        "experiment_id",
+        "status",
+        "decision",
+        "code_commit_at_run",
+        "raw_sha256",
+        "scope",
+        "controls",
+        "target",
+        "method_macro_metrics",
+        "paired_comparisons",
+        "slice_summary",
+        "interpretation",
+        "protocol_deviations",
+        "independent_review",
+        "limitations"
+      ]
+    },
+    {
+      "identity": "s_rank_model_research_20260831",
+      "path": "experiments/s_rank_model_research_20260831/summary.json",
+      "sha256": "90b402116acfc9b2901573dc37b14ca2a42496f64c346fe46c9181269e668ef0",
+      "top_level_keys": [
+        "schema_version",
+        "program_id",
+        "status",
+        "selection_years",
+        "rows_used_2024_for_s_rank_selection",
+        "rows_used_2025_for_s_rank_selection",
+        "items",
+        "additional_user_hypothesis",
+        "current_binary",
+        "current_2024_conservative_lambdarank",
+        "accepted_rolling_lambdarank_candidate",
+        "lightgbm_parameters_changed",
+        "ensemble_adopted",
+        "next_modeling_task"
+      ]
+    },
+    {
+      "identity": "sec_3f_001_rolling",
+      "path": "experiments/sec_3f_20260831/summary.json",
+      "sha256": "b8f989e63c11c46e9d3e9226e873cf7f824c44636acaee94184f2f3fee1270f0",
+      "top_level_keys": [
+        "schema_version",
+        "experiment_id",
+        "run_commit",
+        "run_dirty",
+        "data_fingerprint",
+        "cache_sha256",
+        "scope",
+        "cache_control",
+        "decisions",
+        "adopted",
+        "development_2024_opened",
+        "local_artifacts"
+      ]
+    },
+    {
+      "identity": "shimba_filter_001_rolling",
+      "path": "experiments/shimba_filter_20260831/summary.json",
+      "sha256": "0f3eecc1cf83659a6ff20e4c94613fa54aefbd0098271c6500ef252470a85048",
+      "top_level_keys": [
+        "schema_version",
+        "experiment_id",
+        "run_commit",
+        "run_dirty",
+        "data_fingerprint",
+        "cache_sha256",
+        "scope",
+        "fit_exclusion",
+        "all_race_improvement",
+        "descriptive_slices",
+        "decision",
+        "retain_new_horse_races_in_training",
+        "evaluation_or_betting_scope_changed",
+        "local_artifacts"
+      ]
+    },
+    {
+      "identity": "speed_01_condition_adjusted_rolling",
+      "path": "experiments/speed_01_20260901/summary.json",
+      "sha256": "4751a8cba8a5e23dfdf155f62122d30c09a348a980e75a1fe348713dec2c2b07",
+      "top_level_keys": [
+        "schema_version",
+        "experiment_id",
+        "run_commit",
+        "run_dirty",
+        "data_fingerprint",
+        "cache_sha256",
+        "transformation_hash",
+        "scope",
+        "cache_control",
+        "binary",
+        "lambdarank",
+        "adopted",
+        "development_2024_opened",
+        "development_2024",
+        "next_task"
+      ]
+    }
+  ],
+  "inventory_id": "phase5c_pre_audit_experiment_summary_inventory_20260901",
+  "schema_version": 1,
+  "summary_count": 35
+}

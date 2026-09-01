@@ -1,0 +1,147 @@
+{
+  "schema_version": 1,
+  "registry_id": "phase5c_model_registry_20260901",
+  "historical_archive_years": [2013, 2025],
+  "prospective_final_starts": 2026,
+  "canonical_fundamental_candidate_id": "binary_pv01_pace01_speed01_256",
+  "terminology": {
+    "formal_historical_comparison_control": "stable reference used by matched historical experiments; not necessarily the best accumulated candidate",
+    "rolling_candidate": "supported on repeatedly exposed rolling years but not the canonical prospective candidate",
+    "development_incumbent": "unchanged candidate supported by its preregistered historical development milestone",
+    "canonical_frozen_fundamental_candidate": "the single no-odds configuration frozen for prospective packaging and comparison"
+  },
+  "models": [
+    {
+      "model_id": "lean_253",
+      "family": "lightgbm_binary_and_lambdarank",
+      "feature_count": 253,
+      "feature_columns_sha256": "fd8735cf6f8472a5c7322e3622c83fde1ff7720b022b75637745c96a1bc1062f",
+      "components": ["lean field-relative-drop base"],
+      "evidence": "2014-2021 fit; 2022 early stopping; 2023 calibration; 2024 development",
+      "status": {
+        "binary": "historical_base",
+        "lambdarank": "conservative_formal_control"
+      }
+    },
+    {
+      "model_id": "binary_pv01_254",
+      "family": "lightgbm_binary",
+      "parent": "lean_253",
+      "feature_count": 254,
+      "feature_columns_sha256": "e5228bb4ffd605888b7266030d5e1e9f0931e8468b6fbbf124f3cea60905e51d",
+      "components": ["PV-01 signed time-gap history"],
+      "evidence": "representation selection 2018-2021; 2022 gate/early stopping; 2023 calibration; 2024 supported development",
+      "status": "formal_historical_comparison_control",
+      "note": "Phase 5B S1/S2/S3 comparison anchor; no longer called the accumulated current best"
+    },
+    {
+      "model_id": "lambdarank_pv01_254",
+      "family": "lightgbm_lambdarank",
+      "parent": "lean_253",
+      "feature_count": 254,
+      "feature_columns_sha256": "e5228bb4ffd605888b7266030d5e1e9f0931e8468b6fbbf124f3cea60905e51d",
+      "components": ["PV-01 signed time-gap history"],
+      "evidence": "2024 all point metrics improved but primary intervals crossed zero",
+      "status": "inconclusive_prospective_only_branch"
+    },
+    {
+      "model_id": "lambdarank_sec3f_254",
+      "family": "lightgbm_lambdarank",
+      "parent": "lean_253",
+      "feature_count": 254,
+      "feature_columns_sha256": "fff37fcb9c1b40611df1a1813908be8d4b9eba2fd5dcd9a575858cc1f4942183",
+      "components": ["SEC-3F race-relative last-3F history"],
+      "evidence": "rolling evaluation 2020-2023; NDCG supported",
+      "status": "rolling_candidate_component"
+    },
+    {
+      "model_id": "binary_pv01_pace01_255",
+      "family": "lightgbm_binary",
+      "parent": "binary_pv01_254",
+      "feature_count": 255,
+      "feature_columns_sha256": "a50da361280b6f892ef7dfbe017768bbaa1657a6e95cb744ef7df6417f03275c",
+      "components": ["PV-01", "PACE-01 early-position history"],
+      "evidence": "rolling evaluation 2020-2023; probability path accepted",
+      "status": "rolling_candidate_parent_of_incumbent"
+    },
+    {
+      "model_id": "lambdarank_sec3f_pace01_255",
+      "family": "lightgbm_lambdarank",
+      "parent": "lambdarank_sec3f_254",
+      "feature_count": 255,
+      "feature_columns_sha256": "0bebb3ab682423318d239d338b370d1d6f162f0bbb8d4678f8bc0760b4c63d3e",
+      "components": ["SEC-3F", "PACE-01"],
+      "evidence": "rolling evaluation 2020-2023; ranking and probability paths accepted",
+      "status": "rolling_candidate_parent"
+    },
+    {
+      "model_id": "binary_pv01_pace01_speed01_256",
+      "family": "lightgbm_binary",
+      "parent": "binary_pv01_pace01_255",
+      "feature_count": 256,
+      "feature_columns_sha256": "3b6104ec33f6bf2b02b64685bf3ebf6bb828f14683c262e922e696da43bb4940",
+      "feature_config": "configs/performance/speed_01_binary_candidate.json",
+      "feature_config_sha256": "3ddcc75e0f2e96a3f3ce0b61a438212cff9cf975f62e1ae3280aa893933f51bb",
+      "model_config": "configs/exp_001_binary.json",
+      "model_config_sha256": "46afba67d03f28c48f6177dbb43960a2eb38326df6c2a8e68cd28763e748d2b5",
+      "milestone_config": "configs/evaluation/speed_01_2024_milestone.json",
+      "milestone_config_sha256": "c76618cae7fe2f4a5a5a8c70ecf529cdb5ec747b7bdb71440fc2cde03fd04e09",
+      "components": ["PV-01", "PACE-01", "SPEED-01 prequential condition-adjusted speed history"],
+      "fit_contract": "2014-2021 fit; 2022 early stopping; 2023 temperature calibration; 2024 milestone",
+      "rolling_evidence": "2020-2023 probability accepted; Log Loss improvement +0.00769 [0.00457,0.01078]",
+      "development_evidence": "2024 preregistered milestone supported; Log Loss improvement +0.00654 [0.00143,0.01170]",
+      "run_commits": {
+        "rolling": "f4b38b8744dc7a49d701b23c1c14badc6a663571",
+        "milestone": "dbc656e16a167b3bdcb41691682d10260eed5c38"
+      },
+      "raw_sha256": "270923ce73c4441e64173f242a8719de7d1e9b205508140463ca547ef7b1ca87",
+      "status": ["development_incumbent", "canonical_frozen_fundamental_candidate"],
+      "freeze_rule": "no historical refit, feature union, recalibration, or parameter change; prospective packaging must preserve this identity"
+    },
+    {
+      "model_id": "lambdarank_sec3f_pace01_speed01_256",
+      "family": "lightgbm_lambdarank",
+      "parent": "lambdarank_sec3f_pace01_255",
+      "feature_count": 256,
+      "feature_columns_sha256": "79761cff41a0fdc122a0e81c947c9c4bf10f1184e3e6c1bfff2f1188a45a9ba0",
+      "components": ["SEC-3F", "PACE-01", "SPEED-01"],
+      "evidence": "rolling probability accepted; 2024 milestone directionally consistent",
+      "status": "rolling_candidate_not_canonical"
+    },
+    {
+      "model_id": "binary_pv01_s1_performance_255",
+      "family": "lightgbm_binary",
+      "parent": "binary_pv01_254",
+      "feature_count": 255,
+      "feature_columns_sha256": "d19d7e4d319b106c12ffe0832db4daec1c8e661fce1043a0a70e9d64ef41861d",
+      "components": ["PV-01", "S1 fold-train-frozen performance residual"],
+      "evidence": "S1 and S2 matched runs, evaluation 2020-2022, probability supported",
+      "status": "rolling_supported_overlapping_representation_branch",
+      "note": "meaning overlaps SPEED-01; union with the 256-feature incumbent was never evaluated and is not frozen"
+    },
+    {
+      "model_id": "lambdarank_s1_performance_254",
+      "family": "lightgbm_lambdarank",
+      "parent": "lean_253",
+      "feature_count": 254,
+      "feature_columns_sha256": "eaec84e6c6643d9abc1e620a16b171f4837826861a092304571fcc1f0f1d41e0",
+      "components": ["S1 fold-train-frozen performance residual"],
+      "evidence": "S1 evaluation 2020-2022, probability supported",
+      "status": "rolling_supported_overlapping_representation_branch"
+    },
+    {
+      "model_id": "s3_huber_performance_target",
+      "family": "lightgbm_huber_regression",
+      "feature_count": "matched 254/253 scopes",
+      "evidence": "evaluation 2020-2022; all primary metrics worsened",
+      "status": "rejected_target_branch"
+    },
+    {
+      "model_id": "s2_linear_conditional_logit",
+      "family": "linear_conditional_logit",
+      "feature_count": "matched 254/255 scopes",
+      "evidence": "evaluation 2020-2022; replacement probability path rejected",
+      "status": "rejected_replacement_baseline"
+    }
+  ]
+}
