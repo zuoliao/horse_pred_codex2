@@ -2,7 +2,7 @@
 
 **作成日:** 2026-08-30 (JST)  
 **更新日:** 2026-09-01 (JST)
-**前提:** Phase 5A EDA、S1、S3 Condition-adjusted performance targetまで完了。S3はrejected。人間がS2 Supervised race-wise probabilityを選択し、現在は事前登録・検証中。
+**前提:** Phase 5A EDA、S1、S3、S2 Supervised race-wise probabilityまで完了。S2の線形Conditional Logitは現Binary置換としてrejected、S1 performanceは両objectiveでsupported。次研究は人間レビュー待ち。
 **対象:** JRA平地競走、no-odds予測を先行し、購入判断を別層にする。
 
 ## 進行原則
@@ -59,15 +59,15 @@
 | 39 | COND-01 | condition-transition suitability | SPEED-01 | `superseded_by_eda`。広い旧案を閉じ、狭いA1 transition reliabilityへ再定義 |
 | 40 | EDA-5A | systematic EDA and problem reformulation | 既存実験の安全なcheckpoint | **完了**。2014～2022の時間再現、共通view、全workstream、三者PASS、仮説registry、最大3候補のroadmapを1 commandで再現。production変更なし |
 | 41 | S1-RACE-VALUE-2AXIS | horse performanceとrace-constant field qualityの二軸履歴 | EDA-5A | **completed**。performance supported、field-quality単独 inconclusive、joint supported。production controlは自動変更せず停止 |
-| 42 | S2-RACEWISE-CHOICE | supervised race-wise probability objective | S3 decision | `priority_S2 / current / preregistration`。matched BinaryとLinear Conditional LogitをS1 performance有無で比較 |
+| 42 | S2-RACEWISE-CHOICE | supervised race-wise probability objective | S3 decision | **completed / linear replacement rejected**。Conditional Logitはmatched BinaryよりLL約`.0182`悪化。S1 performanceは両objectiveでsupported。非線形Stage N未実行 |
 | 43 | S3-PERFORMANCE-TARGET | condition-adjusted continuous performance target | S1 decision | **completed / rejected**。両matched scope、全3年でranking/probability悪化。control変更なし |
-| 44 | A1-TRANSITION-RELIABILITY | condition switch時のstate reliability | S1～S3 review | `still_valid_future_candidate / deferred_by_eda` |
-| 45 | A2-CONNECTION-COMPRESSION | 130 connection列の階層的縮約 | S1～S3 review | `still_valid_future_candidate / deferred_by_eda` |
-| 46 | A3-LAST3F-RELATIVE | race-relative last3F履歴 | SEC-3F重複監査、S1～S3 review | `still_valid_future_candidate / deferred_by_eda` |
+| 44 | A1-TRANSITION-RELIABILITY | condition switch時のstate reliability | S1～S3/S2 review | `recommended_next / human_selection_required` |
+| 45 | A2-CONNECTION-COMPRESSION | 130 connection列の階層的縮約 | S1～S3/S2 review | `recommended_second / human_selection_required` |
+| 46 | A3-LAST3F-RELATIVE | race-relative last3F履歴 | SEC-3F重複監査、S1～S3/S2 review | `still_valid_future_candidate / deferred_by_eda` |
 
 ## 2026-08-31実行状態
 
-> 2026-09-01 phase decision: Phase 5Aは完了し、Phase 5BのS1を人間が選択した。比較基準はBinary PV-01 254特徴、LambdaRank lean 253特徴。LambdaRank PV-01 254特徴版はpoint改善・interval inconclusiveのprospective候補に限定する。2024/2025とmarketはS1判断に使わない。
+> 2026-09-01 phase decision: Phase 5A、S1、S3、S2まで完了。比較基準はBinary PV-01 254特徴、LambdaRank lean 253特徴のまま維持する。LambdaRank PV-01 254特徴版はpoint改善・interval inconclusiveのprospective候補に限定する。2023～2025とmarketはS2判断に未使用で、次研究は人間レビュー待ち。
 
 | 範囲 | 状態 | 証拠 |
 |---|---|---|
@@ -95,9 +95,9 @@
 | COND-01 | superseded_by_eda | broad interaction案を閉じ、A1 transition reliabilityへ狭く再定義 |
 | EDA-5A | completed | 全workstream、共通contract、再現CLI、三者review、registry、synthesis、roadmapを完了 |
 | S1-RACE-VALUE-2AXIS | completed | 24 fit完了。performance supported、field-quality単独 inconclusive、joint supported。2023～2025/market未使用 |
-| S2-RACEWISE-CHOICE | current / preregistration / priority_S2 | S3のsingle-target Huber失敗後も残るrace-wise objective仮説。人間が選択済み |
+| S2-RACEWISE-CHOICE | completed / linear replacement rejected | R0−B0 LL `-.01816`、R1−B1 `-.01822`、いずれも0/3年。S1 performanceはBinary/Conditional Logit双方で3/3年改善。control変更なし |
 | S3-PERFORMANCE-TARGET | completed / rejected | Binary-scope ΔLL `-.09299`, ΔNDCG `-.02235`; Rank-scope `-.08481`, `-.02225`。全metric 0/3改善 |
-| A1 / A2 / A3 | deferred_by_eda | valid future candidates。S1～S3より後 |
+| A1 / A2 / A3 | human review / deferred | A1を第一、A2を第二候補として提案。A3は引き続きdefer |
 
 ## Phase 5B decision tree
 
@@ -105,10 +105,10 @@
 |---|---|---|---|---|---|
 | S1 | Past-race valueをhorse performanceとrace-constant field qualityへ分離する | `completed` | Phase 5A | Performance `supported`; field quality `inconclusive`; joint `supported`; C3−C1はBinary weak / LambdaRank reject | production controlを自動変更せず、人間レビュー |
 | S3 | condition-adjusted performanceをcontinuous targetとして直接教師にする | `completed / rejected` | S1 performance support | 両feature scopeでLL/Brier/NDCG/Top1/MRRが3/3年悪化。target coverageは高く、control変更なし | target variantを同期間で追わず停止 |
-| S2 | supervised race-wise probability objectiveを直接最適化する | `current / preregistration` | S3 review | Linear Conditional Logitを第一段階に固定 | 同一fold・populationで4-arm比較し、結論後に停止 |
-| A1 | condition transition時のstate reliabilityを表す | `deferred_by_eda` | S1～S3 review | 未実行 | S1～S3後 |
-| A2 | connection 130列を階層的に縮約する | `deferred_by_eda` | S1～S3 review | 未実行 | S1～S3後 |
-| A3 | race-relative last3F履歴を非冗長化する | `deferred_by_eda` | SEC-3F重複監査 | 未実行 | S1～S3後 |
+| S2 | supervised race-wise probability objectiveを直接最適化する | `completed / linear replacement rejected` | S3 review | Linear Conditional LogitはBinaryよりLL約`.0182`悪化。S1 performance効果は両objectiveで再現。capacity gate非発火 | 非線形race-wise一般へ外挿せず停止 |
+| A1 | condition transition時のstate reliabilityを表す | `recommended_next / human review` | S1～S3/S2 review | 未実行。Binary+performanceのlarge distance-change LLだけ固定sliceで悪化 | 人間が選択した場合のみpreregister |
+| A2 | connection 130列を階層的に縮約する | `recommended_second / human review` | S1～S3/S2 review | 未実行。history-0/new raceの弱さとconnection冗長性が残る | 人間が選択した場合のみpreregister |
+| A3 | race-relative last3F履歴を非冗長化する | `deferred_by_eda` | SEC-3F重複監査 | 未実行 | S2後もdefer |
 
 ## EDA後のlegacy queue再分類
 
@@ -120,7 +120,7 @@
 | old field-relative 15列 | `rejected` | retrained dropで両family全point改善 | 復活しない |
 | Top3 multitask直行 | `deferred_by_eda` | 3着/4着に自然な断絶なし | S3 standalone evidence後だけ再検討 |
 | new-horse fit exclusion | `rejected` | SHIMBA-FILTER-001悪化、EDAも除外を支持せず | 学習母集団に維持 |
-| SEC-3F追加branch | `completed`、A3は`still_valid_future_candidate` | Rank rolling支持済み。EDA候補は定義重複の可能性 | S1～S3後に重複監査 |
+| SEC-3F追加branch | `completed`、A3は`still_valid_future_candidate` | Rank rolling支持済み。EDA候補は定義重複の可能性 | S2後もdefer、選択時に重複監査 |
 | transition interaction旧案 | `superseded_by_eda` | broad COND-01を解体 | A1 one-transition reliabilityとして将来検証 |
 | connection追加案 | `still_valid_future_candidate` / `deferred_by_eda` | signalは強いが130列が冗長 | A2 compressionとして将来検証 |
 | PACE-02 / PACE-03 / PACE-04 | `inconclusive` / `rejected` / `inconclusive`、completed | 保存済みnegative evidence | 再探索しない |
