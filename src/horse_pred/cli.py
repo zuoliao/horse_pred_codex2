@@ -60,6 +60,7 @@ from horse_pred.race_content import (
 from horse_pred.rating_study import run_rating_study
 from horse_pred.rolling_evaluation import run_rolling_evaluation
 from horse_pred.s1_two_axis_study import run_s1_two_axis_study
+from horse_pred.s3_performance_target_study import run_s3_performance_target_study
 from horse_pred.sectional_recent import build_sectional_recent_cache_from_raw
 from horse_pred.shimba_filter_study import run_shimba_filter_study
 from horse_pred.speed_figure import build_speed_cache_from_raw
@@ -99,6 +100,22 @@ def parser() -> argparse.ArgumentParser:
         type=Path,
         default=Path(
             "experiments/s1_two_axis_race_value_20260901/preregistration.json"
+        ),
+    )
+
+    s3 = commands.add_parser(
+        "run-s3-performance-target-study",
+        help="run the preregistered 2020-2022 continuous-performance study",
+    )
+    s3.add_argument("--raw-path", type=Path, required=True)
+    s3.add_argument("--output", type=Path, required=True)
+    s3.add_argument("--repo-root", type=Path, default=Path.cwd())
+    s3.add_argument(
+        "--preregistration",
+        type=Path,
+        default=Path(
+            "experiments/s3_condition_adjusted_performance_target_20260901/"
+            "preregistration.json"
         ),
     )
 
@@ -471,6 +488,27 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 0
     if args.command == "run-s1-two-axis-study":
         result = run_s1_two_axis_study(
+            repo_root=args.repo_root,
+            raw_path=args.raw_path,
+            preregistration_path=args.preregistration,
+            output_dir=args.output,
+        )
+        print(
+            json.dumps(
+                {
+                    "experiment_id": result["experiment_id"],
+                    "output": str(args.output.resolve()),
+                    "evaluation_years": result["scope"]["evaluation_years"],
+                    "decision": result["decision"],
+                    "artifact_verification": result["artifact_verification"],
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
+        return 0
+    if args.command == "run-s3-performance-target-study":
+        result = run_s3_performance_target_study(
             repo_root=args.repo_root,
             raw_path=args.raw_path,
             preregistration_path=args.preregistration,

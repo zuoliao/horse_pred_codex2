@@ -740,11 +740,21 @@ _RANKING_DEFAULTS: dict[str, Any] = {
     "random_state": 42,
 }
 
+_HUBER_DEFAULTS: dict[str, Any] = {
+    "objective": "huber",
+    "metric": "huber",
+    "alpha": 0.9,
+    "n_estimators": 300,
+    "learning_rate": 0.05,
+    "num_leaves": 31,
+    "random_state": 42,
+}
+
 
 def build_lightgbm_estimator(
     model_kind: str, *, params: Mapping[str, Any] | None = None
 ) -> Any:
-    """Create the fixed Binary or LambdaRank estimator with lazy dependency use."""
+    """Create a fixed Binary, LambdaRank, or diagnostic Huber estimator."""
 
     try:
         import lightgbm as lgb  # type: ignore[import-not-found]
@@ -771,7 +781,15 @@ def build_lightgbm_estimator(
         if list(merged.get("label_gain", [])) != [0, 1, 3, 7]:
             raise ValueError("primary LambdaRank label_gain must remain [0, 1, 3, 7]")
         return lgb.LGBMRanker(**merged)
-    raise ValueError("model_kind must be 'binary' or 'lambdarank'")
+    if model_kind == "huber":
+        merged = {**_HUBER_DEFAULTS, **overrides}
+        if merged.get("objective") != "huber":
+            raise ValueError("Huber estimator objective must remain 'huber'")
+        alpha = float(merged.get("alpha", 0.9))
+        if not 0.0 < alpha < 1.0:
+            raise ValueError("Huber alpha must be in (0, 1)")
+        return lgb.LGBMRegressor(**merged)
+    raise ValueError("model_kind must be 'binary', 'lambdarank', or 'huber'")
 
 
 def _lightgbm_validation_data(model: Any, features: Any, targets: Any) -> dict[str, Any]:
@@ -1011,6 +1029,70 @@ def train_ranker(
     return model
 
 
+def train_huber_regressor(
+    frame: Any,
+    *,
+    feature_columns: Sequence[str],
+    target_column: str,
+    train_split: Any = "train",
+    model_validation_split: Any = "model_validation",
+    race_id_column: str = "race_id",
+    split_column: str = "split",
+    params: Mapping[str, Any] | None = None,
+    early_stopping_rounds: int | None = 50,
+) -> Any:
+    """Fit the preregistered continuous-performance Huber model.
+
+    Missing performance targets are excluded from model fitting only.  Callers
+    retain the complete race choice sets when scoring calibration/evaluation.
+    """
+
+    validate_prediction_feature_columns(feature_columns)
+    training_role = _frame_split_mask(frame, split_column, train_split)
+    validation_role = _frame_split_mask(frame, split_column, model_validation_split)
+    try:
+        training_target = frame[target_column].astype(float)
+        validation_target = frame[target_column].astype(float)
+    except (KeyError, TypeError, ValueError) as exc:
+        raise ValueError(f"frame is missing numeric target column {target_column!r}") from exc
+    training_mask = training_role & training_target.map(isfinite)
+    validation_mask = validation_role & validation_target.map(isfinite)
+    if int(training_mask.sum()) == 0:
+        raise ValueError("Huber train split has no finite performance targets")
+    if int(validation_mask.sum()) == 0:
+        raise ValueError("Huber validation split has no finite performance targets")
+    training_ids = _frame_masked_column(frame, training_mask, race_id_column)
+    validation_ids = _frame_masked_column(frame, validation_mask, race_id_column)
+    validate_grouped_rows(training_ids)
+    validate_grouped_rows(validation_ids)
+    training_features = _frame_masked_features(frame, training_mask, feature_columns)
+    validation_features = _frame_masked_features(frame, validation_mask, feature_columns)
+    training_values = [
+        float(value) for value in _frame_masked_column(frame, training_mask, target_column)
+    ]
+    validation_values = [
+        float(value) for value in _frame_masked_column(frame, validation_mask, target_column)
+    ]
+    model = build_lightgbm_estimator("huber", params=params)
+    fit_options: dict[str, Any] = {
+        "sample_weight": race_balanced_weights(training_ids),
+        "feature_name": list(feature_columns),
+        "eval_sample_weight": [race_balanced_weights(validation_ids)],
+        "eval_metric": "huber",
+        **_lightgbm_validation_data(model, validation_features, validation_values),
+    }
+    if early_stopping_rounds is not None:
+        if early_stopping_rounds < 1:
+            raise ValueError("early_stopping_rounds must be positive or None")
+        import lightgbm as lgb  # type: ignore[import-not-found]
+
+        fit_options["callbacks"] = [
+            lgb.early_stopping(early_stopping_rounds, verbose=False)
+        ]
+    model.fit(training_features, training_values, **fit_options)
+    return model
+
+
 def predict(
     model: Any,
     frame: Any,
@@ -1018,7 +1100,7 @@ def predict(
     feature_columns: Sequence[str],
     model_kind: str,
 ) -> list[float]:
-    """Predict raw binary probabilities or raw LambdaRank scores."""
+    """Predict raw binary probabilities, ranking scores, or Huber utilities."""
 
     validate_prediction_feature_columns(feature_columns)
     features = _frame_feature_matrix(frame, feature_columns)
@@ -1027,7 +1109,9 @@ def predict(
         return [float(row[1]) for row in rows]
     if model_kind == "lambdarank":
         return [float(value) for value in model.predict(features)]
-    raise ValueError("model_kind must be 'binary' or 'lambdarank'")
+    if model_kind == "huber":
+        return [float(value) for value in model.predict(features)]
+    raise ValueError("model_kind must be 'binary', 'lambdarank', or 'huber'")
 
 
 def fit_temperature(
