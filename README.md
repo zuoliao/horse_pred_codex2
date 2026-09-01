@@ -2,7 +2,7 @@
 
 JRA中央競馬を主対象とする、競馬予測・馬券購入判断支援システムの研究開発リポジトリです。
 
-> **現在の段階:** `Phase 5B: EDA-guided representation / objective research`。Phase 5A、S1、S3 Condition-adjusted performance targetは完了した。S3は両feature scope・両評価pathでrejectedとなり、正式controlはBinary PV-01 254特徴、LambdaRank lean 253特徴のまま維持する。S2を次候補として推奨するが、人間レビューまで実行しない。
+> **現在の段階:** `Phase 5B: EDA-guided representation / objective research`。Phase 5A、S1、S3 Condition-adjusted performance targetは完了した。S3は両feature scope・両評価pathでrejectedとなり、正式controlはBinary PV-01 254特徴、LambdaRank lean 253特徴のまま維持する。人間がS2 Supervised race-wise probabilityを次研究として選択し、現在は事前登録・検証中である。
 > **最終更新:** 2026-09-01 (JST)
 
 S1ではhistorical performance residualを入力へ足す価値が支持されましたが、同じperformance概念を唯一の教師へ置き換えたS3 Huberは2020～2022の全3年で悪化しました。Binary対応比較はLog Loss `-.09299`、NDCG@3 `-.02235`、LambdaRank対応比較は`-.08481` / `-.02225`で、各95% date-block区間も全て悪化側でした。2023～2025、final odds、市場情報は使用していません。
@@ -634,7 +634,7 @@ Phase 8: 自動予測処理・Web UI
 | PACE-04 | 完了・未採用 | 遷移数補正した前進・後退履歴を1列追加。Binary/Rankともinconclusive。PACE派生探索を終了 |
 | SPEED-01 | rolling両family採択・2024 Binary支持 | 過去日だけの条件別期待勝ち時計と各馬時計の差を90日履歴1列化。rolling LLはBinary `+.00769 [+.00457,+.01078]`、Rank `+.00823 [+.00523,+.01128]`。2024はBinary支持、Rank方向一致 |
 | Phase 5A EDA | 完了 | pre-2023の全workstreamとPIT/statistics/domain reviewを完了。production変更なし |
-| Phase 5B | S1/S3完了・レビュー待ち | S1 performance featureはsupported。S3 continuous-target Huberは両scope・全3年でrejected。S2を次候補として推奨するが未実行 |
+| Phase 5B | S2実行中 | S1 performance featureはsupported。S3 continuous-target Huberは両scope・全3年でrejected。S2でone-race one-choice-set objectiveを事前登録後に検証する |
 | Phase 5B controls | 固定 | BinaryはPV-01 254列、LambdaRankはlean 253列。LambdaRank PV-01 254列版は全point改善だがinterval inconclusiveのprospective candidateに限定 |
 | LIVE-DATA | 基盤完了・ユーザー保留 | 公式JV-Link限定のschema/append-only archiveを実装。公式transportがWindowsのみで現環境がMacのため、実収集は後日に延期 |
 | LambdaRank教師 | 開発維持 | 従来の`1着=3, 2着=2, 3着=1, その他=0`を維持。2・3着を統合して上位半数へ教師を広げたGR-001は2022でLog Loss/Brierを有意に悪化させreject |
@@ -644,10 +644,10 @@ Phase 8: 自動予測処理・Web UI
 
 ## 15. 次の作業
 
-Phase 5A、S1、S3は完了しました。S3結果を受け、現在は人間レビュー待ちです。
+Phase 5A、S1、S3は完了しました。S3結果を受け、人間がS2を次研究として選択しました。
 
 1. `EDA-S03-PERFORMANCE-TARGET`（completed / rejected）: continuous targetはmatched Binary/LambdaRank controlを明確に下回った。
-2. `EDA-S02-RACEWISE-CHOICE`（recommended_next / queued）: one-winner choice structureをobjectiveで直接扱う。人間の選択まで実行しない。
+2. `EDA-S02-RACEWISE-CHOICE`（current / preregistration）: one-winner choice structureをobjectiveで直接扱う。Linear Conditional Logitを透明な第一段階とし、非線形utilityは事前登録したcapacity gateを満たす場合だけ独立段階で検討する。
 
 S1の詳細は[実験結論](docs/experiments/s1_two_axis_race_value_20260901.md)、S3は[実験結論](docs/experiments/s3_condition_adjusted_performance_target_20260901.md)と[machine-readable summary](experiments/s3_condition_adjusted_performance_target_20260901/summary.json)を参照してください。
 

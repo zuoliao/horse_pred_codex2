@@ -2,13 +2,13 @@
 
 ## Operating Rule
 
-The active phase is `Phase 5B: EDA-guided representation / objective research`. Phase 5A, S1, and S3 Condition-adjusted performance target are complete. S3 was rejected. Stop for human review; do not run S2 or any feature/target follow-up automatically.
+The active phase is `Phase 5B: EDA-guided representation / objective research`. Phase 5A, S1, and S3 Condition-adjusted performance target are complete. S3 was rejected. The human selected S2 Supervised race-wise probability as the current experiment. After S2, stop for human review; do not run another model or feature/target follow-up automatically.
 
 S1 and S3 used no 2023/2024/2025 rows or market information. Preserve this firewall for any follow-up selection work. Never commit raw data, cache, models, runner predictions, or recoverable runner-level views.
 
 ## Current Goal
 
-Wait for the human to select the next hypothesis. Recommend S2 supervised race-wise probability. Do not tune S3 variants on the same rolling evidence.
+Preregister and execute S2 supervised race-wise probability on the frozen rolling evidence. Separate objective and S1-performance effects using matched arms. Do not tune S3 variants on the same rolling evidence.
 
 ## Current State
 
@@ -21,7 +21,7 @@ Wait for the human to select the next hypothesis. Recommend S2 supervised race-w
 - New-horse race exclusion is not supported. Race-class debut and `0_observed_history` are distinct.
 - The EDA does not establish production metric, ROI, or profit improvement.
 - S1 performance is `supported`; standalone field quality is `inconclusive`; joint C3 is `supported`. Field quality conditional on performance is Binary weak but LambdaRank rejected, so two independent axes are not established.
-- S3 is `completed / rejected`; S2 is `recommended_next / queued` and was not executed.
+- S3 is `completed / rejected`; S2 is `current / preregistration`, explicitly selected by the human.
 - S1 controls: Binary PV-01 254 features; LambdaRank lean 253 features. LambdaRank PV-01 254 is point-improved but interval-inconclusive and prospective-only.
 - Formal controls remain unchanged pending human review. Binary C1/C3 and LambdaRank C1/C3 are rolling candidates, not final-holdout winners.
 - S3 matched Huber to the Binary 254- and LambdaRank 253-feature scopes. Both probability and ranking paths were rejected; all five primary metrics worsened in 2020, 2021, and 2022.
@@ -82,10 +82,10 @@ S3 completed 12 fits over evaluation years 2020–2022. Its manifest verified al
 
 ## Next Tasks
 
-1. Human reviews the completed S3 negative result and selects the next hypothesis.
-2. Recommended if selected: preregister S2 supervised race-wise probability on the same controls/folds; do not combine it with S3 or feature changes.
+1. Preregister S2 and compare Binary control, Binary + S1 performance, Linear Conditional Logit control, and Linear Conditional Logit + S1 performance on the same controls/folds.
+2. Treat nonlinear utility as a separate capacity stage only if a metric-blind preregistered gate says the linear model cannot fairly test the objective.
 3. Keep S3 target variants, Top3 multi-task, A1 transition reliability, A2 connection compression, and A3 last3F relative deferred.
-4. Preserve the 2024/2025 and market firewall for selection work.
+4. Preserve the 2024/2025 and market firewall; conclude S2 and stop for human review.
 
 ## Useful Commands
 
@@ -111,4 +111,4 @@ git status --short --branch
 
 ## Handoff Notes
 
-S1 found that condition-adjusted historical performance is useful as prior-race input context. S3 found that replacing winner/ranking supervision with a single Huber performance target is materially worse across both feature scopes. Keep those conclusions separate: do not undo S1, and do not tune S3 variants post hoc. S2 is the recommended next hypothesis but remains unauthorized until the human selects it.
+S1 found that condition-adjusted historical performance is useful as prior-race input context. S3 found that replacing winner/ranking supervision with a single Huber performance target is materially worse across both feature scopes. Keep those conclusions separate: do not undo S1, and do not tune S3 variants post hoc. S2 is now authorized and current; no post-S2 model is authorized.
