@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "diagnostic_id": "phase5c_historical_final_market_oracle_20260901",
+  "phase": "Phase 5C: program audit and prospective validation pivot",
+  "status": "preregistered_before_result",
+  "purpose": "one non-selective descriptive check for market-nonredundant information in the frozen fundamental score",
+  "selection_or_adoption_use": false,
+  "profit_or_roi_use": false,
+  "inputs": {
+    "fundamental_predictions": "artifacts/speed_01_2024_binary_candidate/predictions_2024.csv.gz",
+    "fundamental_predictions_sha256": "cb3b624ba5b552d23dd1f2b8b3a255cad71f098773e5badd51e84866b22476bd",
+    "fundamental_probability_column": "prob_binary_logit_softmax_temperature_2023",
+    "fundamental_feature_count": 256,
+    "fundamental_feature_columns_sha256": "3b6104ec33f6bf2b02b64685bf3ebf6bb828f14683c262e922e696da43bb4940",
+    "fundamental_model_sha256": "f35d2ebe978156fafa43c96c552fdab8fc8512f14fe78956eb70d31d01bcf0a8",
+    "market_oracle": "artifacts/mvp_baseline_20260830_corrected/final_market_oracle.csv.gz",
+    "market_oracle_sha256": "27f3157c6c0a0761e344cb455a17cba7d0400fd4364b9038d5d0675d662b22a0",
+    "market_probability": "normalize 1/final_win_odds within complete race",
+    "join_keys": ["race_id", "horse_id"]
+  },
+  "population": {
+    "year": 2024,
+    "prediction_split": "development",
+    "require_complete_common_choice_set": true,
+    "require_finite_final_odds_at_least_one": true,
+    "require_at_least_one_official_winner": true,
+    "dead_heat_rule": "split one unit of winner target mass equally",
+    "population_may_not_be_selected_by_metric": true
+  },
+  "methods": {
+    "fundamental_only": "use frozen calibrated fundamental probability unchanged",
+    "final_market_only": "normalized inverse final odds",
+    "combined_fixed_50_50_log": "normalize exp(0.5*log(p_fundamental)+0.5*log(p_market)) within race"
+  },
+  "metrics": {
+    "proper_scores": ["race_log_loss", "race_brier"],
+    "calibration": "race-balanced 10 fixed bins and ECE",
+    "uncertainty": {
+      "method": "paired circular moving date-block bootstrap",
+      "block_length_dates": 4,
+      "resamples": 10000,
+      "seed": 20240830,
+      "confidence_level": 0.95,
+      "contrasts": ["market_minus_fundamental", "market_minus_combined"]
+    }
+  },
+  "prohibited": [
+    "blend-weight search",
+    "calibration refit",
+    "feature or model selection",
+    "odds-band selection",
+    "bet threshold or staking",
+    "ROI or profit claim",
+    "2025 rescue analysis",
+    "automatic follow-up experiment"
+  ],
+  "interpretation": {
+    "combined_better_than_market": "descriptive evidence that the frozen score may contain market-nonredundant information under post-event final odds",
+    "combined_not_better_than_market": "no descriptive evidence from this fixed mapping; not proof that cutoff-market combination cannot work",
+    "always": "not an executable cutoff result and not an adoption decision"
+  }
+}
