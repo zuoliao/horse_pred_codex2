@@ -1,0 +1,1228 @@
+{
+  "bootstrap": {
+    "block_length_dates": 4,
+    "confidence_level": 0.95,
+    "evaluation_years": [
+      2020,
+      2021,
+      2022
+    ],
+    "n_resamples": 10000,
+    "paired": {
+      "binary_C1_vs_C0": {
+        "ndcg_at_3": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 0.9453,
+          "lower": -0.0005845083713718973,
+          "upper": 0.005495104692793714
+        },
+        "race_brier": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 0.9999,
+          "lower": 0.001102453394178324,
+          "upper": 0.0036582704412013
+        },
+        "race_log_loss": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 1.0,
+          "lower": 0.0036638517547383804,
+          "upper": 0.01141340915406398
+        },
+        "top_1_winner_mass": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 0.9114,
+          "lower": -0.001916932601977312,
+          "upper": 0.009741808642868062
+        },
+        "winner_reciprocal_rank": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 0.9329,
+          "lower": -0.0008085609110311608,
+          "upper": 0.006046931584171255
+        }
+      },
+      "binary_C2_vs_C0": {
+        "ndcg_at_3": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 0.3565,
+          "lower": -0.003041403489827965,
+          "upper": 0.0020738741471600687
+        },
+        "race_brier": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 0.5808,
+          "lower": -0.0008296641173299782,
+          "upper": 0.001022896011784202
+        },
+        "race_log_loss": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 0.3659,
+          "lower": -0.0034410729985804517,
+          "upper": 0.002409082729695588
+        },
+        "top_1_winner_mass": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 0.5852,
+          "lower": -0.004317716132554939,
+          "upper": 0.005319133063010231
+        },
+        "winner_reciprocal_rank": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 0.3782,
+          "lower": -0.003417643048433848,
+          "upper": 0.0025654204915775652
+        }
+      },
+      "binary_C3_vs_C0": {
+        "ndcg_at_3": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 0.9954,
+          "lower": 0.0008357926721108633,
+          "upper": 0.006371931146496468
+        },
+        "race_brier": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 1.0,
+          "lower": 0.0014649936604582497,
+          "upper": 0.003830486868851307
+        },
+        "race_log_loss": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 1.0,
+          "lower": 0.004823955698021988,
+          "upper": 0.011914277959748998
+        },
+        "top_1_winner_mass": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 0.9852,
+          "lower": 0.000619510972929553,
+          "upper": 0.011746028911576665
+        },
+        "winner_reciprocal_rank": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 0.9918,
+          "lower": 0.0007269228296711784,
+          "upper": 0.007015677150534732
+        }
+      },
+      "binary_C3_vs_C1": {
+        "ndcg_at_3": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 0.8453,
+          "lower": -0.001036720283511809,
+          "upper": 0.003346681910066657
+        },
+        "race_brier": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 0.7279,
+          "lower": -0.0005750663730713949,
+          "upper": 0.0011696988547226662
+        },
+        "race_log_loss": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 0.7289,
+          "lower": -0.0018374019729355815,
+          "upper": 0.0035031526489816556
+        },
+        "top_1_winner_mass": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 0.8429,
+          "lower": -0.002150973490383712,
+          "upper": 0.006474709892264489
+        },
+        "winner_reciprocal_rank": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 0.8328,
+          "lower": -0.001205059743022564,
+          "upper": 0.003682209176062787
+        }
+      },
+      "binary_C3_vs_C2": {
+        "ndcg_at_3": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 0.9964,
+          "lower": 0.0011363858906531688,
+          "upper": 0.00705551890826161
+        },
+        "race_brier": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 1.0,
+          "lower": 0.001459464041932704,
+          "upper": 0.0036668156596139172
+        },
+        "race_log_loss": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 1.0,
+          "lower": 0.005516491409714808,
+          "upper": 0.012330098422224333
+        },
+        "top_1_winner_mass": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 0.984,
+          "lower": 0.000579078633774868,
+          "upper": 0.010772589842873687
+        },
+        "winner_reciprocal_rank": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 0.9952,
+          "lower": 0.0011492920887535435,
+          "upper": 0.007539379077584763
+        }
+      },
+      "lambdarank_C1_vs_C0": {
+        "ndcg_at_3": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 0.9725,
+          "lower": -6.28191802251746e-05,
+          "upper": 0.005010300750285592
+        },
+        "race_brier": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 1.0,
+          "lower": 0.0017804113812423586,
+          "upper": 0.0038518600780743564
+        },
+        "race_log_loss": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 1.0,
+          "lower": 0.005450898675239003,
+          "upper": 0.01210941572392955
+        },
+        "top_1_winner_mass": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 0.6179,
+          "lower": -0.004494808787512751,
+          "upper": 0.006044646912762936
+        },
+        "winner_reciprocal_rank": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 0.6656,
+          "lower": -0.002400051104039714,
+          "upper": 0.0037853118488713686
+        }
+      },
+      "lambdarank_C2_vs_C0": {
+        "ndcg_at_3": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 0.6042,
+          "lower": -0.0022927668790945193,
+          "upper": 0.002904229197249147
+        },
+        "race_brier": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 0.1086,
+          "lower": -0.0012660249627481936,
+          "upper": 0.00028359009443852613
+        },
+        "race_log_loss": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 0.023,
+          "lower": -0.005189653868882016,
+          "upper": -6.681792148223228e-05
+        },
+        "top_1_winner_mass": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 0.29,
+          "lower": -0.006381861771808152,
+          "upper": 0.003432740817179412
+        },
+        "winner_reciprocal_rank": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 0.2732,
+          "lower": -0.0038758145200815746,
+          "upper": 0.0019099406003299955
+        }
+      },
+      "lambdarank_C3_vs_C0": {
+        "ndcg_at_3": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 0.9259,
+          "lower": -0.0007414066497315831,
+          "upper": 0.005377878115833332
+        },
+        "race_brier": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 1.0,
+          "lower": 0.0013653435713975649,
+          "upper": 0.003615791981647595
+        },
+        "race_log_loss": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 0.9982,
+          "lower": 0.0016529466124544322,
+          "upper": 0.009300109355983877
+        },
+        "top_1_winner_mass": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 0.9531,
+          "lower": -0.0007406868589394238,
+          "upper": 0.009649544731745688
+        },
+        "winner_reciprocal_rank": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 0.9405,
+          "lower": -0.0006543314787795973,
+          "upper": 0.0060371778261311985
+        }
+      },
+      "lambdarank_C3_vs_C1": {
+        "ndcg_at_3": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 0.4238,
+          "lower": -0.002338803938935857,
+          "upper": 0.0019051667168418606
+        },
+        "race_brier": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 0.2085,
+          "lower": -0.0010953267913990316,
+          "upper": 0.0004675923009519633
+        },
+        "race_log_loss": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 0.007,
+          "lower": -0.005948814431257409,
+          "upper": -0.0006049031552505809
+        },
+        "top_1_winner_mass": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 0.9583,
+          "lower": -0.0005055886078495452,
+          "upper": 0.007915715364893135
+        },
+        "winner_reciprocal_rank": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 0.9577,
+          "lower": -0.0003050486919230113,
+          "upper": 0.004288342910406602
+        }
+      },
+      "lambdarank_C3_vs_C2": {
+        "ndcg_at_3": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 0.9097,
+          "lower": -0.0009091877399823372,
+          "upper": 0.004828339664895778
+        },
+        "race_brier": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 1.0,
+          "lower": 0.0018655734450426537,
+          "upper": 0.004061447352315883
+        },
+        "race_log_loss": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 1.0,
+          "lower": 0.004591767108175893,
+          "upper": 0.011558663875410234
+        },
+        "top_1_winner_mass": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 0.9835,
+          "lower": 0.000467733134909495,
+          "upper": 0.011402018658150524
+        },
+        "winner_reciprocal_rank": {
+          "direction": "positive_is_candidate_improvement",
+          "fraction_positive": 0.9869,
+          "lower": 0.00036632047849822374,
+          "upper": 0.00683013369148444
+        }
+      }
+    },
+    "scheme": "moving_date_block_within_year_then_year_macro",
+    "seed": 20240830
+  },
+  "year_summary": {
+    "comparisons": {
+      "binary_C1_vs_C0": {
+        "candidate": "binary_C1",
+        "candidate_arm": "C1",
+        "family": "binary",
+        "id": "binary_C1_vs_C0",
+        "metrics": {
+          "ndcg_at_3": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 2,
+            "worsened_years": 1,
+            "year_macro_improvement": 0.0024651919313610957
+          },
+          "race_brier": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 3,
+            "worsened_years": 0,
+            "year_macro_improvement": 0.0023873193969609816
+          },
+          "race_log_loss": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 3,
+            "worsened_years": 0,
+            "year_macro_improvement": 0.007554649095048216
+          },
+          "top_1_winner_mass": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 3,
+            "worsened_years": 0,
+            "year_macro_improvement": 0.00398647290794905
+          },
+          "winner_reciprocal_rank": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 3,
+            "worsened_years": 0,
+            "year_macro_improvement": 0.002645111524919123
+          }
+        },
+        "per_year_improvement": {
+          "2020": {
+            "ndcg_at_3": 0.005473758091250336,
+            "race_brier": 0.0025603535945531997,
+            "race_log_loss": 0.007621962439832153,
+            "top_1_winner_mass": 0.004554020100502487,
+            "winner_reciprocal_rank": 0.004052630524835343
+          },
+          "2021": {
+            "ndcg_at_3": -2.9991555911712542e-05,
+            "race_brier": 0.0009004171285337259,
+            "race_log_loss": 0.0032818103784184594,
+            "top_1_winner_mass": 0.004886506935687263,
+            "winner_reciprocal_rank": 0.0010939276150498944
+          },
+          "2022": {
+            "ndcg_at_3": 0.0019518092587446634,
+            "race_brier": 0.003701187467796019,
+            "race_log_loss": 0.011760174466894036,
+            "top_1_winner_mass": 0.0025188916876573986,
+            "winner_reciprocal_rank": 0.002788776434872131
+          }
+        },
+        "reference": "binary_C0",
+        "reference_arm": "C0"
+      },
+      "binary_C2_vs_C0": {
+        "candidate": "binary_C2",
+        "candidate_arm": "C2",
+        "family": "binary",
+        "id": "binary_C2_vs_C0",
+        "metrics": {
+          "ndcg_at_3": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 1,
+            "worsened_years": 2,
+            "year_macro_improvement": -0.0004804219802826415
+          },
+          "race_brier": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 2,
+            "worsened_years": 1,
+            "year_macro_improvement": 9.975749771340414e-05
+          },
+          "race_log_loss": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 1,
+            "worsened_years": 2,
+            "year_macro_improvement": -0.0005102911808768281
+          },
+          "top_1_winner_mass": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 1,
+            "worsened_years": 1,
+            "year_macro_improvement": 0.0005258269067067167
+          },
+          "winner_reciprocal_rank": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 0,
+            "worsened_years": 3,
+            "year_macro_improvement": -0.0004617235739211578
+          }
+        },
+        "per_year_improvement": {
+          "2020": {
+            "ndcg_at_3": 0.0015203411676483758,
+            "race_brier": 0.0005086024039155923,
+            "race_log_loss": -0.00047813967823806536,
+            "top_1_winner_mass": -0.0003140703517587884,
+            "winner_reciprocal_rank": -0.00031485243621287573
+          },
+          "2021": {
+            "ndcg_at_3": -0.002191142050499195,
+            "race_brier": -0.0008789769141575032,
+            "race_log_loss": -0.0038966871260779357,
+            "top_1_winner_mass": 0.0018915510718789386,
+            "winner_reciprocal_rank": -0.0002916348110510447
+          },
+          "2022": {
+            "ndcg_at_3": -0.0007704650579971051,
+            "race_brier": 0.0006696470033821234,
+            "race_log_loss": 0.0028439532616855168,
+            "top_1_winner_mass": 0.0,
+            "winner_reciprocal_rank": -0.000778683474499553
+          }
+        },
+        "reference": "binary_C0",
+        "reference_arm": "C0"
+      },
+      "binary_C3_vs_C0": {
+        "candidate": "binary_C3",
+        "candidate_arm": "C3",
+        "family": "binary",
+        "id": "binary_C3_vs_C0",
+        "metrics": {
+          "ndcg_at_3": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 3,
+            "worsened_years": 0,
+            "year_macro_improvement": 0.0036222851104902865
+          },
+          "race_brier": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 3,
+            "worsened_years": 0,
+            "year_macro_improvement": 0.0026687661427874745
+          },
+          "race_log_loss": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 3,
+            "worsened_years": 0,
+            "year_macro_improvement": 0.008378859558717386
+          },
+          "top_1_winner_mass": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 3,
+            "worsened_years": 0,
+            "year_macro_improvement": 0.006195851850875196
+          },
+          "winner_reciprocal_rank": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 3,
+            "worsened_years": 0,
+            "year_macro_improvement": 0.003863274662403863
+          }
+        },
+        "per_year_improvement": {
+          "2020": {
+            "ndcg_at_3": 0.0031218037849589098,
+            "race_brier": 0.0032644109669194288,
+            "race_log_loss": 0.008825124663677908,
+            "top_1_winner_mass": 0.0009422110552763652,
+            "winner_reciprocal_rank": 0.0015616322476912359
+          },
+          "2021": {
+            "ndcg_at_3": 0.0009014581060520221,
+            "race_brier": 0.0013260522076592451,
+            "race_log_loss": 0.004846107727046078,
+            "top_1_winner_mass": 0.010403530895334134,
+            "winner_reciprocal_rank": 0.003842782637706932
+          },
+          "2022": {
+            "ndcg_at_3": 0.0068435934404599275,
+            "race_brier": 0.00341583525378375,
+            "race_log_loss": 0.011465346285428168,
+            "top_1_winner_mass": 0.00724181360201509,
+            "winner_reciprocal_rank": 0.006185409101813422
+          }
+        },
+        "reference": "binary_C0",
+        "reference_arm": "C0"
+      },
+      "binary_C3_vs_C1": {
+        "candidate": "binary_C3",
+        "candidate_arm": "C3",
+        "family": "binary",
+        "id": "binary_C3_vs_C1",
+        "metrics": {
+          "ndcg_at_3": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 2,
+            "worsened_years": 1,
+            "year_macro_improvement": 0.001157093179129191
+          },
+          "race_brier": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 2,
+            "worsened_years": 1,
+            "year_macro_improvement": 0.00028144674582649315
+          },
+          "race_log_loss": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 2,
+            "worsened_years": 1,
+            "year_macro_improvement": 0.0008242104636691691
+          },
+          "top_1_winner_mass": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 2,
+            "worsened_years": 1,
+            "year_macro_improvement": 0.002209378942926147
+          },
+          "winner_reciprocal_rank": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 2,
+            "worsened_years": 1,
+            "year_macro_improvement": 0.0012181631374847401
+          }
+        },
+        "per_year_improvement": {
+          "2020": {
+            "ndcg_at_3": -0.002351954306291426,
+            "race_brier": 0.0007040573723662291,
+            "race_log_loss": 0.001203162223845755,
+            "top_1_winner_mass": -0.003611809045226122,
+            "winner_reciprocal_rank": -0.0024909982771441075
+          },
+          "2021": {
+            "ndcg_at_3": 0.0009314496619637347,
+            "race_brier": 0.00042563507912551923,
+            "race_log_loss": 0.001564297348627619,
+            "top_1_winner_mass": 0.005517023959646872,
+            "winner_reciprocal_rank": 0.0027488550226570374
+          },
+          "2022": {
+            "ndcg_at_3": 0.004891784181715264,
+            "race_brier": -0.00028535221401226885,
+            "race_log_loss": -0.0002948281814658671,
+            "top_1_winner_mass": 0.004722921914357692,
+            "winner_reciprocal_rank": 0.0033966326669412905
+          }
+        },
+        "reference": "binary_C1",
+        "reference_arm": "C1"
+      },
+      "binary_C3_vs_C2": {
+        "candidate": "binary_C3",
+        "candidate_arm": "C3",
+        "family": "binary",
+        "id": "binary_C3_vs_C2",
+        "metrics": {
+          "ndcg_at_3": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 3,
+            "worsened_years": 0,
+            "year_macro_improvement": 0.004102707090772928
+          },
+          "race_brier": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 3,
+            "worsened_years": 0,
+            "year_macro_improvement": 0.0025690086450740703
+          },
+          "race_log_loss": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 3,
+            "worsened_years": 0,
+            "year_macro_improvement": 0.008889150739594212
+          },
+          "top_1_winner_mass": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 3,
+            "worsened_years": 0,
+            "year_macro_improvement": 0.00567002494416848
+          },
+          "winner_reciprocal_rank": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 3,
+            "worsened_years": 0,
+            "year_macro_improvement": 0.004324998236325021
+          }
+        },
+        "per_year_improvement": {
+          "2020": {
+            "ndcg_at_3": 0.001601462617310534,
+            "race_brier": 0.0027558085630038365,
+            "race_log_loss": 0.009303264341915973,
+            "top_1_winner_mass": 0.0012562814070351536,
+            "winner_reciprocal_rank": 0.0018764846839041116
+          },
+          "2021": {
+            "ndcg_at_3": 0.0030926001565512173,
+            "race_brier": 0.0022050291218167484,
+            "race_log_loss": 0.008742794853124014,
+            "top_1_winner_mass": 0.008511979823455196,
+            "winner_reciprocal_rank": 0.0041344174487579766
+          },
+          "2022": {
+            "ndcg_at_3": 0.0076140584984570325,
+            "race_brier": 0.0027461882504016266,
+            "race_log_loss": 0.008621393023742652,
+            "top_1_winner_mass": 0.00724181360201509,
+            "winner_reciprocal_rank": 0.006964092576312975
+          }
+        },
+        "reference": "binary_C2",
+        "reference_arm": "C2"
+      },
+      "lambdarank_C1_vs_C0": {
+        "candidate": "lambdarank_C1",
+        "candidate_arm": "C1",
+        "family": "lambdarank",
+        "id": "lambdarank_C1_vs_C0",
+        "metrics": {
+          "ndcg_at_3": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 3,
+            "worsened_years": 0,
+            "year_macro_improvement": 0.0024703681407077425
+          },
+          "race_brier": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 3,
+            "worsened_years": 0,
+            "year_macro_improvement": 0.0027906472878554966
+          },
+          "race_log_loss": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 3,
+            "worsened_years": 0,
+            "year_macro_improvement": 0.008723867931741403
+          },
+          "top_1_winner_mass": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 1,
+            "worsened_years": 2,
+            "year_macro_improvement": 0.000795807635486164
+          },
+          "winner_reciprocal_rank": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 1,
+            "worsened_years": 2,
+            "year_macro_improvement": 0.00065606098762692
+          }
+        },
+        "per_year_improvement": {
+          "2020": {
+            "ndcg_at_3": 0.0009977254730545448,
+            "race_brier": 0.003085859663689128,
+            "race_log_loss": 0.009336426184396451,
+            "top_1_winner_mass": -0.004711055276381937,
+            "winner_reciprocal_rank": -0.00260168929688398
+          },
+          "2021": {
+            "ndcg_at_3": 0.005768212328520705,
+            "race_brier": 0.003607991630725005,
+            "race_log_loss": 0.014214940391524156,
+            "top_1_winner_mass": 0.011191677175283743,
+            "winner_reciprocal_rank": 0.00659826910081901
+          },
+          "2022": {
+            "ndcg_at_3": 0.0006451666205479767,
+            "race_brier": 0.0016780905691523573,
+            "race_log_loss": 0.0026202372193036005,
+            "top_1_winner_mass": -0.004093198992443314,
+            "winner_reciprocal_rank": -0.0020283968410542697
+          }
+        },
+        "reference": "lambdarank_C0",
+        "reference_arm": "C0"
+      },
+      "lambdarank_C2_vs_C0": {
+        "candidate": "lambdarank_C2",
+        "candidate_arm": "C2",
+        "family": "lambdarank",
+        "id": "lambdarank_C2_vs_C0",
+        "metrics": {
+          "ndcg_at_3": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 2,
+            "worsened_years": 1,
+            "year_macro_improvement": 0.0003316118170624642
+          },
+          "race_brier": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 1,
+            "worsened_years": 2,
+            "year_macro_improvement": -0.00048059474671376573
+          },
+          "race_log_loss": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 1,
+            "worsened_years": 2,
+            "year_macro_improvement": -0.0025839748972125895
+          },
+          "top_1_winner_mass": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 2,
+            "worsened_years": 1,
+            "year_macro_improvement": -0.00140830123657996
+          },
+          "winner_reciprocal_rank": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 2,
+            "worsened_years": 1,
+            "year_macro_improvement": -0.0009158832064540082
+          }
+        },
+        "per_year_improvement": {
+          "2020": {
+            "ndcg_at_3": -0.0036905593623760002,
+            "race_brier": -0.002130876899020917,
+            "race_log_loss": -0.01428050052996932,
+            "top_1_winner_mass": -0.008636934673366847,
+            "winner_reciprocal_rank": -0.007143296094485829
+          },
+          "2021": {
+            "ndcg_at_3": 0.0038261378582724603,
+            "race_brier": 0.0012393659811174018,
+            "race_log_loss": 0.008483734724345382,
+            "top_1_winner_mass": 0.0031525851197982124,
+            "winner_reciprocal_rank": 0.003184773664754781
+          },
+          "2022": {
+            "ndcg_at_3": 0.0008592569552909324,
+            "race_brier": -0.000550273322237782,
+            "race_log_loss": -0.0019551588860138303,
+            "top_1_winner_mass": 0.0012594458438287548,
+            "winner_reciprocal_rank": 0.0012108728103690236
+          }
+        },
+        "reference": "lambdarank_C0",
+        "reference_arm": "C0"
+      },
+      "lambdarank_C3_vs_C0": {
+        "candidate": "lambdarank_C3",
+        "candidate_arm": "C3",
+        "family": "lambdarank",
+        "id": "lambdarank_C3_vs_C0",
+        "metrics": {
+          "ndcg_at_3": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 2,
+            "worsened_years": 1,
+            "year_macro_improvement": 0.0022670595121770387
+          },
+          "race_brier": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 3,
+            "worsened_years": 0,
+            "year_macro_improvement": 0.0024665275319410984
+          },
+          "race_log_loss": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 2,
+            "worsened_years": 1,
+            "year_macro_improvement": 0.005430026204212475
+          },
+          "top_1_winner_mass": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 2,
+            "worsened_years": 1,
+            "year_macro_improvement": 0.004470248154149037
+          },
+          "winner_reciprocal_rank": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 2,
+            "worsened_years": 1,
+            "year_macro_improvement": 0.0026725563030120894
+          }
+        },
+        "per_year_improvement": {
+          "2020": {
+            "ndcg_at_3": -0.0005329439071510289,
+            "race_brier": 0.0014101833579346357,
+            "race_log_loss": 0.0027557717815773763,
+            "top_1_winner_mass": -0.005339195979899514,
+            "winner_reciprocal_rank": -0.0023713681166848133
+          },
+          "2021": {
+            "ndcg_at_3": 0.00287265251137786,
+            "race_brier": 0.0010941892649408702,
+            "race_log_loss": -0.001465566523190187,
+            "top_1_winner_mass": 0.012452711223203017,
+            "winner_reciprocal_rank": 0.005654264556376798
+          },
+          "2022": {
+            "ndcg_at_3": 0.004461469932304285,
+            "race_brier": 0.004895209972947789,
+            "race_log_loss": 0.014999873354250237,
+            "top_1_winner_mass": 0.0062972292191436074,
+            "winner_reciprocal_rank": 0.004734772469344284
+          }
+        },
+        "reference": "lambdarank_C0",
+        "reference_arm": "C0"
+      },
+      "lambdarank_C3_vs_C1": {
+        "candidate": "lambdarank_C3",
+        "candidate_arm": "C3",
+        "family": "lambdarank",
+        "id": "lambdarank_C3_vs_C1",
+        "metrics": {
+          "ndcg_at_3": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 1,
+            "worsened_years": 2,
+            "year_macro_improvement": -0.0002033086285307036
+          },
+          "race_brier": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 1,
+            "worsened_years": 2,
+            "year_macro_improvement": -0.00032411975591439823
+          },
+          "race_log_loss": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 1,
+            "worsened_years": 2,
+            "year_macro_improvement": -0.003293841727528927
+          },
+          "top_1_winner_mass": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 2,
+            "worsened_years": 1,
+            "year_macro_improvement": 0.003674440518662873
+          },
+          "winner_reciprocal_rank": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 2,
+            "worsened_years": 1,
+            "year_macro_improvement": 0.0020164953153851695
+          }
+        },
+        "per_year_improvement": {
+          "2020": {
+            "ndcg_at_3": -0.0015306693802055737,
+            "race_brier": -0.0016756763057544921,
+            "race_log_loss": -0.006580654402819075,
+            "top_1_winner_mass": -0.0006281407035175768,
+            "winner_reciprocal_rank": 0.0002303211801991667
+          },
+          "2021": {
+            "ndcg_at_3": -0.0028955598171428454,
+            "race_brier": -0.0025138023657841346,
+            "race_log_loss": -0.015680506914714343,
+            "top_1_winner_mass": 0.0012610340479192739,
+            "winner_reciprocal_rank": -0.0009440045444422118
+          },
+          "2022": {
+            "ndcg_at_3": 0.0038163033117563083,
+            "race_brier": 0.003217119403795432,
+            "race_log_loss": 0.012379636134946637,
+            "top_1_winner_mass": 0.010390428211586922,
+            "winner_reciprocal_rank": 0.0067631693103985535
+          }
+        },
+        "reference": "lambdarank_C1",
+        "reference_arm": "C1"
+      },
+      "lambdarank_C3_vs_C2": {
+        "candidate": "lambdarank_C3",
+        "candidate_arm": "C3",
+        "family": "lambdarank",
+        "id": "lambdarank_C3_vs_C2",
+        "metrics": {
+          "ndcg_at_3": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 2,
+            "worsened_years": 1,
+            "year_macro_improvement": 0.0019354476951145745
+          },
+          "race_brier": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 2,
+            "worsened_years": 1,
+            "year_macro_improvement": 0.0029471222786548643
+          },
+          "race_log_loss": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 2,
+            "worsened_years": 1,
+            "year_macro_improvement": 0.008014001101425064
+          },
+          "top_1_winner_mass": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 3,
+            "worsened_years": 0,
+            "year_macro_improvement": 0.005878549390728997
+          },
+          "winner_reciprocal_rank": {
+            "direction": "positive_is_candidate_improvement",
+            "improved_years": 3,
+            "worsened_years": 0,
+            "year_macro_improvement": 0.003588439509466098
+          }
+        },
+        "per_year_improvement": {
+          "2020": {
+            "ndcg_at_3": 0.0031576154552249713,
+            "race_brier": 0.0035410602569555527,
+            "race_log_loss": 0.017036272311546696,
+            "top_1_winner_mass": 0.0032977386934673336,
+            "winner_reciprocal_rank": 0.004771927977801016
+          },
+          "2021": {
+            "ndcg_at_3": -0.0009534853468946003,
+            "race_brier": -0.0001451767161765316,
+            "race_log_loss": -0.009949301247535569,
+            "top_1_winner_mass": 0.009300126103404804,
+            "winner_reciprocal_rank": 0.002469490891622017
+          },
+          "2022": {
+            "ndcg_at_3": 0.0036022129770133526,
+            "race_brier": 0.005445483295185571,
+            "race_log_loss": 0.016955032240264067,
+            "top_1_winner_mass": 0.005037783375314853,
+            "winner_reciprocal_rank": 0.0035238996589752603
+          }
+        },
+        "reference": "lambdarank_C2",
+        "reference_arm": "C2"
+      }
+    },
+    "methods": {
+      "binary_C0": {
+        "per_year": {
+          "2020": {
+            "ndcg_at_3": 0.4633448964278547,
+            "race_brier": 0.8472853628975102,
+            "race_log_loss": 2.176358192041558,
+            "top_1_winner_mass": 0.2653894472361809,
+            "winner_reciprocal_rank": 0.46742129336858496
+          },
+          "2021": {
+            "ndcg_at_3": 0.46557645118035806,
+            "race_brier": 0.8424572447142358,
+            "race_log_loss": 2.1575707020890165,
+            "top_1_winner_mass": 0.2615069356872636,
+            "winner_reciprocal_rank": 0.46638556610044263
+          },
+          "2022": {
+            "ndcg_at_3": 0.4774530654883781,
+            "race_brier": 0.8390908182085498,
+            "race_log_loss": 2.1153607689277623,
+            "top_1_winner_mass": 0.26904911838790935,
+            "winner_reciprocal_rank": 0.47524468560756344
+          }
+        },
+        "year_macro": {
+          "ndcg_at_3": 0.468791471032197,
+          "race_brier": 0.842944475273432,
+          "race_log_loss": 2.1497632210194455,
+          "top_1_winner_mass": 0.2653151671037846,
+          "winner_reciprocal_rank": 0.4696838483588637
+        }
+      },
+      "binary_C1": {
+        "per_year": {
+          "2020": {
+            "ndcg_at_3": 0.46881865451910504,
+            "race_brier": 0.844725009302957,
+            "race_log_loss": 2.1687362296017256,
+            "top_1_winner_mass": 0.2699434673366834,
+            "winner_reciprocal_rank": 0.4714739238934203
+          },
+          "2021": {
+            "ndcg_at_3": 0.46554645962444635,
+            "race_brier": 0.841556827585702,
+            "race_log_loss": 2.154288891710598,
+            "top_1_winner_mass": 0.26639344262295084,
+            "winner_reciprocal_rank": 0.4674794937154925
+          },
+          "2022": {
+            "ndcg_at_3": 0.4794048747471228,
+            "race_brier": 0.8353896307407538,
+            "race_log_loss": 2.1036005944608682,
+            "top_1_winner_mass": 0.27156801007556675,
+            "winner_reciprocal_rank": 0.4780334620424356
+          }
+        },
+        "year_macro": {
+          "ndcg_at_3": 0.471256662963558,
+          "race_brier": 0.840557155876471,
+          "race_log_loss": 2.1422085719243973,
+          "top_1_winner_mass": 0.2693016400117337,
+          "winner_reciprocal_rank": 0.47232895988378276
+        }
+      },
+      "binary_C2": {
+        "per_year": {
+          "2020": {
+            "ndcg_at_3": 0.4648652375955031,
+            "race_brier": 0.8467767604935946,
+            "race_log_loss": 2.176836331719796,
+            "top_1_winner_mass": 0.2650753768844221,
+            "winner_reciprocal_rank": 0.4671064409323721
+          },
+          "2021": {
+            "ndcg_at_3": 0.46338530912985887,
+            "race_brier": 0.8433362216283933,
+            "race_log_loss": 2.1614673892150944,
+            "top_1_winner_mass": 0.2633984867591425,
+            "winner_reciprocal_rank": 0.4660939312893916
+          },
+          "2022": {
+            "ndcg_at_3": 0.476682600430381,
+            "race_brier": 0.8384211712051677,
+            "race_log_loss": 2.1125168156660767,
+            "top_1_winner_mass": 0.26904911838790935,
+            "winner_reciprocal_rank": 0.4744660021330639
+          }
+        },
+        "year_macro": {
+          "ndcg_at_3": 0.4683110490519143,
+          "race_brier": 0.8428447177757185,
+          "race_log_loss": 2.150273512200322,
+          "top_1_winner_mass": 0.2658409940104913,
+          "winner_reciprocal_rank": 0.46922212478494246
+        }
+      },
+      "binary_C3": {
+        "per_year": {
+          "2020": {
+            "ndcg_at_3": 0.4664667002128136,
+            "race_brier": 0.8440209519305908,
+            "race_log_loss": 2.16753306737788,
+            "top_1_winner_mass": 0.2663316582914573,
+            "winner_reciprocal_rank": 0.4689829256162762
+          },
+          "2021": {
+            "ndcg_at_3": 0.4664779092864101,
+            "race_brier": 0.8411311925065765,
+            "race_log_loss": 2.1527245943619704,
+            "top_1_winner_mass": 0.2719104665825977,
+            "winner_reciprocal_rank": 0.47022834873814956
+          },
+          "2022": {
+            "ndcg_at_3": 0.48429665892883805,
+            "race_brier": 0.835674982954766,
+            "race_log_loss": 2.103895422642334,
+            "top_1_winner_mass": 0.27629093198992444,
+            "winner_reciprocal_rank": 0.48143009470937687
+          }
+        },
+        "year_macro": {
+          "ndcg_at_3": 0.47241375614268727,
+          "race_brier": 0.8402757091306444,
+          "race_log_loss": 2.141384361460728,
+          "top_1_winner_mass": 0.27151101895465984,
+          "winner_reciprocal_rank": 0.47354712302126756
+        }
+      },
+      "lambdarank_C0": {
+        "per_year": {
+          "2020": {
+            "ndcg_at_3": 0.46609247838541124,
+            "race_brier": 0.848357681627263,
+            "race_log_loss": 2.18322597455196,
+            "top_1_winner_mass": 0.2649183417085427,
+            "winner_reciprocal_rank": 0.46673654661756936
+          },
+          "2021": {
+            "ndcg_at_3": 0.4567080647401273,
+            "race_brier": 0.846888663876169,
+            "race_log_loss": 2.182333959997505,
+            "top_1_winner_mass": 0.2563051702395965,
+            "winner_reciprocal_rank": 0.4601459678579792
+          },
+          "2022": {
+            "ndcg_at_3": 0.4744598090328073,
+            "race_brier": 0.8417830522971758,
+            "race_log_loss": 2.1256278783763904,
+            "top_1_winner_mass": 0.2611775818639798,
+            "winner_reciprocal_rank": 0.4706794884376748
+          }
+        },
+        "year_macro": {
+          "ndcg_at_3": 0.4657534507194487,
+          "race_brier": 0.845676465933536,
+          "race_log_loss": 2.163729270975285,
+          "top_1_winner_mass": 0.2608003646040397,
+          "winner_reciprocal_rank": 0.4658540009710745
+        }
+      },
+      "lambdarank_C1": {
+        "per_year": {
+          "2020": {
+            "ndcg_at_3": 0.4670902038584658,
+            "race_brier": 0.8452718219635739,
+            "race_log_loss": 2.1738895483675638,
+            "top_1_winner_mass": 0.2602072864321608,
+            "winner_reciprocal_rank": 0.4641348573206854
+          },
+          "2021": {
+            "ndcg_at_3": 0.462476277068648,
+            "race_brier": 0.843280672245444,
+            "race_log_loss": 2.1681190196059807,
+            "top_1_winner_mass": 0.2674968474148802,
+            "winner_reciprocal_rank": 0.4667442369587982
+          },
+          "2022": {
+            "ndcg_at_3": 0.4751049756533553,
+            "race_brier": 0.8401049617280234,
+            "race_log_loss": 2.123007641157087,
+            "top_1_winner_mass": 0.2570843828715365,
+            "winner_reciprocal_rank": 0.46865109159662055
+          }
+        },
+        "year_macro": {
+          "ndcg_at_3": 0.46822381886015635,
+          "race_brier": 0.8428858186456804,
+          "race_log_loss": 2.155005403043544,
+          "top_1_winner_mass": 0.26159617223952586,
+          "winner_reciprocal_rank": 0.4665100619587014
+        }
+      },
+      "lambdarank_C2": {
+        "per_year": {
+          "2020": {
+            "ndcg_at_3": 0.46240191902303523,
+            "race_brier": 0.8504885585262839,
+            "race_log_loss": 2.1975064750819295,
+            "top_1_winner_mass": 0.2562814070351759,
+            "winner_reciprocal_rank": 0.45959325052308353
+          },
+          "2021": {
+            "ndcg_at_3": 0.4605342025983998,
+            "race_brier": 0.8456492978950516,
+            "race_log_loss": 2.1738502252731595,
+            "top_1_winner_mass": 0.2594577553593947,
+            "winner_reciprocal_rank": 0.46333074152273396
+          },
+          "2022": {
+            "ndcg_at_3": 0.47531906598809825,
+            "race_brier": 0.8423333256194135,
+            "race_log_loss": 2.1275830372624043,
+            "top_1_winner_mass": 0.2624370277078086,
+            "winner_reciprocal_rank": 0.47189036124804384
+          }
+        },
+        "year_macro": {
+          "ndcg_at_3": 0.4660850625365111,
+          "race_brier": 0.8461570606802497,
+          "race_log_loss": 2.1663132458724976,
+          "top_1_winner_mass": 0.25939206336745974,
+          "winner_reciprocal_rank": 0.4649381177646204
+        }
+      },
+      "lambdarank_C3": {
+        "per_year": {
+          "2020": {
+            "ndcg_at_3": 0.4655595344782602,
+            "race_brier": 0.8469474982693284,
+            "race_log_loss": 2.180470202770383,
+            "top_1_winner_mass": 0.2595791457286432,
+            "winner_reciprocal_rank": 0.46436517850088455
+          },
+          "2021": {
+            "ndcg_at_3": 0.4595807172515052,
+            "race_brier": 0.8457944746112281,
+            "race_log_loss": 2.183799526520695,
+            "top_1_winner_mass": 0.2687578814627995,
+            "winner_reciprocal_rank": 0.465800232414356
+          },
+          "2022": {
+            "ndcg_at_3": 0.4789212789651116,
+            "race_brier": 0.836887842324228,
+            "race_log_loss": 2.11062800502214,
+            "top_1_winner_mass": 0.26747481108312343,
+            "winner_reciprocal_rank": 0.4754142609070191
+          }
+        },
+        "year_macro": {
+          "ndcg_at_3": 0.46802051023162566,
+          "race_brier": 0.8432099384015949,
+          "race_log_loss": 2.1582992447710727,
+          "top_1_winner_mass": 0.2652706127581887,
+          "winner_reciprocal_rank": 0.4685265572740865
+        }
+      }
+    }
+  }
+}

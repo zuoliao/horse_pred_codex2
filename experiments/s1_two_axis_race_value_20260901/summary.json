@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "experiment_id": "s1_two_axis_race_value_20260901",
+  "phase": "Phase 5B: EDA-guided representation / objective research",
+  "status": "completed",
+  "code_commit_at_run": "582124b603fff540b7f082138ddcbde33cb37095",
+  "raw_sha256": "270923ce73c4441e64173f242a8719de7d1e9b205508140463ca547ef7b1ca87",
+  "scope": {
+    "evaluation_years": [2020, 2021, 2022],
+    "rows_used_2023": 0,
+    "rows_used_2024": 0,
+    "rows_used_2025": 0,
+    "odds_used": false,
+    "final_market_used_for_selection": false,
+    "direct_entity_id_feature_count": 0,
+    "fit_count": 24,
+    "artifact_hashes_verified": true,
+    "artifact_file_count": 38
+  },
+  "controls": {
+    "binary": "PV-01 254-feature control",
+    "lambdarank": "lean 253-feature conservative control"
+  },
+  "axis_decisions": {
+    "performance_axis": "supported",
+    "field_quality_axis": "inconclusive",
+    "joint_two_axis": "supported",
+    "performance_given_field_quality": "supported",
+    "field_quality_given_performance": "weakly_supported"
+  },
+  "primary_comparisons": {
+    "binary_C1_vs_C0": {
+      "race_log_loss_improvement": 0.007554649095048216,
+      "race_log_loss_improved_years": 3,
+      "race_log_loss_ci95": [0.0036638517547383804, 0.01141340915406398],
+      "race_brier_improvement": 0.0023873193969609816,
+      "ndcg_at_3_improvement": 0.0024651919313610957,
+      "top_1_improvement": 0.00398647290794905,
+      "probability_path": "supported",
+      "ranking_path": "weakly_supported"
+    },
+    "lambdarank_C1_vs_C0": {
+      "race_log_loss_improvement": 0.008723867931741403,
+      "race_log_loss_improved_years": 3,
+      "race_log_loss_ci95": [0.005450898675239003, 0.01210941572392955],
+      "race_brier_improvement": 0.0027906472878554966,
+      "ndcg_at_3_improvement": 0.0024703681407077425,
+      "top_1_improvement": 0.000795807635486164,
+      "probability_path": "supported",
+      "ranking_path": "weakly_supported"
+    },
+    "binary_C2_vs_C0": {
+      "race_log_loss_improvement": -0.0005102911808768281,
+      "ndcg_at_3_improvement": -0.0004804219802826415,
+      "probability_path": "rejected",
+      "ranking_path": "rejected"
+    },
+    "lambdarank_C2_vs_C0": {
+      "race_log_loss_improvement": -0.0025839748972125895,
+      "ndcg_at_3_improvement": 0.0003316118170624642,
+      "probability_path": "rejected",
+      "ranking_path": "inconclusive"
+    },
+    "binary_C3_vs_C0": {
+      "race_log_loss_improvement": 0.008378859558717386,
+      "race_log_loss_ci95": [0.004823955698021988, 0.011914277959748998],
+      "ndcg_at_3_improvement": 0.0036222851104902865,
+      "ndcg_at_3_ci95": [0.0008357926721108633, 0.006371931146496468],
+      "top_1_improvement": 0.006195851850875196,
+      "probability_path": "supported",
+      "ranking_path": "supported"
+    },
+    "lambdarank_C3_vs_C0": {
+      "race_log_loss_improvement": 0.005430026204212475,
+      "race_log_loss_ci95": [0.0016529466124544322, 0.009300109355983877],
+      "ndcg_at_3_improvement": 0.0022670595121770387,
+      "top_1_improvement": 0.004470248154149037,
+      "probability_path": "supported",
+      "ranking_path": "weakly_supported"
+    }
+  },
+  "interpretation": {
+    "case": "A_performance_supported",
+    "control_change": false,
+    "reason": "The historical performance residual replicated strongly. Field quality alone did not; its conditional increment was weak in Binary and negative in LambdaRank. C3 therefore does not establish two independently useful axes.",
+    "recommended_next": "S3 condition-adjusted performance target",
+    "S2_executed": false,
+    "S3_executed": false
+  },
+  "slice_summary": {
+    "performance_strengths": [
+      "Binary probability metrics improved in every preregistered slice.",
+      "Binary large-field and surface-switch ranking improved.",
+      "LambdaRank surface-switch ranking and probability improved."
+    ],
+    "performance_weaknesses": [
+      "Binary NDCG declined for history-0/new-race and large-distance-change slices.",
+      "LambdaRank open-or-graded Top-1 and probability declined.",
+      "LambdaRank large-distance-change ranking and Log Loss declined."
+    ],
+    "note": "Slice results are descriptive guardrails and were not used to alter the feature definition."
+  },
+  "limitations": [
+    "2020-2022 are rolling screening years, not untouched final holdouts.",
+    "The block interval conditions on fitted models and does not include refit uncertainty.",
+    "The field-quality feature is highly redundant with existing historical field-strength summaries.",
+    "No claim is made about 2024, 2025, final-market performance, ROI, or betting profitability."
+  ]
+}

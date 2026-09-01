@@ -1,0 +1,59 @@
+{
+  "S2_executed": false,
+  "S3_executed": false,
+  "axes": {
+    "field_quality_axis": "inconclusive",
+    "joint_two_axis": "supported",
+    "performance_axis": "supported"
+  },
+  "case": "A_performance_supported",
+  "comparisons": {
+    "binary_C1_vs_C0": {
+      "probability_path": "supported",
+      "ranking_path": "weakly_supported"
+    },
+    "binary_C2_vs_C0": {
+      "probability_path": "rejected",
+      "ranking_path": "rejected"
+    },
+    "binary_C3_vs_C0": {
+      "probability_path": "supported",
+      "ranking_path": "supported"
+    },
+    "binary_C3_vs_C1": {
+      "probability_path": "weakly_supported",
+      "ranking_path": "weakly_supported"
+    },
+    "binary_C3_vs_C2": {
+      "probability_path": "supported",
+      "ranking_path": "supported"
+    },
+    "lambdarank_C1_vs_C0": {
+      "probability_path": "supported",
+      "ranking_path": "weakly_supported"
+    },
+    "lambdarank_C2_vs_C0": {
+      "probability_path": "rejected",
+      "ranking_path": "inconclusive"
+    },
+    "lambdarank_C3_vs_C0": {
+      "probability_path": "supported",
+      "ranking_path": "weakly_supported"
+    },
+    "lambdarank_C3_vs_C1": {
+      "probability_path": "rejected",
+      "ranking_path": "rejected"
+    },
+    "lambdarank_C3_vs_C2": {
+      "probability_path": "supported",
+      "ranking_path": "weakly_supported"
+    }
+  },
+  "conditional_increment": {
+    "field_quality_given_performance": "weakly_supported",
+    "performance_given_field_quality": "supported"
+  },
+  "next_recommendation": "S3_condition_adjusted_performance_target",
+  "production_control_change": false,
+  "schema_version": 1
+}

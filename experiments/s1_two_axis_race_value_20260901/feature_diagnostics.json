@@ -1,0 +1,1220 @@
+{
+  "distribution": {
+    "roll_2020::race_value__decay_90d__field_quality": {
+      "coverage": 0.8845920893242745,
+      "mean": 1514.3194580078125,
+      "missing": 43825,
+      "nonmissing": 335915,
+      "quantiles": {
+        "0.01": 1495.430419921875,
+        "0.1": 1498.669921875,
+        "0.5": 1506.08447265625,
+        "0.9": 1543.573486328125,
+        "0.99": 1583.6768798828125
+      },
+      "runner_count": 379740,
+      "std": 19.80457305908203
+    },
+    "roll_2020::race_value__decay_90d__performance_residual": {
+      "coverage": 0.865160372886712,
+      "mean": -0.7055796384811401,
+      "missing": 51204,
+      "nonmissing": 328536,
+      "quantiles": {
+        "0.01": -3.06953763961792,
+        "0.1": -1.631343960762024,
+        "0.5": -0.6162528991699219,
+        "0.9": 0.11803828179836273,
+        "0.99": 0.7830070853233337
+      },
+      "runner_count": 379740,
+      "std": 0.753489077091217
+    },
+    "roll_2021::race_value__decay_90d__field_quality": {
+      "coverage": 0.8861913840547724,
+      "mean": 1514.6971435546875,
+      "missing": 48472,
+      "nonmissing": 377436,
+      "quantiles": {
+        "0.01": 1495.48095703125,
+        "0.1": 1498.6953125,
+        "0.5": 1506.4267578125,
+        "0.9": 1544.564208984375,
+        "0.99": 1584.110107421875
+      },
+      "runner_count": 425908,
+      "std": 20.165212631225586
+    },
+    "roll_2021::race_value__decay_90d__performance_residual": {
+      "coverage": 0.8688214356152033,
+      "mean": -0.7001519799232483,
+      "missing": 55870,
+      "nonmissing": 370038,
+      "quantiles": {
+        "0.01": -3.0657551288604736,
+        "0.1": -1.6275714635849,
+        "0.5": -0.6120066046714783,
+        "0.9": 0.1272311508655548,
+        "0.99": 0.8030698299407959
+      },
+      "runner_count": 425908,
+      "std": 0.7555859088897705
+    },
+    "roll_2022::race_value__decay_90d__field_quality": {
+      "coverage": 0.8872352653019677,
+      "mean": 1514.930908203125,
+      "missing": 53175,
+      "nonmissing": 418382,
+      "quantiles": {
+        "0.01": 1495.4854736328125,
+        "0.1": 1498.6844482421875,
+        "0.5": 1506.704833984375,
+        "0.9": 1545.1337890625,
+        "0.99": 1584.2413330078125
+      },
+      "runner_count": 471557,
+      "std": 20.390357971191406
+    },
+    "roll_2022::race_value__decay_90d__performance_residual": {
+      "coverage": 0.8715298468689894,
+      "mean": -0.6906585097312927,
+      "missing": 60581,
+      "nonmissing": 410976,
+      "quantiles": {
+        "0.01": -3.0491912364959717,
+        "0.1": -1.6174070835113525,
+        "0.5": -0.6038438081741333,
+        "0.9": 0.1369084119796753,
+        "0.99": 0.8145291209220886
+      },
+      "runner_count": 471557,
+      "std": 0.755079984664917
+    }
+  },
+  "fold_feature_audits": {
+    "roll_2020": {
+      "condition_fit": {
+        "calibration_rows_used": 0,
+        "clean_race_count": 16584,
+        "early_stopping_rows_used": 0,
+        "evaluation_rows_used": 0,
+        "fit_race_count_by_year": {
+          "2013": 3323,
+          "2014": 3323,
+          "2015": 3323,
+          "2016": 3324,
+          "2017": 3291
+        },
+        "frozen_beta": [
+          59.75724020949081,
+          0.4436776823470131,
+          2.7052554483862106,
+          0.534514782217517,
+          2.7744212719985355,
+          0.006399077575422513,
+          3.3099652972684654,
+          -0.2941262881317786,
+          2.535515608224952,
+          2.0804293667427447,
+          0.2181115083303539,
+          2.933575890962274,
+          0.4405682015211751,
+          2.742943722165906,
+          -0.1932894561964219,
+          2.206759503942743,
+          -0.03317606606131869,
+          2.1984647979063072,
+          -0.4126323386196718,
+          2.5688289301272746,
+          -3.1559298956522372,
+          -2.5348431329692747,
+          -1.7287728581150514,
+          -0.746545921552115,
+          -0.7922636157343986,
+          -0.01768432011488206,
+          0.2919404968740335,
+          1.2523901082013191,
+          1.4885009226318453,
+          1.5451795553941798,
+          1.964707595348003,
+          2.1008759282764435,
+          1.9669099699934223,
+          2.4833493471163663,
+          2.8531141615443074,
+          2.951187250389159,
+          3.472585195022151,
+          2.048525121157881,
+          3.555131972982083,
+          3.560118363168132,
+          0.12994101983740475,
+          -0.06240558064968567,
+          -0.20018798726392012,
+          0.6914018365973397,
+          -0.36462397810803626,
+          -0.6432613981751143,
+          -0.9351365938123355,
+          -1.0681346151493138,
+          0.20318802190531593,
+          -0.4404702495847133,
+          -0.21654628353453445
+        ],
+        "frozen_beta_sha256": "cd98c920e513cafb4f437fb80ef08603b424d97d59c79ba3bf6ab50fd2a4c15c",
+        "max_fit_date": "2017-12-28",
+        "scope": "2013 warm-up plus fold train; frozen after train end"
+      },
+      "field_quality": {
+        "definition": "full-starter arithmetic mean of pre-race global Elo",
+        "future_opponent_results_used": false,
+        "leave_one_out_used": false,
+        "max_abs_error_vs_recalculated_full_starter_mean": 6.821210263296962e-13,
+        "race_constant_violations": 0
+      },
+      "fold": {
+        "calibration_year": 2019,
+        "early_stopping_year": 2018,
+        "evaluation_year": 2020,
+        "id": "roll_2020",
+        "train_end_year": 2017,
+        "train_start_year": 2014
+      },
+      "history": {
+        "field_quality_missing": 43825,
+        "field_quality_nonmissing": 335915,
+        "performance_missing": 51204,
+        "performance_nonmissing": 328536,
+        "same_date_emit_before_update": true
+      },
+      "schema_version": 1,
+      "scope": {
+        "direct_entity_id_features": 0,
+        "input_max_date": "2022-12-28",
+        "input_rows": 488715,
+        "odds_used": false,
+        "processed_max_date": "2020-12-27",
+        "processed_min_date": "2013-01-05",
+        "processed_races": 26580,
+        "processed_starter_rows": 379740,
+        "rows_after_fold_evaluation_ignored": 95041,
+        "rows_used_2023_plus": 0
+      },
+      "spec": {
+        "condition_effects": [
+          "course_surface",
+          "exact_distance",
+          "going",
+          "class_tier",
+          "age_restriction"
+        ],
+        "decay_half_life_days": 90,
+        "field_quality_column": "race_value__decay_90d__field_quality",
+        "field_size_included": false,
+        "min_prior_clean_races": 510,
+        "observation_clip": 5.0,
+        "performance_column": "race_value__decay_90d__performance_residual",
+        "rating": {
+          "family": "pairwise_elo",
+          "initial_rating": 1500.0,
+          "k": 24.0,
+          "pairwise_actual": "ordinal",
+          "scale": 400.0
+        },
+        "ridge_alpha": 1.0,
+        "season_included": false
+      },
+      "transformation_hash": "5991aeb098e24f22a3329880b8ab63e685799a5d058eaf5f23885629df8ba673"
+    },
+    "roll_2021": {
+      "condition_fit": {
+        "calibration_rows_used": 0,
+        "clean_race_count": 19911,
+        "early_stopping_rows_used": 0,
+        "evaluation_rows_used": 0,
+        "fit_race_count_by_year": {
+          "2013": 3323,
+          "2014": 3323,
+          "2015": 3323,
+          "2016": 3324,
+          "2017": 3291,
+          "2018": 3327
+        },
+        "frozen_beta": [
+          59.71338110597909,
+          0.5722293186657885,
+          2.7498327560204547,
+          0.5392583276172186,
+          2.8832878527963177,
+          0.09641443581730483,
+          3.3734845263313766,
+          -0.24322164242004335,
+          2.581660829298733,
+          2.1598885972451334,
+          0.2456074740773101,
+          2.9645007387614095,
+          0.4303189912560763,
+          2.7566108694877784,
+          -0.09248080658160195,
+          2.3088564052858764,
+          -0.013344318829988206,
+          2.2685417157967063,
+          -0.42052495246966626,
+          2.6426588623992924,
+          -3.1487292219254206,
+          -2.5342274676547882,
+          -1.72734626441241,
+          -0.7425780995499582,
+          -0.7913091803554005,
+          0.010888552724073079,
+          0.289962245361491,
+          1.2538458027475452,
+          1.4633112283558163,
+          1.528680446580463,
+          1.9539132931899115,
+          2.072586419289755,
+          2.1118979140858603,
+          2.4900258677138365,
+          2.866373503684377,
+          2.9281698168158385,
+          3.452275918143284,
+          2.143838936178282,
+          3.6240526194734306,
+          3.67494171780018,
+          0.1424429068561365,
+          -0.08169116319446976,
+          -0.26414158276502525,
+          0.6669888873898405,
+          -0.3645128738357924,
+          -0.6411442537477794,
+          -0.9196214241689279,
+          -1.0752391492651043,
+          0.17546549110123705,
+          -0.4628481015581754,
+          -0.21347324234038373
+        ],
+        "frozen_beta_sha256": "e03ead1223dae9fb40ec997d49bfcca054b7b6947312342f99b8984762fd81f8",
+        "max_fit_date": "2018-12-28",
+        "scope": "2013 warm-up plus fold train; frozen after train end"
+      },
+      "field_quality": {
+        "definition": "full-starter arithmetic mean of pre-race global Elo",
+        "future_opponent_results_used": false,
+        "leave_one_out_used": false,
+        "max_abs_error_vs_recalculated_full_starter_mean": 6.821210263296962e-13,
+        "race_constant_violations": 0
+      },
+      "fold": {
+        "calibration_year": 2020,
+        "early_stopping_year": 2019,
+        "evaluation_year": 2021,
+        "id": "roll_2021",
+        "train_end_year": 2018,
+        "train_start_year": 2014
+      },
+      "history": {
+        "field_quality_missing": 48472,
+        "field_quality_nonmissing": 377436,
+        "performance_missing": 55870,
+        "performance_nonmissing": 370038,
+        "same_date_emit_before_update": true
+      },
+      "schema_version": 1,
+      "scope": {
+        "direct_entity_id_features": 0,
+        "input_max_date": "2022-12-28",
+        "input_rows": 488715,
+        "odds_used": false,
+        "processed_max_date": "2021-12-28",
+        "processed_min_date": "2013-01-05",
+        "processed_races": 29909,
+        "processed_starter_rows": 425908,
+        "rows_after_fold_evaluation_ignored": 47220,
+        "rows_used_2023_plus": 0
+      },
+      "spec": {
+        "condition_effects": [
+          "course_surface",
+          "exact_distance",
+          "going",
+          "class_tier",
+          "age_restriction"
+        ],
+        "decay_half_life_days": 90,
+        "field_quality_column": "race_value__decay_90d__field_quality",
+        "field_size_included": false,
+        "min_prior_clean_races": 510,
+        "observation_clip": 5.0,
+        "performance_column": "race_value__decay_90d__performance_residual",
+        "rating": {
+          "family": "pairwise_elo",
+          "initial_rating": 1500.0,
+          "k": 24.0,
+          "pairwise_actual": "ordinal",
+          "scale": 400.0
+        },
+        "ridge_alpha": 1.0,
+        "season_included": false
+      },
+      "transformation_hash": "059351a726e3a94612eb7261aacfd721fa1a3fe6849fdbf8c702201167063fc2"
+    },
+    "roll_2022": {
+      "condition_fit": {
+        "calibration_rows_used": 0,
+        "clean_race_count": 23232,
+        "early_stopping_rows_used": 0,
+        "evaluation_rows_used": 0,
+        "fit_race_count_by_year": {
+          "2013": 3323,
+          "2014": 3323,
+          "2015": 3323,
+          "2016": 3324,
+          "2017": 3291,
+          "2018": 3327,
+          "2019": 3321
+        },
+        "frozen_beta": [
+          59.6658910411669,
+          0.6128096695135581,
+          2.770543019000048,
+          0.5587966118240975,
+          2.9496223255363123,
+          0.1777753745194932,
+          3.4361343432822116,
+          -0.18239603166166446,
+          2.5904500374984103,
+          2.2125899076937046,
+          0.2462678799817856,
+          2.9989271923327805,
+          0.42449916825971984,
+          2.7791409087018906,
+          -0.029593080593833823,
+          2.3722626843591734,
+          0.0036015187007466254,
+          2.3665502892251506,
+          -0.3321822632903452,
+          2.7431792153475345,
+          -3.1688266150465467,
+          -2.577524038154873,
+          -1.724221178671549,
+          -0.7352030891876311,
+          -0.7937766404290096,
+          0.014060257590119338,
+          0.28317591075384774,
+          1.2596021984088257,
+          1.5009380133933123,
+          1.526422266010448,
+          1.9445344479702455,
+          2.0676721646014347,
+          2.0647868891765753,
+          2.5101056933023798,
+          2.8996338523927836,
+          2.9138980632610134,
+          3.5429030275844964,
+          2.197116161460998,
+          3.6934876309088893,
+          3.8119609445449987,
+          0.14908256261283181,
+          -0.11584320822352533,
+          -0.2550056048341556,
+          0.6584228118158565,
+          -0.3661659076014775,
+          -0.6462398217934957,
+          -0.9325710580732832,
+          -1.0843610422143817,
+          0.16437918878124808,
+          -0.4621024504778278,
+          -0.2147125314569965
+        ],
+        "frozen_beta_sha256": "3fb6000ee01a27f41caff639cc300107a15903483745059b4b84cae61f852b13",
+        "max_fit_date": "2019-12-28",
+        "scope": "2013 warm-up plus fold train; frozen after train end"
+      },
+      "field_quality": {
+        "definition": "full-starter arithmetic mean of pre-race global Elo",
+        "future_opponent_results_used": false,
+        "leave_one_out_used": false,
+        "max_abs_error_vs_recalculated_full_starter_mean": 6.821210263296962e-13,
+        "race_constant_violations": 0
+      },
+      "fold": {
+        "calibration_year": 2021,
+        "early_stopping_year": 2020,
+        "evaluation_year": 2022,
+        "id": "roll_2022",
+        "train_end_year": 2019,
+        "train_start_year": 2014
+      },
+      "history": {
+        "field_quality_missing": 53175,
+        "field_quality_nonmissing": 418382,
+        "performance_missing": 60581,
+        "performance_nonmissing": 410976,
+        "same_date_emit_before_update": true
+      },
+      "schema_version": 1,
+      "scope": {
+        "direct_entity_id_features": 0,
+        "input_max_date": "2022-12-28",
+        "input_rows": 488715,
+        "odds_used": false,
+        "processed_max_date": "2022-12-28",
+        "processed_min_date": "2013-01-05",
+        "processed_races": 33240,
+        "processed_starter_rows": 471557,
+        "rows_after_fold_evaluation_ignored": 0,
+        "rows_used_2023_plus": 0
+      },
+      "spec": {
+        "condition_effects": [
+          "course_surface",
+          "exact_distance",
+          "going",
+          "class_tier",
+          "age_restriction"
+        ],
+        "decay_half_life_days": 90,
+        "field_quality_column": "race_value__decay_90d__field_quality",
+        "field_size_included": false,
+        "min_prior_clean_races": 510,
+        "observation_clip": 5.0,
+        "performance_column": "race_value__decay_90d__performance_residual",
+        "rating": {
+          "family": "pairwise_elo",
+          "initial_rating": 1500.0,
+          "k": 24.0,
+          "pairwise_actual": "ordinal",
+          "scale": 400.0
+        },
+        "ridge_alpha": 1.0,
+        "season_included": false
+      },
+      "transformation_hash": "8dfd05b5f728a05c621d6fe79172877b0e6acc40ed416bcbf81e9d1eaf66d6fe"
+    }
+  },
+  "gain_importance": [
+    {
+      "evaluation_year": 2020,
+      "feature": "race_value__decay_90d__performance_residual",
+      "fold_id": "roll_2020",
+      "importance_gain": 327.46579107642174,
+      "importance_gain_fraction": 0.02296833716874719,
+      "importance_split": 208,
+      "method": "binary_C1"
+    },
+    {
+      "evaluation_year": 2020,
+      "feature": "race_value__decay_90d__field_quality",
+      "fold_id": "roll_2020",
+      "importance_gain": 125.95030510425568,
+      "importance_gain_fraction": 0.008512388350071124,
+      "importance_split": 131,
+      "method": "binary_C2"
+    },
+    {
+      "evaluation_year": 2020,
+      "feature": "race_value__decay_90d__performance_residual",
+      "fold_id": "roll_2020",
+      "importance_gain": 319.95053404569626,
+      "importance_gain_fraction": 0.02395863615239876,
+      "importance_split": 196,
+      "method": "binary_C3"
+    },
+    {
+      "evaluation_year": 2020,
+      "feature": "race_value__decay_90d__field_quality",
+      "fold_id": "roll_2020",
+      "importance_gain": 95.51046881079674,
+      "importance_gain_fraction": 0.007152044855334066,
+      "importance_split": 87,
+      "method": "binary_C3"
+    },
+    {
+      "evaluation_year": 2020,
+      "feature": "race_value__decay_90d__performance_residual",
+      "fold_id": "roll_2020",
+      "importance_gain": 7074.047915458679,
+      "importance_gain_fraction": 0.042159872687865176,
+      "importance_split": 163,
+      "method": "lambdarank_C1"
+    },
+    {
+      "evaluation_year": 2020,
+      "feature": "race_value__decay_90d__field_quality",
+      "fold_id": "roll_2020",
+      "importance_gain": 895.6254930496216,
+      "importance_gain_fraction": 0.006215196233249213,
+      "importance_split": 28,
+      "method": "lambdarank_C2"
+    },
+    {
+      "evaluation_year": 2020,
+      "feature": "race_value__decay_90d__performance_residual",
+      "fold_id": "roll_2020",
+      "importance_gain": 6458.418595314026,
+      "importance_gain_fraction": 0.04167772585075798,
+      "importance_split": 139,
+      "method": "lambdarank_C3"
+    },
+    {
+      "evaluation_year": 2020,
+      "feature": "race_value__decay_90d__field_quality",
+      "fold_id": "roll_2020",
+      "importance_gain": 906.3147010803223,
+      "importance_gain_fraction": 0.005848666370672231,
+      "importance_split": 28,
+      "method": "lambdarank_C3"
+    },
+    {
+      "evaluation_year": 2021,
+      "feature": "race_value__decay_90d__performance_residual",
+      "fold_id": "roll_2021",
+      "importance_gain": 372.0008534491062,
+      "importance_gain_fraction": 0.02423103779741613,
+      "importance_split": 183,
+      "method": "binary_C1"
+    },
+    {
+      "evaluation_year": 2021,
+      "feature": "race_value__decay_90d__field_quality",
+      "fold_id": "roll_2021",
+      "importance_gain": 170.84353771805763,
+      "importance_gain_fraction": 0.010821273224930188,
+      "importance_split": 121,
+      "method": "binary_C2"
+    },
+    {
+      "evaluation_year": 2021,
+      "feature": "race_value__decay_90d__performance_residual",
+      "fold_id": "roll_2021",
+      "importance_gain": 375.86836993694305,
+      "importance_gain_fraction": 0.0238262651628654,
+      "importance_split": 193,
+      "method": "binary_C3"
+    },
+    {
+      "evaluation_year": 2021,
+      "feature": "race_value__decay_90d__field_quality",
+      "fold_id": "roll_2021",
+      "importance_gain": 134.6287872493267,
+      "importance_gain_fraction": 0.008534107789106024,
+      "importance_split": 101,
+      "method": "binary_C3"
+    },
+    {
+      "evaluation_year": 2021,
+      "feature": "race_value__decay_90d__performance_residual",
+      "fold_id": "roll_2021",
+      "importance_gain": 7392.513388633728,
+      "importance_gain_fraction": 0.03970248039796943,
+      "importance_split": 134,
+      "method": "lambdarank_C1"
+    },
+    {
+      "evaluation_year": 2021,
+      "feature": "race_value__decay_90d__field_quality",
+      "fold_id": "roll_2021",
+      "importance_gain": 1311.1870985031128,
+      "importance_gain_fraction": 0.006910338350855247,
+      "importance_split": 52,
+      "method": "lambdarank_C2"
+    },
+    {
+      "evaluation_year": 2021,
+      "feature": "race_value__decay_90d__performance_residual",
+      "fold_id": "roll_2021",
+      "importance_gain": 5922.517583847046,
+      "importance_gain_fraction": 0.03550459671966977,
+      "importance_split": 85,
+      "method": "lambdarank_C3"
+    },
+    {
+      "evaluation_year": 2021,
+      "feature": "race_value__decay_90d__field_quality",
+      "fold_id": "roll_2021",
+      "importance_gain": 833.7058029174805,
+      "importance_gain_fraction": 0.004997940132109548,
+      "importance_split": 18,
+      "method": "lambdarank_C3"
+    },
+    {
+      "evaluation_year": 2022,
+      "feature": "race_value__decay_90d__performance_residual",
+      "fold_id": "roll_2022",
+      "importance_gain": 480.25889879465103,
+      "importance_gain_fraction": 0.023627314882622378,
+      "importance_split": 234,
+      "method": "binary_C1"
+    },
+    {
+      "evaluation_year": 2022,
+      "feature": "race_value__decay_90d__field_quality",
+      "fold_id": "roll_2022",
+      "importance_gain": 239.5170543193817,
+      "importance_gain_fraction": 0.011349280951318774,
+      "importance_split": 193,
+      "method": "binary_C2"
+    },
+    {
+      "evaluation_year": 2022,
+      "feature": "race_value__decay_90d__performance_residual",
+      "fold_id": "roll_2022",
+      "importance_gain": 474.0114396214485,
+      "importance_gain_fraction": 0.02475922298678735,
+      "importance_split": 212,
+      "method": "binary_C3"
+    },
+    {
+      "evaluation_year": 2022,
+      "feature": "race_value__decay_90d__field_quality",
+      "fold_id": "roll_2022",
+      "importance_gain": 153.10790196061134,
+      "importance_gain_fraction": 0.007997344301878788,
+      "importance_split": 111,
+      "method": "binary_C3"
+    },
+    {
+      "evaluation_year": 2022,
+      "feature": "race_value__decay_90d__performance_residual",
+      "fold_id": "roll_2022",
+      "importance_gain": 9477.03740310669,
+      "importance_gain_fraction": 0.04288749978113639,
+      "importance_split": 165,
+      "method": "lambdarank_C1"
+    },
+    {
+      "evaluation_year": 2022,
+      "feature": "race_value__decay_90d__field_quality",
+      "fold_id": "roll_2022",
+      "importance_gain": 2175.392063140869,
+      "importance_gain_fraction": 0.008953684325657468,
+      "importance_split": 73,
+      "method": "lambdarank_C2"
+    },
+    {
+      "evaluation_year": 2022,
+      "feature": "race_value__decay_90d__performance_residual",
+      "fold_id": "roll_2022",
+      "importance_gain": 10476.695432662964,
+      "importance_gain_fraction": 0.04289937223407788,
+      "importance_split": 218,
+      "method": "lambdarank_C3"
+    },
+    {
+      "evaluation_year": 2022,
+      "feature": "race_value__decay_90d__field_quality",
+      "fold_id": "roll_2022",
+      "importance_gain": 1547.4889526367188,
+      "importance_gain_fraction": 0.006336569105589801,
+      "importance_split": 54,
+      "method": "lambdarank_C3"
+    }
+  ],
+  "importance_is_not_acceptance_evidence": true,
+  "race_aware_permutation": [
+    {
+      "evaluation_year": 2020,
+      "feature": "race_value__decay_90d__performance_residual",
+      "fold_id": "roll_2020",
+      "method": "binary_C1",
+      "ndcg_at_3_degradation": 0.008548591160662866,
+      "race_brier_degradation": 0.005409124570984303,
+      "race_log_loss_degradation": 0.020889980126062913,
+      "top_1_winner_mass_degradation": 0.008008793969849215,
+      "winner_reciprocal_rank_degradation": 0.006551180184974248
+    },
+    {
+      "evaluation_year": 2020,
+      "feature": "race_value__decay_90d__field_quality",
+      "fold_id": "roll_2020",
+      "method": "binary_C2",
+      "ndcg_at_3_degradation": 0.0008025291220465913,
+      "race_brier_degradation": 1.3797251455560655e-05,
+      "race_log_loss_degradation": 0.00030081463840314626,
+      "top_1_winner_mass_degradation": 0.0006281407035175768,
+      "winner_reciprocal_rank_degradation": 0.00013342294139662148
+    },
+    {
+      "evaluation_year": 2020,
+      "feature": "race_value__decay_90d__performance_residual",
+      "fold_id": "roll_2020",
+      "method": "binary_C3",
+      "ndcg_at_3_degradation": 0.005137233065904467,
+      "race_brier_degradation": 0.005686928031843785,
+      "race_log_loss_degradation": 0.022185338930281517,
+      "top_1_winner_mass_degradation": 0.00785175879396982,
+      "winner_reciprocal_rank_degradation": 0.005898587512308651
+    },
+    {
+      "evaluation_year": 2020,
+      "feature": "race_value__decay_90d__field_quality",
+      "fold_id": "roll_2020",
+      "method": "binary_C3",
+      "ndcg_at_3_degradation": -0.0005106974011613308,
+      "race_brier_degradation": -0.00013096465042894412,
+      "race_log_loss_degradation": -9.548973049877674e-05,
+      "top_1_winner_mass_degradation": 0.0003140703517587884,
+      "winner_reciprocal_rank_degradation": 0.000569147055484942
+    },
+    {
+      "evaluation_year": 2020,
+      "feature": "race_value__decay_90d__performance_residual",
+      "fold_id": "roll_2020",
+      "method": "lambdarank_C1",
+      "ndcg_at_3_degradation": 0.009536169079861267,
+      "race_brier_degradation": 0.004529694877784873,
+      "race_log_loss_degradation": 0.01851543207937789,
+      "top_1_winner_mass_degradation": 0.005810301507537696,
+      "winner_reciprocal_rank_degradation": 0.006411813734964411
+    },
+    {
+      "evaluation_year": 2020,
+      "feature": "race_value__decay_90d__field_quality",
+      "fold_id": "roll_2020",
+      "method": "lambdarank_C2",
+      "ndcg_at_3_degradation": 0.001303931931785629,
+      "race_brier_degradation": 0.00014095042134598668,
+      "race_log_loss_degradation": 0.0007382724582187805,
+      "top_1_winner_mass_degradation": -0.0003140703517587884,
+      "winner_reciprocal_rank_degradation": 0.00018432938502038754
+    },
+    {
+      "evaluation_year": 2020,
+      "feature": "race_value__decay_90d__performance_residual",
+      "fold_id": "roll_2020",
+      "method": "lambdarank_C3",
+      "ndcg_at_3_degradation": 0.005954674345659883,
+      "race_brier_degradation": 0.004068213631405859,
+      "race_log_loss_degradation": 0.016548134105898615,
+      "top_1_winner_mass_degradation": -0.0010992462311557594,
+      "winner_reciprocal_rank_degradation": 0.0028888821667050757
+    },
+    {
+      "evaluation_year": 2020,
+      "feature": "race_value__decay_90d__field_quality",
+      "fold_id": "roll_2020",
+      "method": "lambdarank_C3",
+      "ndcg_at_3_degradation": 0.0003153115510071136,
+      "race_brier_degradation": 0.00018674930058926176,
+      "race_log_loss_degradation": 0.0009331129334952948,
+      "top_1_winner_mass_degradation": 0.0012562814070351536,
+      "winner_reciprocal_rank_degradation": 0.0008631008159902254
+    },
+    {
+      "evaluation_year": 2021,
+      "feature": "race_value__decay_90d__performance_residual",
+      "fold_id": "roll_2021",
+      "method": "binary_C1",
+      "ndcg_at_3_degradation": 0.011043934033933,
+      "race_brier_degradation": 0.0075853419804564615,
+      "race_log_loss_degradation": 0.026084698281449548,
+      "top_1_winner_mass_degradation": 0.012925598991172793,
+      "winner_reciprocal_rank_degradation": 0.009925161797009252
+    },
+    {
+      "evaluation_year": 2021,
+      "feature": "race_value__decay_90d__field_quality",
+      "fold_id": "roll_2021",
+      "method": "binary_C2",
+      "ndcg_at_3_degradation": 0.002184040924663122,
+      "race_brier_degradation": 0.0006116026852334144,
+      "race_log_loss_degradation": 0.0025029520487525048,
+      "top_1_winner_mass_degradation": 0.005674653215636816,
+      "winner_reciprocal_rank_degradation": 0.0038725797986516874
+    },
+    {
+      "evaluation_year": 2021,
+      "feature": "race_value__decay_90d__performance_residual",
+      "fold_id": "roll_2021",
+      "method": "binary_C3",
+      "ndcg_at_3_degradation": 0.009849962633659726,
+      "race_brier_degradation": 0.007738700544938526,
+      "race_log_loss_degradation": 0.027069883871211342,
+      "top_1_winner_mass_degradation": 0.011034047919293799,
+      "winner_reciprocal_rank_degradation": 0.008466290826186273
+    },
+    {
+      "evaluation_year": 2021,
+      "feature": "race_value__decay_90d__field_quality",
+      "fold_id": "roll_2021",
+      "method": "binary_C3",
+      "ndcg_at_3_degradation": 0.0008944831903043848,
+      "race_brier_degradation": -0.0002583929261639195,
+      "race_log_loss_degradation": -0.00047631462339836617,
+      "top_1_winner_mass_degradation": 0.004728877679697319,
+      "winner_reciprocal_rank_degradation": 0.0015407314942308958
+    },
+    {
+      "evaluation_year": 2021,
+      "feature": "race_value__decay_90d__performance_residual",
+      "fold_id": "roll_2021",
+      "method": "lambdarank_C1",
+      "ndcg_at_3_degradation": 0.007100680752323785,
+      "race_brier_degradation": 0.005802500519934917,
+      "race_log_loss_degradation": 0.023173979229477837,
+      "top_1_winner_mass_degradation": 0.013240857503152625,
+      "winner_reciprocal_rank_degradation": 0.00907999642491708
+    },
+    {
+      "evaluation_year": 2021,
+      "feature": "race_value__decay_90d__field_quality",
+      "fold_id": "roll_2021",
+      "method": "lambdarank_C2",
+      "ndcg_at_3_degradation": -0.00022220956816293436,
+      "race_brier_degradation": 0.00013337365625620823,
+      "race_log_loss_degradation": 0.0014880231238278974,
+      "top_1_winner_mass_degradation": -0.0018915510718789386,
+      "winner_reciprocal_rank_degradation": -0.0007367872949525234
+    },
+    {
+      "evaluation_year": 2021,
+      "feature": "race_value__decay_90d__performance_residual",
+      "fold_id": "roll_2021",
+      "method": "lambdarank_C3",
+      "ndcg_at_3_degradation": 0.0075792785699959064,
+      "race_brier_degradation": 0.004988255526136243,
+      "race_log_loss_degradation": 0.01836314266341832,
+      "top_1_winner_mass_degradation": 0.01907313997477933,
+      "winner_reciprocal_rank_degradation": 0.011244413472317583
+    },
+    {
+      "evaluation_year": 2021,
+      "feature": "race_value__decay_90d__field_quality",
+      "fold_id": "roll_2021",
+      "method": "lambdarank_C3",
+      "ndcg_at_3_degradation": 0.001062039036261897,
+      "race_brier_degradation": 0.0001546394030478293,
+      "race_log_loss_degradation": 0.0009384049510461345,
+      "top_1_winner_mass_degradation": 0.00031525851197983235,
+      "winner_reciprocal_rank_degradation": 0.0005135006159596722
+    },
+    {
+      "evaluation_year": 2022,
+      "feature": "race_value__decay_90d__performance_residual",
+      "fold_id": "roll_2022",
+      "method": "binary_C1",
+      "ndcg_at_3_degradation": 0.007812893095219264,
+      "race_brier_degradation": 0.00905778641475341,
+      "race_log_loss_degradation": 0.02928843691526728,
+      "top_1_winner_mass_degradation": 0.010705289672544083,
+      "winner_reciprocal_rank_degradation": 0.00904273360979907
+    },
+    {
+      "evaluation_year": 2022,
+      "feature": "race_value__decay_90d__field_quality",
+      "fold_id": "roll_2022",
+      "method": "binary_C2",
+      "ndcg_at_3_degradation": 0.0022387922766104462,
+      "race_brier_degradation": 0.0009038936363966465,
+      "race_log_loss_degradation": 0.0024422426935650776,
+      "top_1_winner_mass_degradation": 0.004408060453400531,
+      "winner_reciprocal_rank_degradation": 0.0025766390061100486
+    },
+    {
+      "evaluation_year": 2022,
+      "feature": "race_value__decay_90d__performance_residual",
+      "fold_id": "roll_2022",
+      "method": "binary_C3",
+      "ndcg_at_3_degradation": 0.01437941121858044,
+      "race_brier_degradation": 0.008650846237503895,
+      "race_log_loss_degradation": 0.028843830412883076,
+      "top_1_winner_mass_degradation": 0.01401133501259444,
+      "winner_reciprocal_rank_degradation": 0.012467540942824429
+    },
+    {
+      "evaluation_year": 2022,
+      "feature": "race_value__decay_90d__field_quality",
+      "fold_id": "roll_2022",
+      "method": "binary_C3",
+      "ndcg_at_3_degradation": 0.002157674917393937,
+      "race_brier_degradation": -8.404218821655984e-05,
+      "race_log_loss_degradation": 0.0001310893153418924,
+      "top_1_winner_mass_degradation": 0.0017317380352644962,
+      "winner_reciprocal_rank_degradation": 0.0016201769822676848
+    },
+    {
+      "evaluation_year": 2022,
+      "feature": "race_value__decay_90d__performance_residual",
+      "fold_id": "roll_2022",
+      "method": "lambdarank_C1",
+      "ndcg_at_3_degradation": 0.01131568077663675,
+      "race_brier_degradation": 0.007394399568685928,
+      "race_log_loss_degradation": 0.03001381090459887,
+      "top_1_winner_mass_degradation": 0.004722921914357692,
+      "winner_reciprocal_rank_degradation": 0.007227775635363809
+    },
+    {
+      "evaluation_year": 2022,
+      "feature": "race_value__decay_90d__field_quality",
+      "fold_id": "roll_2022",
+      "method": "lambdarank_C2",
+      "ndcg_at_3_degradation": 0.0020449108259317783,
+      "race_brier_degradation": 0.0003068807492054848,
+      "race_log_loss_degradation": 0.0010881756100040718,
+      "top_1_winner_mass_degradation": 0.00566750629722923,
+      "winner_reciprocal_rank_degradation": 0.002961690300323727
+    },
+    {
+      "evaluation_year": 2022,
+      "feature": "race_value__decay_90d__performance_residual",
+      "fold_id": "roll_2022",
+      "method": "lambdarank_C3",
+      "ndcg_at_3_degradation": 0.008732684284046721,
+      "race_brier_degradation": 0.008680373896501892,
+      "race_log_loss_degradation": 0.034886101867735775,
+      "top_1_winner_mass_degradation": 0.0018891687657430767,
+      "winner_reciprocal_rank_degradation": 0.004970441939113279
+    },
+    {
+      "evaluation_year": 2022,
+      "feature": "race_value__decay_90d__field_quality",
+      "fold_id": "roll_2022",
+      "method": "lambdarank_C3",
+      "ndcg_at_3_degradation": -0.0002998129188116483,
+      "race_brier_degradation": 0.0004523412222443568,
+      "race_log_loss_degradation": 0.001100263385736433,
+      "top_1_winner_mass_degradation": 0.0018891687657430767,
+      "winner_reciprocal_rank_degradation": 0.001399815899186141
+    }
+  ],
+  "schema_version": 1,
+  "shap_dependence_summary": [
+    {
+      "coverage": 0.8958511068205289,
+      "evaluation_year": 2020,
+      "feature": "race_value__decay_90d__performance_residual",
+      "fold_id": "roll_2020",
+      "mean_abs_shap": 0.09266207905997337,
+      "mean_shap": -0.02073418241810481,
+      "method": "binary_C1",
+      "runner_count": 44542
+    },
+    {
+      "coverage": 0.8963450226752279,
+      "evaluation_year": 2020,
+      "feature": "race_value__decay_90d__field_quality",
+      "fold_id": "roll_2020",
+      "mean_abs_shap": 0.04893045939664199,
+      "mean_shap": 0.010844229638804699,
+      "method": "binary_C2",
+      "runner_count": 44542
+    },
+    {
+      "coverage": 0.8958511068205289,
+      "evaluation_year": 2020,
+      "feature": "race_value__decay_90d__performance_residual",
+      "fold_id": "roll_2020",
+      "mean_abs_shap": 0.09410655698870204,
+      "mean_shap": -0.019367085417126527,
+      "method": "binary_C3",
+      "runner_count": 44542
+    },
+    {
+      "coverage": 0.8963450226752279,
+      "evaluation_year": 2020,
+      "feature": "race_value__decay_90d__field_quality",
+      "fold_id": "roll_2020",
+      "mean_abs_shap": 0.04076874422001158,
+      "mean_shap": 0.009113681170229584,
+      "method": "binary_C3",
+      "runner_count": 44542
+    },
+    {
+      "coverage": 0.8958511068205289,
+      "evaluation_year": 2020,
+      "feature": "race_value__decay_90d__performance_residual",
+      "fold_id": "roll_2020",
+      "mean_abs_shap": 0.11572242216378935,
+      "mean_shap": -0.012208424546461259,
+      "method": "lambdarank_C1",
+      "runner_count": 44542
+    },
+    {
+      "coverage": 0.8963450226752279,
+      "evaluation_year": 2020,
+      "feature": "race_value__decay_90d__field_quality",
+      "fold_id": "roll_2020",
+      "mean_abs_shap": 0.009482279713478594,
+      "mean_shap": -0.0014938863165160532,
+      "method": "lambdarank_C2",
+      "runner_count": 44542
+    },
+    {
+      "coverage": 0.8958511068205289,
+      "evaluation_year": 2020,
+      "feature": "race_value__decay_90d__performance_residual",
+      "fold_id": "roll_2020",
+      "mean_abs_shap": 0.10696578093414244,
+      "mean_shap": -0.012631282751308027,
+      "method": "lambdarank_C3",
+      "runner_count": 44542
+    },
+    {
+      "coverage": 0.8963450226752279,
+      "evaluation_year": 2020,
+      "feature": "race_value__decay_90d__field_quality",
+      "fold_id": "roll_2020",
+      "mean_abs_shap": 0.00812585170249398,
+      "mean_shap": -0.0009052994006146502,
+      "method": "lambdarank_C3",
+      "runner_count": 44542
+    },
+    {
+      "coverage": 0.9012853120174402,
+      "evaluation_year": 2021,
+      "feature": "race_value__decay_90d__performance_residual",
+      "fold_id": "roll_2021",
+      "mean_abs_shap": 0.09331779215855618,
+      "mean_shap": -0.000794033010707395,
+      "method": "binary_C1",
+      "runner_count": 44036
+    },
+    {
+      "coverage": 0.9017167771823054,
+      "evaluation_year": 2021,
+      "feature": "race_value__decay_90d__field_quality",
+      "fold_id": "roll_2021",
+      "mean_abs_shap": 0.04610427455639162,
+      "mean_shap": 0.003976776213159956,
+      "method": "binary_C2",
+      "runner_count": 44036
+    },
+    {
+      "coverage": 0.9012853120174402,
+      "evaluation_year": 2021,
+      "feature": "race_value__decay_90d__performance_residual",
+      "fold_id": "roll_2021",
+      "mean_abs_shap": 0.09416619088997734,
+      "mean_shap": 0.0003937173245928442,
+      "method": "binary_C3",
+      "runner_count": 44036
+    },
+    {
+      "coverage": 0.9017167771823054,
+      "evaluation_year": 2021,
+      "feature": "race_value__decay_90d__field_quality",
+      "fold_id": "roll_2021",
+      "mean_abs_shap": 0.04189778409279134,
+      "mean_shap": 0.0032341928792769766,
+      "method": "binary_C3",
+      "runner_count": 44036
+    },
+    {
+      "coverage": 0.9012853120174402,
+      "evaluation_year": 2021,
+      "feature": "race_value__decay_90d__performance_residual",
+      "fold_id": "roll_2021",
+      "mean_abs_shap": 0.10009121329890809,
+      "mean_shap": 0.00751260065159448,
+      "method": "lambdarank_C1",
+      "runner_count": 44036
+    },
+    {
+      "coverage": 0.9017167771823054,
+      "evaluation_year": 2021,
+      "feature": "race_value__decay_90d__field_quality",
+      "fold_id": "roll_2021",
+      "mean_abs_shap": 0.014682704612199792,
+      "mean_shap": -0.0012911122674556287,
+      "method": "lambdarank_C2",
+      "runner_count": 44036
+    },
+    {
+      "coverage": 0.9012853120174402,
+      "evaluation_year": 2021,
+      "feature": "race_value__decay_90d__performance_residual",
+      "fold_id": "roll_2021",
+      "mean_abs_shap": 0.05285304876726911,
+      "mean_shap": 0.0018189037749842345,
+      "method": "lambdarank_C3",
+      "runner_count": 44036
+    },
+    {
+      "coverage": 0.9017167771823054,
+      "evaluation_year": 2021,
+      "feature": "race_value__decay_90d__field_quality",
+      "fold_id": "roll_2021",
+      "mean_abs_shap": 0.006226091462187688,
+      "mean_shap": -0.0014135094742748764,
+      "method": "lambdarank_C3",
+      "runner_count": 44036
+    },
+    {
+      "coverage": 0.8989824746767118,
+      "evaluation_year": 2022,
+      "feature": "race_value__decay_90d__performance_residual",
+      "fold_id": "roll_2022",
+      "mean_abs_shap": 0.10071936776267447,
+      "mean_shap": 0.006435044808792259,
+      "method": "binary_C1",
+      "runner_count": 43537
+    },
+    {
+      "coverage": 0.8991432574591727,
+      "evaluation_year": 2022,
+      "feature": "race_value__decay_90d__field_quality",
+      "fold_id": "roll_2022",
+      "mean_abs_shap": 0.05855721212111351,
+      "mean_shap": 0.005739136171404977,
+      "method": "binary_C2",
+      "runner_count": 43537
+    },
+    {
+      "coverage": 0.8989824746767118,
+      "evaluation_year": 2022,
+      "feature": "race_value__decay_90d__performance_residual",
+      "fold_id": "roll_2022",
+      "mean_abs_shap": 0.09959884989764993,
+      "mean_shap": 0.00907086096690164,
+      "method": "binary_C3",
+      "runner_count": 43537
+    },
+    {
+      "coverage": 0.8991432574591727,
+      "evaluation_year": 2022,
+      "feature": "race_value__decay_90d__field_quality",
+      "fold_id": "roll_2022",
+      "mean_abs_shap": 0.04279100389671438,
+      "mean_shap": 0.006396495517963731,
+      "method": "binary_C3",
+      "runner_count": 43537
+    },
+    {
+      "coverage": 0.8989824746767118,
+      "evaluation_year": 2022,
+      "feature": "race_value__decay_90d__performance_residual",
+      "fold_id": "roll_2022",
+      "mean_abs_shap": 0.11342946485298826,
+      "mean_shap": 0.016177956001020524,
+      "method": "lambdarank_C1",
+      "runner_count": 43537
+    },
+    {
+      "coverage": 0.8991432574591727,
+      "evaluation_year": 2022,
+      "feature": "race_value__decay_90d__field_quality",
+      "fold_id": "roll_2022",
+      "mean_abs_shap": 0.024125496895580023,
+      "mean_shap": -0.0017344293215891832,
+      "method": "lambdarank_C2",
+      "runner_count": 43537
+    },
+    {
+      "coverage": 0.8989824746767118,
+      "evaluation_year": 2022,
+      "feature": "race_value__decay_90d__performance_residual",
+      "fold_id": "roll_2022",
+      "mean_abs_shap": 0.14390310855152047,
+      "mean_shap": 0.022795708383630958,
+      "method": "lambdarank_C3",
+      "runner_count": 43537
+    },
+    {
+      "coverage": 0.8991432574591727,
+      "evaluation_year": 2022,
+      "feature": "race_value__decay_90d__field_quality",
+      "fold_id": "roll_2022",
+      "mean_abs_shap": 0.021441037786889352,
+      "mean_shap": -0.0021733851638883962,
+      "method": "lambdarank_C3",
+      "runner_count": 43537
+    }
+  ]
+}
