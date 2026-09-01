@@ -1,0 +1,347 @@
+{
+  "difference_in_differences": {
+    "ndcg_at_3": {
+      "direction": "positive_means_larger_S1_increment_under_racewise",
+      "interval_95": [
+        -0.002526375064584322,
+        0.003521495178964878
+      ],
+      "per_year": {
+        "2020": -0.00412515210058672,
+        "2021": -1.6364141578271917e-05,
+        "2022": 0.005526043441834344
+      },
+      "year_macro": 0.00046150906655645043
+    },
+    "race_brier": {
+      "direction": "positive_means_larger_S1_increment_under_racewise",
+      "interval_95": [
+        -0.0007206779121320396,
+        0.0015026919822243993
+      ],
+      "per_year": {
+        "2020": 0.0009134692622237263,
+        "2021": 0.0007159687486580544,
+        "2022": -0.0004804444475038962
+      },
+      "year_macro": 0.00038299785445929487
+    },
+    "race_log_loss": {
+      "direction": "positive_means_larger_S1_increment_under_racewise",
+      "interval_95": [
+        -0.0036674010208324432,
+        0.0035298510707011273
+      ],
+      "per_year": {
+        "2020": 0.002063435402553231,
+        "2021": -0.00012003752304686083,
+        "2022": -0.002106675783211327
+      },
+      "year_macro": -5.442596790165229e-05
+    },
+    "top_1_winner_mass": {
+      "direction": "positive_means_larger_S1_increment_under_racewise",
+      "interval_95": [
+        -0.0016216386957263577,
+        0.009954043463973706
+      ],
+      "per_year": {
+        "2020": -0.000628140703517588,
+        "2021": -0.0012610340479192938,
+        "2022": 0.014011335012594458
+      },
+      "year_macro": 0.004040720087052525
+    },
+    "winner_reciprocal_rank": {
+      "direction": "positive_means_larger_S1_increment_under_racewise",
+      "interval_95": [
+        -0.0017244831431064485,
+        0.004868582225622374
+      ],
+      "per_year": {
+        "2020": -0.0011370079652669063,
+        "2021": -0.002043576339344458,
+        "2022": 0.007826917915681065
+      },
+      "year_macro": 0.0015487778703565669
+    }
+  },
+  "integrity": {
+    "all_choice_set_sequences_identical": true,
+    "choice_set_population": {
+      "roll_2020::calibration": {
+        "identical_race_finish_sequence": true,
+        "method_count": 4,
+        "race_count": 3151,
+        "runner_count": 43532
+      },
+      "roll_2020::evaluation": {
+        "identical_race_finish_sequence": true,
+        "method_count": 4,
+        "race_count": 3184,
+        "runner_count": 44542
+      },
+      "roll_2021::calibration": {
+        "identical_race_finish_sequence": true,
+        "method_count": 4,
+        "race_count": 3184,
+        "runner_count": 44542
+      },
+      "roll_2021::evaluation": {
+        "identical_race_finish_sequence": true,
+        "method_count": 4,
+        "race_count": 3172,
+        "runner_count": 44036
+      },
+      "roll_2022::calibration": {
+        "identical_race_finish_sequence": true,
+        "method_count": 4,
+        "race_count": 3172,
+        "runner_count": 44036
+      },
+      "roll_2022::evaluation": {
+        "identical_race_finish_sequence": true,
+        "method_count": 4,
+        "race_count": 3176,
+        "runner_count": 43537
+      }
+    },
+    "maximum_calibrated_probability_sum_error": 1.3322676295501878e-15,
+    "maximum_native_probability_sum_error": 1.2212453270876722e-15,
+    "nonfinite_probability_count": 0
+  },
+  "linear_performance_coefficients": {
+    "roll_2020": {
+      "feature": "race_value__decay_90d__performance_residual",
+      "feature_is_last_registered_column": true,
+      "standardized_coefficient": 0.21933909292277234
+    },
+    "roll_2021": {
+      "feature": "race_value__decay_90d__performance_residual",
+      "feature_is_last_registered_column": true,
+      "standardized_coefficient": 0.22700562958740614
+    },
+    "roll_2022": {
+      "feature": "race_value__decay_90d__performance_residual",
+      "feature_is_last_registered_column": true,
+      "standardized_coefficient": 0.2345071654763139
+    }
+  },
+  "performance_coverage_and_drift": {
+    "roll_2020": {
+      "calibration": {
+        "coverage": 0.8911375539832767,
+        "missing_count": 4739,
+        "quantiles": {
+          "0.01": -3.160940170288086,
+          "0.1": -1.6579688787460327,
+          "0.5": -0.6024318337440491,
+          "0.9": 0.173807293176651,
+          "0.99": 0.8437114953994751
+        },
+        "race_count": 3151,
+        "runner_count": 43532,
+        "year": 2019
+      },
+      "evaluation": {
+        "coverage": 0.8958511068205289,
+        "missing_count": 4639,
+        "quantiles": {
+          "0.01": -3.1733579635620117,
+          "0.1": -1.6731785535812378,
+          "0.5": -0.6464328169822693,
+          "0.9": 0.1304691880941391,
+          "0.99": 0.8653565645217896
+        },
+        "race_count": 3184,
+        "runner_count": 44542,
+        "year": 2020
+      },
+      "model_validation": {
+        "coverage": 0.8968717695177312,
+        "missing_count": 4589,
+        "quantiles": {
+          "0.01": -3.2167577743530273,
+          "0.1": -1.747233510017395,
+          "0.5": -0.6680313944816589,
+          "0.9": 0.07167796045541763,
+          "0.99": 0.7147142887115479
+        },
+        "race_count": 3150,
+        "runner_count": 44498,
+        "year": 2018
+      },
+      "train": {
+        "coverage": 0.9035272984595286,
+        "missing_count": 17723,
+        "quantiles": {
+          "0.01": -2.9388952255249023,
+          "0.1": -1.5762841701507568,
+          "0.5": -0.6043935418128967,
+          "0.9": 0.09517166018486023,
+          "0.99": 0.6953328847885132
+        },
+        "race_count": 12665,
+        "runner_count": 183710,
+        "year": null
+      }
+    },
+    "roll_2021": {
+      "calibration": {
+        "coverage": 0.8958511068205289,
+        "missing_count": 4639,
+        "quantiles": {
+          "0.01": -3.1816134452819824,
+          "0.1": -1.6905466318130493,
+          "0.5": -0.6573840975761414,
+          "0.9": 0.10923736542463303,
+          "0.99": 0.8135973811149597
+        },
+        "race_count": 3184,
+        "runner_count": 44542,
+        "year": 2020
+      },
+      "evaluation": {
+        "coverage": 0.9012853120174402,
+        "missing_count": 4347,
+        "quantiles": {
+          "0.01": -3.01792049407959,
+          "0.1": -1.5828251838684082,
+          "0.5": -0.5634543895721436,
+          "0.9": 0.2386118620634079,
+          "0.99": 0.9805595874786377
+        },
+        "race_count": 3172,
+        "runner_count": 44036,
+        "year": 2021
+      },
+      "model_validation": {
+        "coverage": 0.8911375539832767,
+        "missing_count": 4739,
+        "quantiles": {
+          "0.01": -3.1788859367370605,
+          "0.1": -1.6632319688796997,
+          "0.5": -0.6085497140884399,
+          "0.9": 0.15259283781051636,
+          "0.99": 0.8091627359390259
+        },
+        "race_count": 3151,
+        "runner_count": 43532,
+        "year": 2019
+      },
+      "train": {
+        "coverage": 0.9022295449765126,
+        "missing_count": 22312,
+        "quantiles": {
+          "0.01": -2.997575521469116,
+          "0.1": -1.607460618019104,
+          "0.5": -0.6164565086364746,
+          "0.9": 0.09002871066331863,
+          "0.99": 0.6975030899047852
+        },
+        "race_count": 15815,
+        "runner_count": 228208,
+        "year": null
+      }
+    },
+    "roll_2022": {
+      "calibration": {
+        "coverage": 0.9012853120174402,
+        "missing_count": 4347,
+        "quantiles": {
+          "0.01": -3.020392656326294,
+          "0.1": -1.5917010307312012,
+          "0.5": -0.5764428973197937,
+          "0.9": 0.21455608308315277,
+          "0.99": 0.9390293955802917
+        },
+        "race_count": 3172,
+        "runner_count": 44036,
+        "year": 2021
+      },
+      "evaluation": {
+        "coverage": 0.8989824746767118,
+        "missing_count": 4398,
+        "quantiles": {
+          "0.01": -2.903684139251709,
+          "0.1": -1.5109660625457764,
+          "0.5": -0.5074499845504761,
+          "0.9": 0.2554056644439697,
+          "0.99": 0.9801551103591919
+        },
+        "race_count": 3176,
+        "runner_count": 43537,
+        "year": 2022
+      },
+      "model_validation": {
+        "coverage": 0.8958511068205289,
+        "missing_count": 4639,
+        "quantiles": {
+          "0.01": -3.176344633102417,
+          "0.1": -1.6937029361724854,
+          "0.5": -0.6649965047836304,
+          "0.9": 0.09146835654973984,
+          "0.99": 0.7880606055259705
+        },
+        "race_count": 3184,
+        "runner_count": 44542,
+        "year": 2020
+      },
+      "train": {
+        "coverage": 0.9004526385515567,
+        "missing_count": 27051,
+        "quantiles": {
+          "0.01": -3.029503583908081,
+          "0.1": -1.6149872541427612,
+          "0.5": -0.61534184217453,
+          "0.9": 0.09929921478033066,
+          "0.99": 0.7167149186134338
+        },
+        "race_count": 18966,
+        "runner_count": 271740,
+        "year": null
+      }
+    }
+  },
+  "protocol_deviations": [
+    {
+      "item": "race-aware permutation dependence",
+      "reason": "not generated by the completed runner; no refit or acceptance metric depends on it",
+      "result_impact": false,
+      "status": "omitted_non_selection_diagnostic"
+    },
+    {
+      "item": "capacity-matched LB0/LB1 model files and predictions",
+      "reason": "auxiliary validation losses and optimizer records were saved, but coefficients and runner predictions were not",
+      "result_impact": false,
+      "status": "optimizer_diagnostics_only_saved"
+    }
+  ],
+  "race_constant_linear_features": {
+    "feature_count": 254,
+    "fit_role": "roll_2020_train",
+    "interpretation": "linear main effects cancel within every choice set",
+    "race_constant_feature_count": 18,
+    "race_constant_features": [
+      "context__venue_code",
+      "context__distance",
+      "context__field_size_rows",
+      "context__surface_turf",
+      "context__surface_dirt",
+      "context__surface_unknown",
+      "context__direction_right",
+      "context__direction_left",
+      "context__direction_straight",
+      "context__direction_unknown",
+      "context__sex_unknown",
+      "context__class_tier",
+      "context__class_female_only",
+      "context__class_age_min",
+      "context__class_age_and_older",
+      "rating__field_mean_elo_pre",
+      "rating__field_max_elo_pre",
+      "rating__field_std_elo_pre"
+    ]
+  },
+  "schema_version": 1
+}

@@ -1,0 +1,135 @@
+{
+  "schema_version": 1,
+  "experiment_id": "s2_supervised_racewise_probability_20260901",
+  "status": "completed",
+  "decision": {
+    "race_wise_objective_as_control_replacement": "rejected",
+    "s1_performance_feature_across_objectives": "objective_robust_supported",
+    "primary_racewise_stage": "linear_conditional_logit",
+    "nonlinear_stage_executed": false,
+    "production_control_change": false,
+    "next_model_executed": false
+  },
+  "scope": {
+    "evaluation_years": [2020, 2021, 2022],
+    "evaluation_races": 9532,
+    "base_runners": 403855,
+    "base_races": 28498,
+    "rows_used_2023": 0,
+    "rows_used_2024": 0,
+    "rows_used_2025": 0,
+    "odds_used": false,
+    "final_market_used_for_selection": false,
+    "direct_entity_id_feature_count": 0,
+    "fit_count": 42,
+    "model_unit_count": 18,
+    "lightgbm_fit_count": 6,
+    "linear_optimizer_candidate_fit_count": 36
+  },
+  "capacity_gate": {
+    "source_role": "model_validation_only",
+    "threshold": 0.75,
+    "recoveries": {
+      "roll_2020": 0.9439204827910361,
+      "roll_2021": 0.9632057022370959,
+      "roll_2022": 0.9620471131474582
+    },
+    "under_capacity_folds": 0,
+    "nonlinear_stage_triggered": false
+  },
+  "comparisons": {
+    "binary_B1_vs_B0": {
+      "probability_path": "supported",
+      "ranking_path": "supported",
+      "macro_improvement": {
+        "race_log_loss": 0.007418715102871361,
+        "race_brier": 0.0019392304000704907,
+        "ndcg_at_3": 0.002926641757157141,
+        "top_1_winner_mass": -0.0016758284959749366,
+        "winner_reciprocal_rank": 0.0007138987557848883,
+        "native_race_log_loss": 0.008000038923433225
+      },
+      "primary_interval": [0.0036500365361165046, 0.011233267101481263],
+      "primary_positive_years": 3
+    },
+    "linear_R0_vs_binary_B0": {
+      "probability_path": "rejected",
+      "ranking_path": "rejected",
+      "macro_improvement": {
+        "race_log_loss": -0.01816348373199128,
+        "race_brier": -0.003903457865398511,
+        "ndcg_at_3": -0.0008916144546950814,
+        "top_1_winner_mass": -0.0037831543523094515,
+        "winner_reciprocal_rank": -0.0021305291658996564,
+        "native_race_log_loss": -0.018076672148328754
+      },
+      "primary_interval": [-0.026112724601003226, -0.01021920015312887],
+      "primary_positive_years": 0
+    },
+    "linear_R1_vs_binary_B1": {
+      "probability_path": "rejected",
+      "ranking_path": "inconclusive",
+      "macro_improvement": {
+        "race_log_loss": -0.01821790969989297,
+        "race_brier": -0.003520460010939086,
+        "ndcg_at_3": -0.0004301053881386278,
+        "top_1_winner_mass": 0.00025756573474309635,
+        "winner_reciprocal_rank": -0.0005817512955430537,
+        "native_race_log_loss": -0.01871327539245297
+      },
+      "primary_interval": [-0.026041037046500195, -0.010469635912215881],
+      "primary_positive_years": 0
+    },
+    "linear_R1_vs_R0": {
+      "probability_path": "supported",
+      "ranking_path": "supported",
+      "macro_improvement": {
+        "race_log_loss": 0.00736428913496967,
+        "race_brier": 0.0023222282545299158,
+        "ndcg_at_3": 0.0033881508237135947,
+        "top_1_winner_mass": 0.0023648915910776114,
+        "winner_reciprocal_rank": 0.002262676626141491,
+        "native_race_log_loss": 0.007363435679309009
+      },
+      "primary_interval": [0.005101629341597678, 0.00964760850143927],
+      "primary_positive_years": 3
+    }
+  },
+  "fixed_slice_summary": {
+    "binary_performance_feature": "Log Loss improved in five of six fixed slices; winner distance change >=400m worsened by 0.00389",
+    "racewise_vs_binary": "Race-wise linear utility was worst in history-0 and new races; neither matched comparison improved overall probability",
+    "racewise_performance_feature": "Improved open/graded, large-field, surface-switch, and large-distance-change slices; history-0 and new-race Log Loss worsened"
+  },
+  "difference_in_differences": {
+    "interpretation": "The incremental S1 performance-feature effect was not detectably different between the two objectives.",
+    "race_log_loss": {
+      "year_macro": -0.00005442596790165229,
+      "interval_95": [-0.0036674010208324432, 0.0035298510707011273]
+    },
+    "ndcg_at_3": {
+      "year_macro": 0.00046150906655645043,
+      "interval_95": [-0.002526375064584322, 0.003521495178964878]
+    }
+  },
+  "quality": {
+    "artifact_manifest_sha256": "ff96e07fd12f152bea0c36662401bb9041b8fc847eac73e4b5ec5d6f8b91c589",
+    "artifact_manifest_verified": true,
+    "artifact_file_count": 27,
+    "choice_set_identity": "pass",
+    "maximum_native_probability_sum_error": 1.2212453270876722e-15,
+    "maximum_calibrated_probability_sum_error": 1.3322676295501878e-15,
+    "optimizer_amendments_before_evaluation": true,
+    "raw_or_runner_artifacts_committed": false,
+    "postrun_non_selection_diagnostics_added": true,
+    "omitted_non_selection_diagnostics": [
+      "race-aware permutation dependence",
+      "capacity-matched linear-Binary coefficients and runner predictions"
+    ]
+  },
+  "interpretation": {
+    "objective": "Direct top-choice likelihood is valuable relative to the weak capacity-matched linear Binary diagnostic, but the preregistered Conditional Logit candidate does not outperform the nonlinear LightGBM Binary control.",
+    "performance_feature": "The S1 historical performance residual improves probability and ranking under both LightGBM Binary and Conditional Logit on all three years.",
+    "inter_horse": "S2 does not establish a need for an Inter-horse set model; Conditional Logit adds only a choice-set denominator and no learned inter-runner interaction.",
+    "limitations": "The capacity rule passed, but S2 did not execute the conditional nonlinear grouped-softmax stage and therefore does not prove that every nonlinear race-wise utility objective would fail."
+  }
+}

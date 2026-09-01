@@ -1,0 +1,794 @@
+{
+  "roll_2020::binary_B0": {
+    "best_iteration": 428,
+    "performance_feature_gain": null,
+    "total_gain": 16517.06323197484
+  },
+  "roll_2020::binary_B1": {
+    "best_iteration": 220,
+    "performance_feature_gain": 342.9467254281044,
+    "total_gain": 13192.547431647778
+  },
+  "roll_2020::linear_R0": {
+    "candidates": [
+      {
+        "coefficient_norm": 2.3166288933441552,
+        "final_objective": 2.1814412529562803,
+        "function_evaluations": 270,
+        "gradient_norm": 0.0027070387285535744,
+        "iterations": 250,
+        "l2": 0.0001,
+        "message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+        "operational_convergence": true,
+        "status": 1,
+        "success": false,
+        "validation_native_race_log_loss": 2.1346814658222013
+      },
+      {
+        "coefficient_norm": 1.4942709963221852,
+        "final_objective": 2.1828385007624385,
+        "function_evaluations": 265,
+        "gradient_norm": 0.0006964046844425438,
+        "iterations": 250,
+        "l2": 0.001,
+        "message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+        "operational_convergence": true,
+        "status": 1,
+        "success": false,
+        "validation_native_race_log_loss": 2.1332118378794513
+      },
+      {
+        "coefficient_norm": 0.9479673609915794,
+        "final_objective": 2.1884600454220746,
+        "function_evaluations": 180,
+        "gradient_norm": 3.710882876290535e-05,
+        "iterations": 163,
+        "l2": 0.01,
+        "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+        "operational_convergence": true,
+        "status": 0,
+        "success": true,
+        "validation_native_race_log_loss": 2.1324174898245793
+      }
+    ],
+    "invalid_candidate_count": 0,
+    "selected": {
+      "coefficient_norm": 0.9479673609915794,
+      "final_objective": 2.1884600454220746,
+      "function_evaluations": 180,
+      "gradient_norm": 3.710882876290535e-05,
+      "iterations": 163,
+      "l2": 0.01,
+      "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+      "operational_convergence": true,
+      "status": 0,
+      "success": true,
+      "validation_native_race_log_loss": 2.1324174898245793
+    },
+    "transform": {
+      "constant_feature_count": 3,
+      "feature_count": 254,
+      "transform_sha256": "9d73568fc2e7881805417751301c89968d89c1a8a04ae904c59c43a6340c998a",
+      "z_clip": 10.0
+    }
+  },
+  "roll_2020::linear_R1": {
+    "candidates": [
+      {
+        "coefficient_norm": 2.071168394052339,
+        "final_objective": 2.1751161135118444,
+        "function_evaluations": 271,
+        "gradient_norm": 0.004415249262075445,
+        "iterations": 250,
+        "l2": 0.0001,
+        "message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+        "operational_convergence": true,
+        "status": 1,
+        "success": false,
+        "validation_native_race_log_loss": 2.1261011122332465
+      },
+      {
+        "coefficient_norm": 1.4420180830907896,
+        "final_objective": 2.176390833699416,
+        "function_evaluations": 267,
+        "gradient_norm": 0.0012013888695277621,
+        "iterations": 250,
+        "l2": 0.001,
+        "message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+        "operational_convergence": true,
+        "status": 1,
+        "success": false,
+        "validation_native_race_log_loss": 2.1250429515362486
+      },
+      {
+        "coefficient_norm": 0.9097221352527114,
+        "final_objective": 2.181554046213676,
+        "function_evaluations": 172,
+        "gradient_norm": 0.00010659189773174198,
+        "iterations": 158,
+        "l2": 0.01,
+        "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+        "operational_convergence": true,
+        "status": 0,
+        "success": true,
+        "validation_native_race_log_loss": 2.1241108152018615
+      }
+    ],
+    "invalid_candidate_count": 0,
+    "selected": {
+      "coefficient_norm": 0.9097221352527114,
+      "final_objective": 2.181554046213676,
+      "function_evaluations": 172,
+      "gradient_norm": 0.00010659189773174198,
+      "iterations": 158,
+      "l2": 0.01,
+      "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+      "operational_convergence": true,
+      "status": 0,
+      "success": true,
+      "validation_native_race_log_loss": 2.1241108152018615
+    },
+    "transform": {
+      "constant_feature_count": 3,
+      "feature_count": 255,
+      "transform_sha256": "d12307ab2b412bcd115df23d003f30a13466955be589f9f19d3f9e35e6b12f1a",
+      "z_clip": 10.0
+    }
+  },
+  "roll_2020::linear_binary": {
+    "LB0": {
+      "candidates": [
+        {
+          "coefficient_norm": 17.535425601275808,
+          "final_objective": 0.6389724962987846,
+          "function_evaluations": 264,
+          "gradient_norm": 0.0032092796473702917,
+          "iterations": 250,
+          "l2": 0.0001,
+          "message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+          "operational_convergence": true,
+          "status": 1,
+          "success": false,
+          "validation_native_race_log_loss": 3.7276496906305003
+        },
+        {
+          "coefficient_norm": 3.6119448944808945,
+          "final_objective": 0.6669010620312568,
+          "function_evaluations": 265,
+          "gradient_norm": 0.00011320759222875528,
+          "iterations": 250,
+          "l2": 0.001,
+          "message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+          "operational_convergence": true,
+          "status": 1,
+          "success": false,
+          "validation_native_race_log_loss": 2.7283054325609077
+        },
+        {
+          "coefficient_norm": 0.6123018615812285,
+          "final_objective": 0.6746932545219478,
+          "function_evaluations": 124,
+          "gradient_norm": 1.6021942296090082e-05,
+          "iterations": 110,
+          "l2": 0.01,
+          "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+          "operational_convergence": true,
+          "status": 0,
+          "success": true,
+          "validation_native_race_log_loss": 2.4628950260430336
+        }
+      ],
+      "invalid_candidate_count": 0,
+      "selected": {
+        "coefficient_norm": 0.6123018615812285,
+        "final_objective": 0.6746932545219478,
+        "function_evaluations": 124,
+        "gradient_norm": 1.6021942296090082e-05,
+        "iterations": 110,
+        "l2": 0.01,
+        "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+        "operational_convergence": true,
+        "status": 0,
+        "success": true,
+        "validation_native_race_log_loss": 2.4628950260430336
+      },
+      "transform": {
+        "constant_feature_count": 3,
+        "feature_count": 254,
+        "transform_sha256": "9d73568fc2e7881805417751301c89968d89c1a8a04ae904c59c43a6340c998a",
+        "z_clip": 10.0
+      }
+    },
+    "LB1": {
+      "candidates": [
+        {
+          "coefficient_norm": 16.31719033152261,
+          "final_objective": 0.6390404053116505,
+          "function_evaluations": 262,
+          "gradient_norm": 0.001530124322709339,
+          "iterations": 250,
+          "l2": 0.0001,
+          "message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+          "operational_convergence": true,
+          "status": 1,
+          "success": false,
+          "validation_native_race_log_loss": 3.6352709686317906
+        },
+        {
+          "coefficient_norm": 3.6042060274382886,
+          "final_objective": 0.6668160875644417,
+          "function_evaluations": 261,
+          "gradient_norm": 0.000253076648878399,
+          "iterations": 250,
+          "l2": 0.001,
+          "message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+          "operational_convergence": true,
+          "status": 1,
+          "success": false,
+          "validation_native_race_log_loss": 2.724856955910248
+        },
+        {
+          "coefficient_norm": 0.6122016582122208,
+          "final_objective": 0.674606188226952,
+          "function_evaluations": 117,
+          "gradient_norm": 7.288080274030914e-05,
+          "iterations": 104,
+          "l2": 0.01,
+          "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+          "operational_convergence": true,
+          "status": 0,
+          "success": true,
+          "validation_native_race_log_loss": 2.4603713918156704
+        }
+      ],
+      "invalid_candidate_count": 0,
+      "selected": {
+        "coefficient_norm": 0.6122016582122208,
+        "final_objective": 0.674606188226952,
+        "function_evaluations": 117,
+        "gradient_norm": 7.288080274030914e-05,
+        "iterations": 104,
+        "l2": 0.01,
+        "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+        "operational_convergence": true,
+        "status": 0,
+        "success": true,
+        "validation_native_race_log_loss": 2.4603713918156704
+      },
+      "transform": {
+        "constant_feature_count": 3,
+        "feature_count": 255,
+        "transform_sha256": "d12307ab2b412bcd115df23d003f30a13466955be589f9f19d3f9e35e6b12f1a",
+        "z_clip": 10.0
+      }
+    }
+  },
+  "roll_2021::binary_B0": {
+    "best_iteration": 218,
+    "performance_feature_gain": null,
+    "total_gain": 15708.600046873093
+  },
+  "roll_2021::binary_B1": {
+    "best_iteration": 188,
+    "performance_feature_gain": 387.86185079813004,
+    "total_gain": 15308.333350598812
+  },
+  "roll_2021::linear_R0": {
+    "candidates": [
+      {
+        "coefficient_norm": 2.1016110211387775,
+        "final_objective": 2.169823918660164,
+        "function_evaluations": 267,
+        "gradient_norm": 0.006365198284740164,
+        "iterations": 250,
+        "l2": 0.0001,
+        "message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+        "operational_convergence": true,
+        "status": 1,
+        "success": false,
+        "validation_native_race_log_loss": 2.1478262515737825
+      },
+      {
+        "coefficient_norm": 1.5213919752435634,
+        "final_objective": 2.1712270126191,
+        "function_evaluations": 270,
+        "gradient_norm": 0.0014475202005562232,
+        "iterations": 250,
+        "l2": 0.001,
+        "message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+        "operational_convergence": true,
+        "status": 1,
+        "success": false,
+        "validation_native_race_log_loss": 2.1470886777559572
+      },
+      {
+        "coefficient_norm": 0.9497956294660672,
+        "final_objective": 2.1769425419701967,
+        "function_evaluations": 184,
+        "gradient_norm": 0.00012921697729096414,
+        "iterations": 166,
+        "l2": 0.01,
+        "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+        "operational_convergence": true,
+        "status": 0,
+        "success": true,
+        "validation_native_race_log_loss": 2.1473387861292847
+      }
+    ],
+    "invalid_candidate_count": 0,
+    "selected": {
+      "coefficient_norm": 1.5213919752435634,
+      "final_objective": 2.1712270126191,
+      "function_evaluations": 270,
+      "gradient_norm": 0.0014475202005562232,
+      "iterations": 250,
+      "l2": 0.001,
+      "message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+      "operational_convergence": true,
+      "status": 1,
+      "success": false,
+      "validation_native_race_log_loss": 2.1470886777559572
+    },
+    "transform": {
+      "constant_feature_count": 3,
+      "feature_count": 254,
+      "transform_sha256": "2988017f12bbc4a3eb10e12810638930a7d65375fd40ef01cef3c11d39fa4f41",
+      "z_clip": 10.0
+    }
+  },
+  "roll_2021::linear_R1": {
+    "candidates": [
+      {
+        "coefficient_norm": 1.9990795250968711,
+        "final_objective": 2.1630878048634643,
+        "function_evaluations": 273,
+        "gradient_norm": 0.00365443580970178,
+        "iterations": 250,
+        "l2": 0.0001,
+        "message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+        "operational_convergence": true,
+        "status": 1,
+        "success": false,
+        "validation_native_race_log_loss": 2.138952180713954
+      },
+      {
+        "coefficient_norm": 1.4665475775809225,
+        "final_objective": 2.164388750979071,
+        "function_evaluations": 264,
+        "gradient_norm": 0.0010050721431773965,
+        "iterations": 250,
+        "l2": 0.001,
+        "message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+        "operational_convergence": true,
+        "status": 1,
+        "success": false,
+        "validation_native_race_log_loss": 2.138408918757554
+      },
+      {
+        "coefficient_norm": 0.9125850403548258,
+        "final_objective": 2.1696517489730525,
+        "function_evaluations": 177,
+        "gradient_norm": 3.5053215677476656e-05,
+        "iterations": 165,
+        "l2": 0.01,
+        "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+        "operational_convergence": true,
+        "status": 0,
+        "success": true,
+        "validation_native_race_log_loss": 2.138659043231796
+      }
+    ],
+    "invalid_candidate_count": 0,
+    "selected": {
+      "coefficient_norm": 1.4665475775809225,
+      "final_objective": 2.164388750979071,
+      "function_evaluations": 264,
+      "gradient_norm": 0.0010050721431773965,
+      "iterations": 250,
+      "l2": 0.001,
+      "message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+      "operational_convergence": true,
+      "status": 1,
+      "success": false,
+      "validation_native_race_log_loss": 2.138408918757554
+    },
+    "transform": {
+      "constant_feature_count": 3,
+      "feature_count": 255,
+      "transform_sha256": "02a6a5506aae87e1ac0917a87e70d7109465190b1bb97ca5f788fbd44ffc55f5",
+      "z_clip": 10.0
+    }
+  },
+  "roll_2021::linear_binary": {
+    "LB0": {
+      "candidates": [
+        {
+          "coefficient_norm": 16.29007402772367,
+          "final_objective": 0.637564575179604,
+          "function_evaluations": 263,
+          "gradient_norm": 0.003400553546298073,
+          "iterations": 250,
+          "l2": 0.0001,
+          "message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+          "operational_convergence": true,
+          "status": 1,
+          "success": false,
+          "validation_native_race_log_loss": 3.329778542020899
+        },
+        {
+          "coefficient_norm": 3.6756777081333696,
+          "final_objective": 0.6659448575375715,
+          "function_evaluations": 265,
+          "gradient_norm": 0.00020404754649153004,
+          "iterations": 250,
+          "l2": 0.001,
+          "message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+          "operational_convergence": true,
+          "status": 1,
+          "success": false,
+          "validation_native_race_log_loss": 2.66124710513203
+        },
+        {
+          "coefficient_norm": 0.6217916796004269,
+          "final_objective": 0.6740256620285835,
+          "function_evaluations": 114,
+          "gradient_norm": 3.098210209545177e-05,
+          "iterations": 103,
+          "l2": 0.01,
+          "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+          "operational_convergence": true,
+          "status": 0,
+          "success": true,
+          "validation_native_race_log_loss": 2.451029396757876
+        }
+      ],
+      "invalid_candidate_count": 0,
+      "selected": {
+        "coefficient_norm": 0.6217916796004269,
+        "final_objective": 0.6740256620285835,
+        "function_evaluations": 114,
+        "gradient_norm": 3.098210209545177e-05,
+        "iterations": 103,
+        "l2": 0.01,
+        "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+        "operational_convergence": true,
+        "status": 0,
+        "success": true,
+        "validation_native_race_log_loss": 2.451029396757876
+      },
+      "transform": {
+        "constant_feature_count": 3,
+        "feature_count": 254,
+        "transform_sha256": "2988017f12bbc4a3eb10e12810638930a7d65375fd40ef01cef3c11d39fa4f41",
+        "z_clip": 10.0
+      }
+    },
+    "LB1": {
+      "candidates": [
+        {
+          "coefficient_norm": 17.773783748418463,
+          "final_objective": 0.6374616567739985,
+          "function_evaluations": 270,
+          "gradient_norm": 0.009431240444515614,
+          "iterations": 250,
+          "l2": 0.0001,
+          "message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+          "operational_convergence": true,
+          "status": 1,
+          "success": false,
+          "validation_native_race_log_loss": 3.4065951846674984
+        },
+        {
+          "coefficient_norm": 3.660302081895838,
+          "final_objective": 0.6658588191529515,
+          "function_evaluations": 268,
+          "gradient_norm": 7.889697731941558e-05,
+          "iterations": 250,
+          "l2": 0.001,
+          "message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+          "operational_convergence": true,
+          "status": 1,
+          "success": false,
+          "validation_native_race_log_loss": 2.658070504521438
+        },
+        {
+          "coefficient_norm": 0.6222255059083739,
+          "final_objective": 0.6739374998727871,
+          "function_evaluations": 119,
+          "gradient_norm": 1.0143232396405e-05,
+          "iterations": 111,
+          "l2": 0.01,
+          "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+          "operational_convergence": true,
+          "status": 0,
+          "success": true,
+          "validation_native_race_log_loss": 2.4482803354232
+        }
+      ],
+      "invalid_candidate_count": 0,
+      "selected": {
+        "coefficient_norm": 0.6222255059083739,
+        "final_objective": 0.6739374998727871,
+        "function_evaluations": 119,
+        "gradient_norm": 1.0143232396405e-05,
+        "iterations": 111,
+        "l2": 0.01,
+        "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+        "operational_convergence": true,
+        "status": 0,
+        "success": true,
+        "validation_native_race_log_loss": 2.4482803354232
+      },
+      "transform": {
+        "constant_feature_count": 3,
+        "feature_count": 255,
+        "transform_sha256": "02a6a5506aae87e1ac0917a87e70d7109465190b1bb97ca5f788fbd44ffc55f5",
+        "z_clip": 10.0
+      }
+    }
+  },
+  "roll_2022::binary_B0": {
+    "best_iteration": 242,
+    "performance_feature_gain": null,
+    "total_gain": 18742.421847254038
+  },
+  "roll_2022::binary_B1": {
+    "best_iteration": 237,
+    "performance_feature_gain": 461.69396364688873,
+    "total_gain": 18831.043119072914
+  },
+  "roll_2022::linear_R0": {
+    "candidates": [
+      {
+        "coefficient_norm": 2.0873614369087496,
+        "final_objective": 2.164818147391168,
+        "function_evaluations": 263,
+        "gradient_norm": 0.004064696170260833,
+        "iterations": 250,
+        "l2": 0.0001,
+        "message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+        "operational_convergence": true,
+        "status": 1,
+        "success": false,
+        "validation_native_race_log_loss": 2.1876322804065764
+      },
+      {
+        "coefficient_norm": 1.5138591174549876,
+        "final_objective": 2.166160735546089,
+        "function_evaluations": 269,
+        "gradient_norm": 0.0006552826266082327,
+        "iterations": 250,
+        "l2": 0.001,
+        "message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+        "operational_convergence": true,
+        "status": 1,
+        "success": false,
+        "validation_native_race_log_loss": 2.186880289060641
+      },
+      {
+        "coefficient_norm": 0.9457274408899393,
+        "final_objective": 2.171883779623898,
+        "function_evaluations": 176,
+        "gradient_norm": 4.787503206571503e-05,
+        "iterations": 162,
+        "l2": 0.01,
+        "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+        "operational_convergence": true,
+        "status": 0,
+        "success": true,
+        "validation_native_race_log_loss": 2.1857825113503253
+      }
+    ],
+    "invalid_candidate_count": 0,
+    "selected": {
+      "coefficient_norm": 0.9457274408899393,
+      "final_objective": 2.171883779623898,
+      "function_evaluations": 176,
+      "gradient_norm": 4.787503206571503e-05,
+      "iterations": 162,
+      "l2": 0.01,
+      "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+      "operational_convergence": true,
+      "status": 0,
+      "success": true,
+      "validation_native_race_log_loss": 2.1857825113503253
+    },
+    "transform": {
+      "constant_feature_count": 3,
+      "feature_count": 254,
+      "transform_sha256": "a251fb3b2583c9d90e22fc0a4426d2c903b1297b22584fd87908f9dd0e50c466",
+      "z_clip": 10.0
+    }
+  },
+  "roll_2022::linear_R1": {
+    "candidates": [
+      {
+        "coefficient_norm": 1.9902600958479413,
+        "final_objective": 2.1577459673064636,
+        "function_evaluations": 269,
+        "gradient_norm": 0.002210277319483335,
+        "iterations": 250,
+        "l2": 0.0001,
+        "message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+        "operational_convergence": true,
+        "status": 1,
+        "success": false,
+        "validation_native_race_log_loss": 2.180937491276526
+      },
+      {
+        "coefficient_norm": 1.4719152279476178,
+        "final_objective": 2.1590157154751553,
+        "function_evaluations": 275,
+        "gradient_norm": 0.0006301161139324647,
+        "iterations": 250,
+        "l2": 0.001,
+        "message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+        "operational_convergence": true,
+        "status": 1,
+        "success": false,
+        "validation_native_race_log_loss": 2.18028931843444
+      },
+      {
+        "coefficient_norm": 0.9084088572242551,
+        "final_objective": 2.1642989252514684,
+        "function_evaluations": 185,
+        "gradient_norm": 7.901519007661969e-05,
+        "iterations": 168,
+        "l2": 0.01,
+        "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+        "operational_convergence": true,
+        "status": 0,
+        "success": true,
+        "validation_native_race_log_loss": 2.1790142990548618
+      }
+    ],
+    "invalid_candidate_count": 0,
+    "selected": {
+      "coefficient_norm": 0.9084088572242551,
+      "final_objective": 2.1642989252514684,
+      "function_evaluations": 185,
+      "gradient_norm": 7.901519007661969e-05,
+      "iterations": 168,
+      "l2": 0.01,
+      "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+      "operational_convergence": true,
+      "status": 0,
+      "success": true,
+      "validation_native_race_log_loss": 2.1790142990548618
+    },
+    "transform": {
+      "constant_feature_count": 3,
+      "feature_count": 255,
+      "transform_sha256": "55b6b9f0392db7ba270f16dea06bfeaada8d6a51f477104006c4e8696a079685",
+      "z_clip": 10.0
+    }
+  },
+  "roll_2022::linear_binary": {
+    "LB0": {
+      "candidates": [
+        {
+          "coefficient_norm": 16.714705538641986,
+          "final_objective": 0.6376899682024082,
+          "function_evaluations": 267,
+          "gradient_norm": 0.002251129162508573,
+          "iterations": 250,
+          "l2": 0.0001,
+          "message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+          "operational_convergence": true,
+          "status": 1,
+          "success": false,
+          "validation_native_race_log_loss": 3.1426266134794387
+        },
+        {
+          "coefficient_norm": 3.6150104248102024,
+          "final_objective": 0.6657010918711321,
+          "function_evaluations": 275,
+          "gradient_norm": 0.00010060339712485366,
+          "iterations": 250,
+          "l2": 0.001,
+          "message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+          "operational_convergence": true,
+          "status": 1,
+          "success": false,
+          "validation_native_race_log_loss": 2.6094011599633866
+        },
+        {
+          "coefficient_norm": 0.6192167607865576,
+          "final_objective": 0.6736258367036074,
+          "function_evaluations": 115,
+          "gradient_norm": 1.7158349618973198e-05,
+          "iterations": 107,
+          "l2": 0.01,
+          "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+          "operational_convergence": true,
+          "status": 0,
+          "success": true,
+          "validation_native_race_log_loss": 2.448321129302825
+        }
+      ],
+      "invalid_candidate_count": 0,
+      "selected": {
+        "coefficient_norm": 0.6192167607865576,
+        "final_objective": 0.6736258367036074,
+        "function_evaluations": 115,
+        "gradient_norm": 1.7158349618973198e-05,
+        "iterations": 107,
+        "l2": 0.01,
+        "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+        "operational_convergence": true,
+        "status": 0,
+        "success": true,
+        "validation_native_race_log_loss": 2.448321129302825
+      },
+      "transform": {
+        "constant_feature_count": 3,
+        "feature_count": 254,
+        "transform_sha256": "a251fb3b2583c9d90e22fc0a4426d2c903b1297b22584fd87908f9dd0e50c466",
+        "z_clip": 10.0
+      }
+    },
+    "LB1": {
+      "candidates": [
+        {
+          "coefficient_norm": 15.25558976927804,
+          "final_objective": 0.6384947752430012,
+          "function_evaluations": 266,
+          "gradient_norm": 0.019904118682273104,
+          "iterations": 250,
+          "l2": 0.0001,
+          "message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+          "operational_convergence": false,
+          "status": 1,
+          "success": false,
+          "validation_native_race_log_loss": 3.0741266703319923
+        },
+        {
+          "coefficient_norm": 3.5842679094792507,
+          "final_objective": 0.665610618190713,
+          "function_evaluations": 267,
+          "gradient_norm": 0.00022478642286520947,
+          "iterations": 250,
+          "l2": 0.001,
+          "message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+          "operational_convergence": true,
+          "status": 1,
+          "success": false,
+          "validation_native_race_log_loss": 2.6060043710146266
+        },
+        {
+          "coefficient_norm": 0.6192471990016714,
+          "final_objective": 0.6735327731868784,
+          "function_evaluations": 114,
+          "gradient_norm": 1.4093605701476141e-05,
+          "iterations": 107,
+          "l2": 0.01,
+          "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+          "operational_convergence": true,
+          "status": 0,
+          "success": true,
+          "validation_native_race_log_loss": 2.4455962322167757
+        }
+      ],
+      "invalid_candidate_count": 1,
+      "selected": {
+        "coefficient_norm": 0.6192471990016714,
+        "final_objective": 0.6735327731868784,
+        "function_evaluations": 114,
+        "gradient_norm": 1.4093605701476141e-05,
+        "iterations": 107,
+        "l2": 0.01,
+        "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+        "operational_convergence": true,
+        "status": 0,
+        "success": true,
+        "validation_native_race_log_loss": 2.4455962322167757
+      },
+      "transform": {
+        "constant_feature_count": 3,
+        "feature_count": 255,
+        "transform_sha256": "55b6b9f0392db7ba270f16dea06bfeaada8d6a51f477104006c4e8696a079685",
+        "z_clip": 10.0
+      }
+    }
+  }
+}

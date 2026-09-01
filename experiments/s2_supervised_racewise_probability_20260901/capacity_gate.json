@@ -1,0 +1,33 @@
+{
+  "folds": {
+    "roll_2020": {
+      "binary_native_log_loss": 2.1031074710112736,
+      "linear_binary_native_log_loss": 2.4628950260430336,
+      "linear_native_log_loss": 2.1324174898245793,
+      "recovery": 0.9439204827910361,
+      "under_capacity": false,
+      "uniform_native_log_loss": 2.6257585256573144
+    },
+    "roll_2021": {
+      "binary_native_log_loss": 2.1297420445053543,
+      "linear_binary_native_log_loss": 2.451029396757876,
+      "linear_native_log_loss": 2.1470886777559572,
+      "recovery": 0.9632057022370959,
+      "under_capacity": false,
+      "uniform_native_log_loss": 2.601191000057694
+    },
+    "roll_2022": {
+      "binary_native_log_loss": 2.1688428056013427,
+      "linear_binary_native_log_loss": 2.448321129302825,
+      "linear_native_log_loss": 2.1857825113503253,
+      "recovery": 0.9620471131474582,
+      "under_capacity": false,
+      "uniform_native_log_loss": 2.6151779108806426
+    }
+  },
+  "nonlinear_stage_triggered": false,
+  "role": "model_validation_only",
+  "threshold": 0.75,
+  "trigger_folds": 2,
+  "under_capacity_folds": 0
+}
