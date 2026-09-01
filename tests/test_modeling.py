@@ -21,6 +21,7 @@ from horse_pred.modeling import (
     race_softmax,
     ranking_relevance_targets,
     train_binary,
+    train_huber_regressor,
     train_ranker,
     uniform_baseline,
     validate_chronological_calibration,
@@ -333,6 +334,58 @@ def test_train_ranker_propagates_relevance_scheme_to_train_and_validation(
     assert fitted is capturing_ranker
     assert capturing_ranker.training_targets == [3, 2, 2, 1, 0, 0, 0, 0]
     assert capturing_ranker.validation_targets == [3, 2, 2, 1, 1, 0, 0, 0, 0]
+
+
+def test_train_huber_filters_missing_targets_and_uses_race_balanced_weights(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    class CapturingRegressor:
+        def __init__(self) -> None:
+            self.targets: list[float] | None = None
+            self.validation_targets: list[float] | None = None
+            self.weights: list[float] | None = None
+
+        def fit(
+            self,
+            features: object,
+            targets: list[float],
+            *,
+            sample_weight: list[float],
+            eval_X: object = None,
+            eval_y: list[float] | None = None,
+            **fit_options: object,
+        ) -> CapturingRegressor:
+            del features, eval_X, fit_options
+            self.targets = targets
+            self.validation_targets = eval_y
+            self.weights = sample_weight
+            return self
+
+    model = CapturingRegressor()
+    monkeypatch.setattr(
+        "horse_pred.modeling.build_lightgbm_estimator",
+        lambda model_kind, *, params=None: model,
+    )
+    frame = pd.DataFrame(
+        {
+            "race_id": ["t1", "t1", "t1", "t2", "t2", "v1", "v1"],
+            "split": ["train"] * 5 + ["model_validation"] * 2,
+            "form": [3.0, 2.0, 1.0, 2.0, 1.0, 2.0, 1.0],
+            "performance": [0.2, -0.1, float("nan"), 0.3, -0.4, 0.1, float("nan")],
+        }
+    )
+
+    fitted = train_huber_regressor(
+        frame,
+        feature_columns=["form"],
+        target_column="performance",
+        early_stopping_rounds=None,
+    )
+
+    assert fitted is model
+    assert model.targets == [0.2, -0.1, 0.3, -0.4]
+    assert model.validation_targets == [0.1]
+    assert model.weights == [0.5, 0.5, 0.5, 0.5]
 
 
 def test_lightgbm_binary_and_ranker_use_same_frame_contract() -> None:
